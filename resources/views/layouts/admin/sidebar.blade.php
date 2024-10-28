@@ -1,4 +1,19 @@
 <div class="sidebar bg-dark">
+    <!-- User Info -->
+    @if(Auth::check() && Auth::user()->dosen)
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
+                 alt="User Image">
+        </div>
+        <div class="info">
+            <a href="#" class="d-block">
+                {{ Str::words(Auth::user()->dosen->nama, 3, '') }}
+            </a>
+        </div>
+    </div>
+    @endif
+
     <!-- SidebarSearch Form -->
     <div class="form-inline mt-2">
         <div class="input-group" data-widget="sidebar-search">

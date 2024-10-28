@@ -135,14 +135,14 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
                     aria-expanded="false">
-                    <img src="{{ Auth::user()->avatar ? asset('storage/avatars/' . Auth::user()->avatar) : asset('default-avatar.png') }}"
+                    <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
                         class="img-circle mr-2" alt="User Avatar" style="width: 30px; height: 30px;">
-                    <span>{{ Auth::user()->nama }}</span>
+                    <span>{{ Auth::user()->username }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow"
                     aria-labelledby="navbarDropdown">
                     <div class="dropdown-header text-center">
-                        <strong>Welcome, {{ Auth::user()->nama }}</strong>
+                        <strong>Welcome, {{ Auth::user()->username }}</strong>
                     </div>
                     <div class="dropdown-divider"></div>
                     <!-- Profile link -->
