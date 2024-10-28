@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ config('app.name', 'PWL Laravel Starter Code') }}</title>
+  <title>JTISphere</title>
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
-  <link rel="icon" href="{{ asset('tab_logo.png') }}" type="image/png">
+  <link rel="icon" href="{{ asset('jti.png') }}" type="image/png">
 
   @stack('css')
 </head>
