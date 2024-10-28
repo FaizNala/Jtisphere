@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('t_dosen_level', function (Blueprint $table) {
             $table->unsignedBigInteger('dosen_id')->index();
             $table->unsignedBigInteger('level_id')->index();
+            $table->timestamps();
 
 
             $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen')->onDelete('cascade');

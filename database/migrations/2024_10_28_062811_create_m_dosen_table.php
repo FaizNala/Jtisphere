@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->string('nip')->unique();
             $table->string('nama');
+            $table->string('avatar')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('m_user')->onDelete('cascade');

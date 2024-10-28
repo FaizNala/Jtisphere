@@ -18,17 +18,20 @@ class UserSeeder extends Seeder
             [
                 'user_id' => 1,
                 'username' => 'Administrator',
-                'password' => Hash::make(12345)
+                'password' => Hash::make(12345),
+                'created_at' => now()
             ],
             [
                 'user_id' => 2,
                 'username' => 'Pimpinan',
-                'password' => Hash::make(12345)
+                'password' => Hash::make(12345),
+                'created_at' => now()
             ],
             [
                 'user_id' => 3,
                 'username' => 'Dosen',
-                'password' => Hash::make(12345)
+                'password' => Hash::make(12345),
+                'created_at' => now()
             ]
         ];
         DB::table('m_user')->insert($data);
