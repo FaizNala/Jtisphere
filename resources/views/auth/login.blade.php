@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login POS</title>
+    <title>JTISphere</title>
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- icheck bootstrap -->
@@ -15,143 +17,195 @@
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
-    <link rel="icon" href="{{ asset('tab_logo.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('jti.png') }}" type="image/png">
 
     <style>
         body {
-            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            background: #f0f2f5;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
         .login-box {
-            width: 400px;
+            width: 900px;
+            margin: 0 auto;
         }
 
         .card {
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            border: none;
+            display: flex;
+            flex-direction: row;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        .card-header {
-            background-color: #5a67d8;
+        .left-side {
+            flex: 1;
+            background: linear-gradient(135deg, #2b65d1 0%, #4172db 100%);
+            padding: 40px;
             color: white;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-side img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .left-side h3 {
+            color: white;
+            font-size: 40px;
+            margin-top: 10px;
+            font-weight: 900;
+        }
+
+        .left-side h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .left-side p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .right-side {
+            flex: 1;
+            background: white;
+            padding: 40px;
+        }
+
+        .login-header {
             text-align: center;
-            padding: 20px 0;
-        }
-
-        .card-header .h1 {
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 24px;
-        }
-
-        .login-box-msg {
-            font-size: 18px;
-            color: #6b7280;
             margin-bottom: 30px;
         }
 
-        .btn-primary {
-            background-color: #4caf50;
-            border-color: #4caf50;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #43a047;
-            border-color: #388e3c;
-        }
-
-        .input-group-text {
-            background-color: #5a67d8;
-            border-color: #5a67d8;
-            color: white;
-            border-radius: 0 0.25rem 0.25rem 0;
+        .login-header h2 {
+            color: #2b5db8;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .form-control {
-            font-size: 16px;
             height: 45px;
-            border-radius: 0.25rem;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            font-size: 16px;
         }
 
-        .icheck-primary label {
-            font-size: 14px;
-            color: #6b7280;
+        .input-group-text {
+            background: transparent;
+            border: none;
+            color: #666;
         }
 
-        .card-footer {
-            background-color: #f9fafb;
+        .btn-primary {
+            background: #4172db;
+            border: none;
+            height: 45px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
         }
 
-        .login-box .card-body {
-            padding: 40px;
-            background-color: white;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
+        .btn-primary:hover {
+            background: #234a94;
         }
 
-        .btn-block {
-            border-radius: 25px;
-            padding: 10px;
+        .remember-me {
+            margin-top: 15px;
         }
 
-        /* Small tweaks for error messages */
-        .error-text {
-            font-size: 13px;
-            margin-top: 5px;
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .login-box {
+                width: 95%;
+            }
+
+            .card {
+                flex-direction: column;
+            }
+
+            .left-side {
+                padding: 30px;
+            }
+
+            .right-side {
+                padding: 30px;
+            }
         }
     </style>
 </head>
 
-<body class="hold-transition login-page">
+<body>
     <div class="login-box">
-        <div class="card card-outline card-primary">
-            <div class="card-header">
-                <a href="{{ url('/') }}" class="h1"><b>QuickSales</b></a>
+        <div class="card">
+            <div class="left-side">
+                <div class="text-center mb-4">
+                    <img src="{{ asset('jti.png') }}" alt="JTI Logo" style="width: 150px; height: auto;">
+                    <h3 class="mt-3" style="font-weight: bold;">JTISphere</h3>
+                </div>
             </div>
-            <div class="card-body">
-                <p class="login-box-msg">Sign in to access POS system</p>
+            <div class="right-side">
+                <div class="login-header">
+                    <h2>Sign In to Your Account</h2>
+                </div>
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
-                    <div class="input-group mb-4">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-user"></span>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
                             </div>
                         </div>
                         <small id="error-username" class="error-text text-danger"></small>
                     </div>
-                    <div class="input-group mb-4">
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group mb-3">
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
                             </div>
                         </div>
                         <small id="error-password" class="error-text text-danger"></small>
                     </div>
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" id="remember">
-                                <label for="remember">Remember Me</label>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+
+                    <div class="remember-me">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="remember">
+                            <label class="custom-control-label" for="remember">Remember me</label>
                         </div>
                     </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
                 </form>
-                <a href="{{ url('register') }}" class="text-center d-block mt-3">Don't have an account? Sign up</a>
             </div>
         </div>
     </div>
@@ -165,7 +219,7 @@
     <script src="{{ asset('adminlte/plugins/jquery-validation/additional-methods.min.js') }}"></script>
     <!-- SweetAlert2 -->
     <script src="{{ asset('adminlte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    <!-- AdminLTE App -->
+    <!-- AdminL te App -->
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
 
     <script>
@@ -233,4 +287,5 @@
         });
     </script>
 </body>
+
 </html>
