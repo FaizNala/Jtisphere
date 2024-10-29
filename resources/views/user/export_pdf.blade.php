@@ -92,25 +92,27 @@
     </table>
 
     <h3 class="text-center">LAPORAN DATA USER</h3>
-        <table class="border-all">
-            <thead>
+    <table class="border-all">
+        <thead>
+            <tr>
+                <th class="text-center">No</th>
+                <th>Username</th>
+                <th>Nama</th>
+                <th>NIP</th>
+                <th>Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $index => $user)
                 <tr>
-                    <th class="text-center">No</th>
-                    <th>Username</th>
-                    <th>Nama User</th>
-                    <th>Level User</th>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $user->username }}</td>
+                    <td>{{ $user->nama }}</td>
+                    <td>{{ $user->nip }}</td>
+                    <td>{{ $user->level_nama }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($users as $u)
-                    <tr>
-                        <td class="text-center">{{ $loop->iteration }}</td>
-                        <td>{{ $u->username }}</td>
-                        <td>{{ $u->nama }}</td>
-                        <td>{{ $u->level->level_nama }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html>

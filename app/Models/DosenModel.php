@@ -13,7 +13,7 @@ class DosenModel extends Model
 
     protected $table = 'm_dosen';
     protected $primaryKey = 'dosen_id';
-    protected $fillable = ['nip', 'nama'];
+    protected $fillable = ['user_id', 'nip', 'nama'];
 
     public function user(): HasOne {
         return $this->hasOne(UserModel::class, 'user_id', 'user_id');

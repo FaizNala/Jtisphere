@@ -57,15 +57,28 @@
 @endsection
 
 @push('css')
+    <!-- Tambahkan CSS Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 
 @push('js')
+    <!-- Tambahkan JS Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         function modalAction(url = '') {
             $('#myModal').load(url, function() {
                 $('#myModal').modal('show');
+                // Inisialisasi Select2 setelah modal dimuat
+                if ($('.select2-multiple').length) {
+                    $('.select2-multiple').select2({
+                        placeholder: "Pilih Level Pengguna",
+                        allowClear: true,
+                        dropdownParent: $('#myModal') // Penting untuk Select2 dalam modal
+                    });
+                }
             })
         }
+
         var dataUser;
         $(document).ready(function() {
             dataUser = $('#table-user').DataTable({
@@ -110,7 +123,7 @@
             });
 
             $('#table-user_filter input').unbind().bind().on('keyup', function(e) {
-                if (e.keyCode == 13) { // enter key
+                if (e.keyCode == 13) {
                     dataUser.search(this.value).draw();
                 }
             });
@@ -118,6 +131,13 @@
             $('.filter_level').change(function() {
                 dataUser.draw();
             });
+        });
+
+        // Tambahkan handler untuk membersihkan Select2 saat modal ditutup
+        $('#myModal').on('hidden.bs.modal', function () {
+            if ($('.select2-multiple').length) {
+                $('.select2-multiple').select2('destroy');
+            }
         });
     </script>
 @endpush
