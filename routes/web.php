@@ -4,6 +4,7 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,6 +74,13 @@ Route::middleware(['auth'])->group(function() {
             Route::get('/export_excel', [UserController::class, 'export_excel']);
             Route::get('/export_pdf', [UserController::class, 'export_pdf']);
         });
+    });
 
+    Route::middleware('authorize:ADM,MNG,STF')->group(function () {
+        Route::group(['prefix' => 'profile'], function() {
+            Route::get('/', [ProfileController::class, 'index']);
+            Route::get('/edit_ajax', [ProfileController::class, 'edit_ajax']);
+            Route::post('/update_ajax', [ProfileController::class, 'update_ajax']);
+        });
     });
 });
