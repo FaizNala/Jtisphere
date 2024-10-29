@@ -1,15 +1,22 @@
 @empty($level)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Kesalahan
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="alert alert-danger">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>Data yang anda cari tidak ditemukan
+            <div class="modal-body p-4">
+                <div class="alert alert-danger border-left border-danger" style="border-left-width: 5px;">
+                    <h5 class="alert-heading mb-2"><i class="icon fas fa-ban mr-2"></i>Data Tidak Ditemukan</h5>
+                    <p class="mb-0">Maaf, data yang Anda cari tidak dapat ditemukan dalam sistem kami.</p>
                 </div>
-                <a href="{{ url('/level') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/level') }}" class="btn btn-warning btn-block mt-3">
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali ke Halaman Level
+                </a>
             </div>
         </div>
     </div>
@@ -18,26 +25,36 @@
         @csrf
         @method('PUT')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Level</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fas fa-pencil-alt mr-2"></i>Edit Data Level
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="form-group">
-                        <label>Level Kode</label>
-                        <input value="{{ $level->level_kode }}" type="text" name="level_kode" id="level_kode" class="form-control" required>
+                        <label><i class="fas fa-key mr-2"></i>Level Kode</label>
+                        <input value="{{ $level->level_kode }}" type="text" name="level_kode" id="level_kode"
+                            class="form-control" placeholder="Masukkan kode level" required>
                         <small id="error-level_kode" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Level Nama</label>
-                        <input value="{{ $level->level_nama }}" type="text" name="level_nama" id="level_nama" class="form-control" required>
+                        <label><i class="fas fa-tag mr-2"></i>Level Nama</label>
+                        <input value="{{ $level->level_nama }}" type="text" name="level_nama" id="level_nama"
+                            class="form-control" placeholder="Masukkan nama level" required>
                         <small id="error-nama" class="error-text form-text text-danger"></small>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" data-dismiss="modal" class="btn btn-secondary">
+                        <i class="fas fa-times mr-2"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i>Simpan
+                    </button>
                 </div>
             </div>
         </div>

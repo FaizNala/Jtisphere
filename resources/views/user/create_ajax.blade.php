@@ -1,46 +1,53 @@
-Copy code
 <form action="{{ url('/user/store_ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data User</h5>
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <i class="fas fa-user-plus mr-2"></i>Tambah Data User
+                </h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <!-- Informasi Dasar -->
+                <h6 class="card-subtitle mb-3 text-muted"><i class="fas fa-info-circle mr-2"></i>Informasi Dasar</h6>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" name="username" id="username" class="form-control">
+                            <label><i class="fas fa-user mr-2"></i>Username</label>
+                            <input type="text" name="username" id="username" class="form-control"
+                                placeholder="Masukkan username">
                             <small id="error-username" class="error-text form-text text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" name="password" id="password" class="form-control">
+                            <label><i class="fas fa-lock mr-2"></i>Password</label>
+                            <input type="password" name="password" id="password" class="form-control"
+                                placeholder="Masukkan password">
                             <small id="error-password" class="error-text form-text text-danger"></small>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Nama</label>
-                            <input type="text" name="nama" id="nama" class="form-control">
+                            <label><i class="fas fa-id-card mr-2"></i>Nama</label>
+                            <input type="text" name="nama" id="nama" class="form-control"
+                                placeholder="Masukkan nama lengkap">
                             <small id="error-nama" class="error-text form-text text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label>NIP</label>
-                            <input type="text" name="nip" id="nip" class="form-control">
+                            <label><i class="fas fa-id-badge mr-2"></i>NIP</label>
+                            <input type="text" name="nip" id="nip" class="form-control"
+                                placeholder="Masukkan NIP">
                             <small id="error-nip" class="error-text form-text text-danger"></small>
                         </div>
                     </div>
                 </div>
 
                 <!-- Level Pengguna -->
-                <div class="form-group mt-3">
-                    <label>Level Pengguna</label>
+                <h6 class="card-subtitle mb-3 mt-4 text-muted"><i class="fas fa-layer-group mr-2"></i>Level Pengguna</h6>
+                <div class="form-group">
+                    <label><i class="fas fa-users-cog mr-2"></i>Pilih Level</label>
                     <select name="level[]" id="level" class="form-control select2-multiple" multiple="multiple"
                         data-placeholder="Pilih Level Pengguna">
                         @foreach ($level as $l)
@@ -50,14 +57,17 @@ Copy code
                     <small id="error-level" class="error-text form-text text-danger"></small>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i>Batal
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>Simpan
+                </button>
             </div>
         </div>
     </div>
 </form>
-
 <script>
     $(document).ready(function() {
         // Inisialisasi Select2

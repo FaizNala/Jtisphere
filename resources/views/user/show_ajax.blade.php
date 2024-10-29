@@ -23,7 +23,7 @@
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title text-white">
-                    Detail User
+                    <i class="fas fa-info-circle mr-2"></i>Detail Data User
                 </h5>
                 <button type="button" class="close text-white" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
@@ -60,10 +60,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    Tutup
+                    <i class="fas fa-times mr-2"></i>Tutup
                 </button>
                 <button type="button" class="btn btn-primary" onclick="modalAction('{{ url('/user/' . $user->user_id . '/edit_ajax') }}')">
-                    Edit
+                    <i class="fas fa-user-edit mr-2"></i>Edit
                 </button>
             </div>
         </div>

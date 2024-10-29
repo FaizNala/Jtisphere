@@ -1,17 +1,22 @@
 @empty($user)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Kesalahan
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="alert alert-danger">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang anda cari tidak ditemukan
+            <div class="modal-body p-4">
+                <div class="alert alert-danger border-left border-danger" style="border-left-width: 5px;">
+                    <h5 class="alert-heading mb-2"><i class="icon fas fa-ban mr-2"></i>Data Tidak Ditemukan</h5>
+                    <p class="mb-0">Maaf, data yang Anda cari tidak dapat ditemukan dalam sistem kami.</p>
                 </div>
-                <a href="{{ url('/user') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/user') }}" class="btn btn-warning btn-block mt-3">
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali ke Halaman User
+                </a>
             </div>
         </div>
     </div>
@@ -20,39 +25,52 @@
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data User</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fas fa-trash-alt mr-2"></i>Hapus Data User
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
-                        Apakah Anda yakin ingin menghapus data seperti di bawah ini?
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning border-left border-warning" style="border-left-width: 5px;">
+                        <h5 class="alert-heading mb-2">
+                            <i class="icon fas fa-exclamation-triangle mr-2"></i>Konfirmasi Penghapusan
+                        </h5>
+                        <p class="mb-0">Apakah Anda yakin ingin menghapus data berikut?</p>
                     </div>
-                    <table class="table table-sm table-bordered table-striped">
-                        <tr>
-                            <th class="text-right col-3">Level Pengguna :</th>
-                            <td class="col-9">{{ $user->level_nama }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Username :</th>
-                            <td class="col-9">{{ $user->username }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Nama :</th>
-                            <td class="col-9">{{ $user->nama }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">NIP :</th>
-                            <td class="col-9">{{ $user->nip }}</td>
-                        </tr>
-                    </table>
+                    <div class="table-responsive mt-4">
+                        <table class="table table-hover">
+                            <tr>
+                                <th class="text-right" style="width: 30%;">Level Pengguna:</th>
+                                <td style="width: 70%;">
+                                    <span class="badge badge-primary">{{ $user->level_nama }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-right">Username:</th>
+                                <td><strong>{{ $user->username }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right">Nama:</th>
+                                <td>{{ $user->nama }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-right">NIP:</th>
+                                <td>{{ $user->nip }}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Batal</button>
-                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" data-dismiss="modal" class="btn btn-secondary">
+                        <i class="fas fa-times mr-2"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt mr-2"></i>Ya, Hapus
+                    </button>
                 </div>
             </div>
         </div>
