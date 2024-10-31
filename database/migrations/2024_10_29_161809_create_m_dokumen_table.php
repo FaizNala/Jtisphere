@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('m_dokumen', function (Blueprint $table) {
             $table->id('dokumen_id');
             $table->string('dokumen_nama', 255);
+            $table->enum('dokumen_kategori', ['Surat Tugas', 'Bukti Tugas']);
             $table->timestamps();
         });
     }

@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('t_agenda', function (Blueprint $table) {
+        Schema::create('t_agenda', function (Blueprint $table) {
             $table->id('agenda_id');
-            $table->String('nama');
-            $table->dateTime('Tanggal_mulai');
-            $table->dateTime('Tanggal_selesai');
-            $table->decimal('progress_persen',[3,2]);
+            $table->string('nama');
+            $table->dateTime('tanggal_mulai');
+            $table->dateTime('tanggal_selesai');
+            $table->decimal('progress_persen', 3, 2);
             $table->text('progress_deskripsi');
+            $table->timestamps();
         });
     }
 

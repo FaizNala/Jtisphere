@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_kegiatan', function (Blueprint $table) {
-            $table->id('kegiatan_id');
-            $table->unsignedBigInteger('kategori_id')->index();
-            $table->string('kegiatan_nama');
+        Schema::create('t_kegiatan_agenda', function (Blueprint $table) {
+            $table->unsignedBigInteger('agenda_id')->index();
+            $table->unsignedBigInteger('kegiatan_id')->index();
             $table->enum('status', ['Belum', 'Berjalan', 'Selesai']);
-            $table->text('deskripsi');
-            $table->timestamps();
 
-            $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori');
+            $table->foreign('agenda_id')->references('agenda_id')->on('t_agenda');
+            $table->foreign('kegiatan_id')->references('kegiatan_id')->on('t_kegiatan');
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('t_kegiatan');
+        Schema::dropIfExists('t_kegiatan_agenda');
     }
 };
