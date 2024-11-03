@@ -60,9 +60,9 @@
             </li>
             <!-- Jabatan Kegiatan Section -->
             <li class="nav-item">
-                <a href="{{ url('/jabatan') }}" class="nav-link {{ $activeMenu == 'jabatan' ? 'active' : '' }}">
+                <a href="{{ url('/peran') }}" class="nav-link {{ $activeMenu == 'peran' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-user-tie"></i>
-                    <p>Jabatan Kegiatan</p>
+                    <p>Peran Kegiatan</p>
                 </a>
             </li>
             <li class="nav-item">

@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\kategoriController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\PeranController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
@@ -93,6 +94,25 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [KategoriController::class, 'import_ajax']);
             Route::get('/export_excel', [KategoriController::class, 'export_excel']);
             Route::get('/export_pdf', [KategoriController::class, 'export_pdf']);
+        });
+    });
+
+    // Peran routes
+    Route::middleware(['authorize:ADM,MNG,STF'])->group(function () {
+        Route::group(['prefix' => 'peran'], function () {
+            Route::get('/', [PeranController::class, 'index']);
+            Route::post('/list', [PeranController::class, 'list']);
+            Route::get('/create_ajax', [PeranController::class, 'create_ajax']);
+            Route::post('/ajax', [PeranController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [PeranController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [PeranController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [PeranController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [PeranController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [PeranController::class, 'delete_ajax']);
+            Route::get('/import', [PeranController::class, 'import']);
+            Route::post('/import_ajax', [PeranController::class, 'import_ajax']);
+            Route::get('/export_excel', [PeranController::class, 'export_excel']);
+            Route::get('/export_pdf', [PeranController::class, 'export_pdf']);
         });
     });
 
