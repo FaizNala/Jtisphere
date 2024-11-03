@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('agenda_id')->index();
             $table->unsignedBigInteger('kegiatan_id')->index();
             $table->enum('status', ['Belum', 'Berjalan', 'Selesai']);
+            $table->timestamps();
 
             $table->foreign('agenda_id')->references('agenda_id')->on('t_agenda');
             $table->foreign('kegiatan_id')->references('kegiatan_id')->on('t_kegiatan');
