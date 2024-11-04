@@ -6,6 +6,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PeranController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -79,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kategori routes
-    Route::middleware(['authorize:ADM,MNG,STF'])->group(function () {
+    Route::middleware(['authorize:ADM'])->group(function () {
         Route::group(['prefix' => 'kategori'], function () {
             Route::get('/', [KategoriController::class, 'index']);
             Route::post('/list', [KategoriController::class, 'list']);
@@ -98,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Peran routes
-    Route::middleware(['authorize:ADM,MNG,STF'])->group(function () {
+    Route::middleware(['authorize:ADM'])->group(function () {
         Route::group(['prefix' => 'peran'], function () {
             Route::get('/', [PeranController::class, 'index']);
             Route::post('/list', [PeranController::class, 'list']);
@@ -113,6 +114,25 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [PeranController::class, 'import_ajax']);
             Route::get('/export_excel', [PeranController::class, 'export_excel']);
             Route::get('/export_pdf', [PeranController::class, 'export_pdf']);
+        });
+    });
+
+    // Kegiatan routes
+    Route::middleware(['authorize:ADM'])->group(function () {
+        Route::group(['prefix' => 'kegiatan'], function () {
+            Route::get('/', [KegiatanController::class, 'index']);
+            Route::post('/list', [KegiatanController::class, 'list']);
+            Route::get('/create_ajax', [KegiatanController::class, 'create_ajax']);
+            Route::post('/ajax', [KegiatanController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [KegiatanController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [KegiatanController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajax']);
+            Route::get('/import', [KegiatanController::class, 'import']);
+            Route::post('/import_ajax', [KegiatanController::class, 'import_ajax']);
+            Route::get('/export_excel', [KegiatanController::class, 'export_excel']);
+            Route::get('/export_pdf', [KegiatanController::class, 'export_pdf']);
         });
     });
 
