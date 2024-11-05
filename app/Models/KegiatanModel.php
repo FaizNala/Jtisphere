@@ -23,4 +23,8 @@ class KegiatanModel extends Model
     public function dosenKegiatan(): HasMany {
         return $this->hasMany(DosenKegiatanModel::class, 'kegiatan_id', 'id_kegiatan');
     }
+    public function suratTugas()
+    {
+        return $this->hasOne(SuratTugasModel::class, 'kegiatan_id', 'kegiatan_id');
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PeranController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -133,6 +134,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [KegiatanController::class, 'import_ajax']);
             Route::get('/export_excel', [KegiatanController::class, 'export_excel']);
             Route::get('/export_pdf', [KegiatanController::class, 'export_pdf']);
+            Route::get('/{id}/download_surat_tugas', [KegiatanController::class, 'download_surat_tugas']);
         });
     });
 
