@@ -16,6 +16,7 @@ class DosenLevelSeeder extends Seeder
             ['dosen_id' => 1, 'level_id' => 1, 'created_at' => now()],
             ['dosen_id' => 1, 'level_id' => 3, 'created_at' => now()],
             ['dosen_id' => 2, 'level_id' => 2, 'created_at' => now()],
+            ['dosen_id' => 2, 'level_id' => 3, 'created_at' => now()],
             ['dosen_id' => 3, 'level_id' => 3, 'created_at' => now()],
         ];
 
