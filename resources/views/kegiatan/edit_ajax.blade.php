@@ -72,6 +72,19 @@
                         <small id="error-deskripsi" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
+                        <label><i class="fas fa-calendar-alt mr-2"></i>Tanggal Mulai</label>
+                        <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
+                               value="{{ $kegiatan->tanggal_mulai }}" required>
+                        <small id="error-tanggal_mulai" class="error-text form-text text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-check mr-2"></i>Tanggal Selesai</label>
+                        <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control"
+                               value="{{ $kegiatan->tanggal_selesai }}" required>
+                        <small id="error-tanggal_selesai" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
                         <label><i class="fas fa-users mr-2"></i>Dosen dan Peran</label>
                         <div id="dosen-peran-container">
                             @foreach ($dosenKegiatan as $index => $dk)
@@ -195,6 +208,15 @@
                         required: true,
                         minlength: 10,
                         maxlength: 1000
+                    },
+                    tanggal_mulai: {
+                        required: true,
+                        date: true
+                    },
+                    tanggal_selesai: {
+                        required: true,
+                        date: true,
+                        greaterThan: "#tanggal_mulai"
                     },
                     'dosen[]': {
                         required: true

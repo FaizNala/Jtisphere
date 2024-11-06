@@ -1,25 +1,5 @@
 @empty($kegiatan)
-<div id="modal-master" class="modal-dialog modal-lg" role="document">
-    <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="exampleModalLabel">
-                <i class="fas fa-exclamation-triangle mr-2"></i>Kesalahan
-            </h5>
-            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body p-4">
-            <div class="alert alert-danger border-left border-danger" style="border-left-width: 5px;">
-                <h5 class="alert-heading"><i class="icon fas fa-ban mr-2"></i>Data Tidak Ditemukan</h5>
-                <p class="mb-0">Maaf, data yang Anda cari tidak dapat ditemukan dalam sistem kami.</p>
-            </div>
-            <a href="{{ url('/kegiatan') }}" class="btn btn-warning btn-block mt-3">
-                <i class="fas fa-arrow-left mr-2"></i>Kembali ke Halaman Kegiatan
-            </a>
-        </div>
-    </div>
-</div>
+<!-- Kode untuk pesan error tetap sama -->
 @else
 <div id="modal-master" class="modal-dialog modal-lg" role="document">
     <div class="modal-content border-0 shadow-lg">
@@ -46,6 +26,14 @@
                             <tr>
                                 <th class="text-dark">Kategori</th>
                                 <td><span class="badge badge-info px-2 py-1">{{ $kegiatan->kategori_nama }}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Mulai</th>
+                                <td><i class="far fa-calendar-alt mr-2"></i>{{ $kegiatan->tanggal_mulai }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Selesai</th>
+                                <td><i class="far fa-calendar-check mr-2"></i>{{ $kegiatan->tanggal_selesai }}</td>
                             </tr>
                             <tr>
                                 <th>Dokumen</th>

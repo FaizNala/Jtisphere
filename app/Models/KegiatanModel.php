@@ -12,7 +12,7 @@ class KegiatanModel extends Model
     use HasFactory;
     protected $table = 't_kegiatan';
     protected $primaryKey = 'kegiatan_id';
-    protected $fillable = ['kategori_id', 'kegiatan_nama', 'status', 'deskripsi'];
+    protected $fillable = ['kategori_id', 'kegiatan_nama', 'status', 'deskripsi', 'tanggal_mulai', 'tanggal_selesai'];
 
     public function kategori(): BelongsTo {
         return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');

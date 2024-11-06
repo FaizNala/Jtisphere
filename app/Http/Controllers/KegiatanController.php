@@ -82,6 +82,8 @@ class KegiatanController extends Controller
                 'kegiatan_nama' => 'required|string|min:3|max:255',
                 'status' => 'required|in:Belum,Berjalan,Selesai',
                 'deskripsi' => 'required|string|',
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date',
                 'dosen' => 'required|array|min:1',
                 'dosen.*' => 'exists:m_dosen,dosen_id',
                 'peran' => 'required|array|min:1',
@@ -107,7 +109,9 @@ class KegiatanController extends Controller
                     'kategori_id' => $request->kategori_id,
                     'kegiatan_nama' => $request->kegiatan_nama,
                     'status' => $request->status,
-                    'deskripsi' => $request->deskripsi
+                    'deskripsi' => $request->deskripsi,
+                    'tanggal_mulai' => $request->tanggal_mulai,
+                    'tanggal_selesai' => $request->tanggal_selesai
                 ]);
 
                 // Simpan dosen kegiatan dengan peran
@@ -226,6 +230,8 @@ class KegiatanController extends Controller
                 'kegiatan_nama' => 'required|string|min:3|max:255',
                 'status' => 'required|in:Belum,Berjalan,Selesai',
                 'deskripsi' => 'required|string',
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date',
                 'dosen' => 'required|array|min:1',
                 'dosen.*' => 'exists:m_dosen,dosen_id',
                 'peran' => 'required|array|min:1',
@@ -253,7 +259,9 @@ class KegiatanController extends Controller
                     'kategori_id' => $request->kategori_id,
                     'kegiatan_nama' => $request->kegiatan_nama,
                     'status' => $request->status,
-                    'deskripsi' => $request->deskripsi
+                    'deskripsi' => $request->deskripsi,
+                    'tanggal_mulai' => $request->tanggal_mulai,
+                    'tanggal_selesai' => $request->tanggal_selesai
                 ]);
 
                 // Hapus dosen kegiatan yang lama

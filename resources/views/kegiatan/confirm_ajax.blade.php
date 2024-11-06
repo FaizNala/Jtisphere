@@ -53,6 +53,14 @@
                             <td>{{ $kegiatan->status }}</td>
                         </tr>
                         <tr>
+                            <th class="text-right">Tanggal Mulai:</th>
+                            <td><i class="far fa-calendar-alt mr-2"></i>{{ $kegiatan->tanggal_mulai }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right">Tanggal Selesai:</th>
+                            <td><i class="far fa-calendar-check mr-2"></i>{{ $kegiatan->tanggal_selesai }}</td>
+                        </tr>
+                        <tr>
                             <th class="text-right">Dosen dan Peran:</th>
                             <td>
                                 @if($dosenKegiatan->isEmpty())
