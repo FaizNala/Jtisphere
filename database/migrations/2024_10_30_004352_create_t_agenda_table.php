@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('t_agenda', function (Blueprint $table) {
             $table->id('agenda_id');
             $table->string('nama');
-            $table->dateTime('tanggal_mulai');
-            $table->dateTime('tanggal_selesai');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
             $table->decimal('progress_persen', 3, 2);
             $table->text('progress_deskripsi');
             $table->timestamps();

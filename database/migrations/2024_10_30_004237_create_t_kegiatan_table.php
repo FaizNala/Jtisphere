@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('kegiatan_nama');
             $table->enum('status', ['Belum', 'Berjalan', 'Selesai']);
             $table->text('deskripsi');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
             $table->timestamps();
 
             $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori');
