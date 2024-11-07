@@ -74,7 +74,7 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <i class="fas fa-times mr-2"></i>Tutup
             </button>
-            <a href="" download="" class="btn btn-primary">
+            <a href="{{ url('kegiatan/' . $kegiatan->kegiatan_id . '/export_draft_surat_tugas') }}" class="btn btn-primary">
                 <i class="fas fa-download mr-2"></i>Unduh Draft Surat Tugas
             </a>
         </div>

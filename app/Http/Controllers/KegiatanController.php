@@ -9,12 +9,15 @@ use App\Models\DosenModel;
 use App\Models\PeranModel;
 use App\Models\DosenKegiatanModel;
 use App\Models\SuratTugasModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class KegiatanController extends Controller
 {
@@ -410,18 +413,118 @@ class KegiatanController extends Controller
         return redirect('/');
     }
 
-    public function download_surat_tugas($id)
+    public function export_excel()
     {
-        $kegiatan = KegiatanModel::findOrFail($id);
+        // ambil data kegiatan yang akan di export
+        $kegiatan = KegiatanModel::select(
+            't_kegiatan.kegiatan_nama',
+            'm_kategori.kategori_nama',
+            't_kegiatan.status',
+            't_kegiatan.tanggal_mulai',
+            't_kegiatan.tanggal_selesai'
+        )
+            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
+            ->get();
 
-        if ($kegiatan->dokumen_nama) {
-            $path = storage_path('app/public/surat_tugas/');
+        // load library excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-            if (file_exists($path)) {
-                return response()->download($path, $kegiatan->dokumen_nama);
-            }
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Kegiatan');
+        $sheet->setCellValue('C1', 'Kategori');
+        $sheet->setCellValue('D1', 'Status');
+        $sheet->setCellValue('E1', 'Tanggal Mulai');
+        $sheet->setCellValue('F1', 'Tanggal Selesai');
+
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+
+        $no = 1; // no data dimulai dari 1
+        $baris = 2; // baris data dimulai dari baris ke 2
+        foreach ($kegiatan as $key => $value) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $value->kegiatan_nama);
+            $sheet->setCellValue('C' . $baris, $value->kategori_nama);
+            $sheet->setCellValue('D' . $baris, $value->status);
+            $sheet->setCellValue('E' . $baris, $value->tanggal_mulai);
+            $sheet->setCellValue('F' . $baris, $value->tanggal_selesai);
+            $baris++;
+            $no++;
         }
 
-        return back()->with('error', 'File tidak ditemukan.');
+        foreach (range('A', 'F') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->setTitle('Data Kegiatan');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data Kegiatan ' . date('Y-m-d H:i:s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . 'GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $kegiatan = KegiatanModel::select(
+            't_kegiatan.kegiatan_nama',
+            'm_kategori.kategori_nama',
+            't_kegiatan.status',
+            't_kegiatan.tanggal_mulai',
+            't_kegiatan.tanggal_selesai'
+        )
+            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
+            ->get();
+
+        $pdf = Pdf::loadView('kegiatan.export_pdf', ['kegiatan' => $kegiatan]);
+        $pdf->setPaper('a4', 'potrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
+    }
+
+    public function export_draft_surat_tugas($id)
+    {
+        $kegiatan = KegiatanModel::select(
+            't_kegiatan.kegiatan_nama',
+            'm_kategori.kategori_nama',
+            't_kegiatan.tanggal_mulai',
+            't_kegiatan.tanggal_selesai'
+        )
+            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
+            ->where('t_kegiatan.kegiatan_id', $id)
+            ->first();
+
+        if (!$kegiatan) {
+            return response()->json(['message' => 'Kegiatan tidak ditemukan'], 404);
+        }
+
+        $dosenKegiatan = DosenKegiatanModel::with(['dosen', 'peran'])
+            ->where('kegiatan_id', $id)
+            ->get();
+
+        $pdf = Pdf::loadView('kegiatan.export_draft_surat_tugas', [
+            'kegiatan' => $kegiatan,
+            'dosenKegiatan' => $dosenKegiatan
+        ]);
+        $pdf->setPaper('a4', 'potrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        // Membuat nama file yang aman untuk digunakan
+        $safeFileName = preg_replace('/[^a-z0-9]+/', '-', strtolower($kegiatan->kegiatan_nama));
+        $fileName = 'Draft Surat Tugas - ' . $safeFileName . ' - ' . date('Y-m-d H:i:s') . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 }
