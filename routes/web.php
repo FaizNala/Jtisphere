@@ -134,7 +134,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [KegiatanController::class, 'import_ajax']);
             Route::get('/export_excel', [KegiatanController::class, 'export_excel']);
             Route::get('/export_pdf', [KegiatanController::class, 'export_pdf']);
-            Route::get('/{id}/download_surat_tugas', [KegiatanController::class, 'download_surat_tugas']);
+            Route::get('/{id}/export_draft_surat_tugas', [KegiatanController::class, 'export_draft_surat_tugas']);
         });
     });
 
