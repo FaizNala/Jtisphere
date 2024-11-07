@@ -6,7 +6,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PeranController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 
 // Pattern enforcement for 'id' parameter (must be a number)
 Route::pattern('id', '[0-9]+');
-
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 // Auth routes
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
