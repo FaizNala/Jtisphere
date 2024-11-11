@@ -11,7 +11,7 @@ class DosenKegiatanModel extends Model
     use HasFactory;
     protected $table = 't_dosen_kegiatan';
     protected $primaryKey = 'dosen_kegiatan_id';
-    protected $fillable = ['dosen_id', 'kegiatan_id', 'peran_id'];
+    protected $fillable = ['dosen_id', 'kegiatan_id', 'peran_id', 'is_pic'];
 
     public function dosen(): BelongsTo {
         return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');

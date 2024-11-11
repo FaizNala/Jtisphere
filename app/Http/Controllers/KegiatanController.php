@@ -122,7 +122,8 @@ class KegiatanController extends Controller
                     DosenKegiatanModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dosen_id' => $dosen_id,
-                        'peran_id' => $request->peran[$index]
+                        'peran_id' => $request->peran[$index],
+                        'is_pic' => $request->peran[$index] == 1 ? true : false
                     ]);
                 }
 
@@ -275,7 +276,8 @@ class KegiatanController extends Controller
                     DosenKegiatanModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dosen_id' => $dosen_id,
-                        'peran_id' => $request->peran[$index]
+                        'peran_id' => $request->peran[$index],
+                        'is_pic' => $request->peran[$index] == 1 ? true : false
                     ]);
                 }
 

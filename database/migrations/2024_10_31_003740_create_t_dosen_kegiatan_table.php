@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('kegiatan_id')->index();
             $table->unsignedBigInteger('dosen_id')->index();
             $table->unsignedBigInteger('peran_id')->index();
+            $table->boolean('is_pic')->default(false);
             $table->timestamps();
 
             $table->foreign('kegiatan_id')->references('kegiatan_id')->on('t_kegiatan');
