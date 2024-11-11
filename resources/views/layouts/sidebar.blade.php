@@ -27,6 +27,8 @@
         </div>
     </div>
     <!-- Sidebar Menu -->
+
+    {{-- Admin Sidebar --}}
     @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -82,6 +84,8 @@
             </li> --}}
         </ul>
         @endif
+
+        {{-- Pimpinan Sidebar --}}
         @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'PMN')
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Dashboard Link -->
@@ -109,6 +113,8 @@
             </li>
         </ul>
         @endif
+
+        {{-- Dosen Sidebar --}}
         @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'DSN')
         @endif
     </nav>
