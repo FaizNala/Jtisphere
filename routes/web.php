@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Welcome route
     Route::get('/', [WelcomeController::class, 'index']);
+    Route::get('/switch-role/{level_id}', [UserController::class, 'switchRole'])->name('switch.role');
 
     // Semua route di dalam group ini harus punya role ADM
     Route::middleware(['authorize:ADM'])->group(function () {

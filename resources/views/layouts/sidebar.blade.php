@@ -27,10 +27,13 @@
         </div>
     </div>
     <!-- Sidebar Menu -->
-
-    {{-- Admin Sidebar --}}
-    @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
     <nav class="mt-2">
+        @php
+            $currentLevelId = session('current_level_id');
+            $currentRole = optional(optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level)->level_kode;
+        @endphp
+        {{-- Admin Sidebar --}}
+        @if($currentRole == 'ADM')
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Dashboard Link -->
             <li class="nav-item">
@@ -61,7 +64,6 @@
                     <p>Kategori Kegiatan</p>
                 </a>
             </li>
-            <!-- Jabatan Kegiatan Section -->
             <li class="nav-item">
                 <a href="{{ url('/peran') }}" class="nav-link {{ $activeMenu == 'peran' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-user-tie"></i>
@@ -74,19 +76,10 @@
                     <p>Data Kegiatan</p>
                 </a>
             </li>
-            {{-- <!-- Data Transaksi Section -->
-            <li class="nav-header">Dokumen</li>
-            <li class="nav-item">
-                <a href="{{ url('/stok') }}" class="nav-link {{ $activeMenu == 'dokumen' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-cubes"></i>
-                    <p>Dokumen Kegiatan</p>
-                </a>
-            </li> --}}
         </ul>
         @endif
-
         {{-- Pimpinan Sidebar --}}
-        @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'PMN')
+        @if($currentRole == 'PMN')
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Dashboard Link -->
             <li class="nav-item">
@@ -115,7 +108,10 @@
         @endif
 
         {{-- Dosen Sidebar --}}
-        @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'DSN')
+        @if($currentRole == 'DSN')
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Engko lak es mari dosen e link e tambah nok kene! -->
+        </ul>
         @endif
     </nav>
 </div>

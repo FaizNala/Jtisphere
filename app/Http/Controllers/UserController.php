@@ -452,4 +452,16 @@ class UserController extends Controller
         $pdf->setPaper('A4', 'portrait');
         return $pdf->stream('Data_User_' . date('Y-m-d_His') . '.pdf');
     }
+    public function switchRole($level_id)
+    {
+        $user = auth()->user();
+        $allowedLevels = $user->dosen->dosenLevel->pluck('level_id')->toArray();
+        if (in_array($level_id, $allowedLevels)) {
+            session(['current_level_id' => $level_id]);
+            return redirect()->back()->with('success', 'Role switched successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Access denied for this role.');
+        }
+    }
+    
 }

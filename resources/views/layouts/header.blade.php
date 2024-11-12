@@ -136,13 +136,20 @@
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
                     aria-expanded="false">
                     <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
-                        class="img-circle mr-2" alt="User  Avatar" style="width: 30px; height: 30px;">
-                    <span>{{ Auth::user()->username }}</span>
+                        class="img-circle mr-2" alt="User Avatar" style="width: 30px; height: 30px;">
+                    @php
+                        // Ngambil id current user
+                        $currentLevelId = session('current_level_id');
+                        // Ngambil nama current user
+                        $currentRoleName = optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first()->level ?? null)->level_nama;
+                    @endphp
+                    <!-- Menampilkan -->
+                    <span>{{ Auth::user()->username }}@if($currentRoleName) ({{ $currentRoleName }}) @endif</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow"
                     aria-labelledby="navbarDropdown">
                     <div class="dropdown-header text-center bg-primary text-white">
-                        <strong>Welcome, {{ Auth::user()->username }}</strong>
+                        <strong>Welcome, {{ Auth::user()->username }}@if($currentRoleName) ({{ $currentRoleName }}) @endif</strong>
                     </div>
                     <div class="dropdown-divider"></div>
 
@@ -163,12 +170,6 @@
                         </div>
                         <div class="dropdown-divider"></div>
                     @endif
-
-                    {{-- <!-- Profile linkf -->
-                    <a href="{{ url('/profile') }}" class="dropdown-item">
-                        <i class="fas fa-user-circle mr-2"></i> Profile
-                    </a> --}}
-                    <div class="dropdown-divider"></div>
                     <!-- Logout link -->
                     <a href="{{ url('logout') }}" class="dropdown-item text-danger">
                         <i class="fas fa-sign-out-alt mr-2"></i> Logout
