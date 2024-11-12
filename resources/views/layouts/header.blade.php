@@ -164,7 +164,7 @@
                         <div class="dropdown-divider"></div>
                     @endif
 
-                    {{-- <!-- Profile link -->
+                    {{-- <!-- Profile linkf -->
                     <a href="{{ url('/profile') }}" class="dropdown-item">
                         <i class="fas fa-user-circle mr-2"></i> Profile
                     </a> --}}
