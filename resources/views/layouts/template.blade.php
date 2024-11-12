@@ -18,10 +18,12 @@
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- FullCalendar -->
+  <link rel="stylesheet" href="{{ asset('adminlte/plugins/fullcalendar/main.css') }}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2/css/select2.min.css') }}">
-<link rel="stylesheet" href="{{ asset('adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
   <link rel="icon" href="{{ asset('jti.png') }}" type="image/png">
 
   @stack('css')
@@ -38,8 +40,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="{{ url('/') }}" class="brand-link">
-        <img src="{{ asset('jti.png') }}" alt="AdminLTE Logo"
-          class="brand-image" style="opacity: .8">
+        <img src="{{ asset('jti.png') }}" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
         <span class="brand-text font-weight-bold text-center"><b>JTISphere</b></span>
       </a>
 
@@ -96,12 +97,15 @@
   <!-- AdminLTE App -->
   <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
   <script src="{{ asset('adminlte/plugins/select2/js/select2.full.min.js') }}"></script>
+  <!-- FullCalendar -->
+  <script src="{{ asset('adminlte/plugins/moment/moment.min.js') }}"></script>
+  <script src="{{ asset('adminlte/plugins/fullcalendar/main.min.js') }}"></script>
   <script>
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
-    })
+    });
   </script>
   @stack('js')
 </body>
