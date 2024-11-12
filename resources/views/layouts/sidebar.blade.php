@@ -27,6 +27,9 @@
         </div>
     </div>
     <!-- Sidebar Menu -->
+
+    {{-- Admin Sidebar --}}
+    @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Dashboard Link -->
@@ -71,14 +74,48 @@
                     <p>Data Kegiatan</p>
                 </a>
             </li>
-            <!-- Data Transaksi Section -->
+            {{-- <!-- Data Transaksi Section -->
             <li class="nav-header">Dokumen</li>
             <li class="nav-item">
                 <a href="{{ url('/stok') }}" class="nav-link {{ $activeMenu == 'dokumen' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-cubes"></i>
                     <p>Dokumen Kegiatan</p>
                 </a>
+            </li> --}}
+        </ul>
+        @endif
+
+        {{-- Pimpinan Sidebar --}}
+        @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'PMN')
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Dashboard Link -->
+            <li class="nav-item">
+                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
+            <!-- Data Pengguna Section -->
+            <li class="nav-header">Data Pengguna</li>
+            <li class="nav-item">
+                <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
+                    <i class="nav-icon far fa-user"></i>
+                    <p>Data Pengguna</p>
+                </a>
+            </li>
+            <!-- Data Kegiatan Section -->
+            <li class="nav-header">Data Kegiatan</li>
+            <li class="nav-item">
+                <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
+                    <i class="nav-icon far fa-list-alt"></i>
+                    <p>Data Kegiatan</p>
+                </a>
             </li>
         </ul>
+        @endif
+
+        {{-- Dosen Sidebar --}}
+        @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'DSN')
+        @endif
     </nav>
 </div>

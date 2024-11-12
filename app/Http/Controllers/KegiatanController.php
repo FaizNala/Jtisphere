@@ -56,8 +56,11 @@ class KegiatanController extends Controller
             })
             ->addColumn('aksi', function ($kegiatan) {
                 $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                $userRole = optional(optional(auth()->user()->dosen)->dosenLevel)->first()->level->level_kode ?? null;
+                if ($userRole == 'ADM') {
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                }
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -122,7 +125,8 @@ class KegiatanController extends Controller
                     DosenKegiatanModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dosen_id' => $dosen_id,
-                        'peran_id' => $request->peran[$index]
+                        'peran_id' => $request->peran[$index],
+                        'is_pic' => $request->peran[$index] == 1 ? true : false
                     ]);
                 }
 
@@ -275,7 +279,8 @@ class KegiatanController extends Controller
                     DosenKegiatanModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dosen_id' => $dosen_id,
-                        'peran_id' => $request->peran[$index]
+                        'peran_id' => $request->peran[$index],
+                        'is_pic' => $request->peran[$index] == 1 ? true : false
                     ]);
                 }
 

@@ -136,19 +136,38 @@
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
                     aria-expanded="false">
                     <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
-                        class="img-circle mr-2" alt="User Avatar" style="width: 30px; height: 30px;">
+                        class="img-circle mr-2" alt="User  Avatar" style="width: 30px; height: 30px;">
                     <span>{{ Auth::user()->username }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow"
                     aria-labelledby="navbarDropdown">
-                    <div class="dropdown-header text-center">
+                    <div class="dropdown-header text-center bg-primary text-white">
                         <strong>Welcome, {{ Auth::user()->username }}</strong>
                     </div>
                     <div class="dropdown-divider"></div>
-                    <!-- Profile link -->
+
+                    <!-- Role Switching -->
+                    @if (Auth::user()->dosen && Auth::user()->dosen->dosenLevel->isNotEmpty())
+                        <div class="dropdown-header text-center">
+                            <strong>Available Roles</strong>
+                        </div>
+                        @foreach (Auth::user()->dosen->dosenLevel as $dosenLevel)
+                            <a href="{{ url('/switch-role/' . $dosenLevel->level->level_id) }}" class="dropdown-item">
+                                <i class="fas fa-briefcase mr-2"></i> {{ $dosenLevel->level->level_nama }}
+                            </a>
+                        @endforeach
+                        <div class="dropdown-divider"></div>
+                    @else
+                        <div class="dropdown-header text-center">
+                            <strong>No Roles Available</strong>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                    @endif
+
+                    {{-- <!-- Profile linkf -->
                     <a href="{{ url('/profile') }}" class="dropdown-item">
                         <i class="fas fa-user-circle mr-2"></i> Profile
-                    </a>
+                    </a> --}}
                     <div class="dropdown-divider"></div>
                     <!-- Logout link -->
                     <a href="{{ url('logout') }}" class="dropdown-item text-danger">

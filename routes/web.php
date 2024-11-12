@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // User routes
-    Route::middleware(['authorize:ADM'])->group(function () {
+    Route::middleware(['authorize:ADM,PMN'])->group(function () {
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index']);
             Route::post('/list', [UserController::class, 'list']);
@@ -119,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kegiatan routes
-    Route::middleware(['authorize:ADM'])->group(function () {
+    Route::middleware(['authorize:ADM,PMN'])->group(function () {
         Route::group(['prefix' => 'kegiatan'], function () {
             Route::get('/', [KegiatanController::class, 'index']);
             Route::post('/list', [KegiatanController::class, 'list']);

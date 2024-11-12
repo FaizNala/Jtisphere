@@ -31,7 +31,7 @@
   <!-- Site wrapper -->
   <div class="wrapper">
     <!-- Navbar -->
-    @include('layouts.admin.header')
+    @include('layouts.header')
     <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
@@ -44,14 +44,14 @@
       </a>
 
       <!-- Sidebar -->
-      @include('layouts.admin.sidebar')
+      @include('layouts.sidebar')
       <!-- /.sidebar -->
     </aside>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- Content Header (Page header) -->
-      @include('layouts.admin.breadcrumb')
+      @include('layouts.breadcrumb')
 
       <!-- Main content -->
       <section class="content">
@@ -61,7 +61,7 @@
     </div>
     <!-- /.content-wrapper -->
 
-    @include('layouts.admin.footer')
+    @include('layouts.footer')
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
