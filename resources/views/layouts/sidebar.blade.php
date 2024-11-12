@@ -42,6 +42,13 @@
                     <p>Dashboard</p>
                 </a>
             </li>
+            <!-- Kalender Link -->
+            <li class="nav-item">
+                <a href="{{ url('/kalender') }}" class="nav-link {{ $activeMenu == 'kalender' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-calendar-alt"></i>
+                    <p>Kalender</p>
+                </a>
+            </li>
             <!-- Data Pengguna Section -->
             <li class="nav-header">Data Pengguna</li>
             <li class="nav-item">
@@ -88,6 +95,13 @@
                     <p>Dashboard</p>
                 </a>
             </li>
+            <!-- Kalender Link -->
+            <li class="nav-item">
+                <a href="{{ url('/kalender') }}" class="nav-link {{ $activeMenu == 'kalender' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-calendar-alt"></i>
+                    <p>Kalender</p>
+                </a>
+            </li>
             <!-- Data Pengguna Section -->
             <li class="nav-header">Data Pengguna</li>
             <li class="nav-item">
@@ -110,6 +124,21 @@
         {{-- Dosen Sidebar --}}
         @if($currentRole == 'DSN')
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Dashboard Link -->
+            <li class="nav-item">
+                <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
+
+            <!-- Kalender Link -->
+            <li class="nav-item">
+                <a href="{{ url('/kalender') }}" class="nav-link {{ $activeMenu == 'kalender' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-calendar-alt"></i>
+                    <p>Kalender</p>
+                </a>
+            </li>
             <!-- Engko lak es mari dosen e link e tambah nok kene! -->
         </ul>
         @endif

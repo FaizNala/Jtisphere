@@ -7,6 +7,7 @@ use App\Http\Controllers\PeranController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KalenderController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
     // Welcome route
     Route::get('/', [WelcomeController::class, 'index']);
     Route::get('/switch-role/{level_id}', [UserController::class, 'switchRole'])->name('switch.role');
+    Route::get('/kalender', [KalenderController::class, 'index']);
 
     // Semua route di dalam group ini harus punya role ADM
     Route::middleware(['authorize:ADM'])->group(function () {
