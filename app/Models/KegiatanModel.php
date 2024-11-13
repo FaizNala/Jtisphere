@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class KegiatanModel extends Model
 {
     use HasFactory;
-    protected $table = 't_kegiatan';
+    protected $table = 'm_kegiatan';
     protected $primaryKey = 'kegiatan_id';
     protected $fillable = ['kategori_id', 'kegiatan_nama', 'status', 'deskripsi', 'tanggal_mulai', 'tanggal_selesai'];
 
@@ -21,7 +21,7 @@ class KegiatanModel extends Model
         return $this->hasMany(agendaModel::class, 'kegiatan_id', 'kegiatan_id');
     }
     public function dosenKegiatan(): HasMany {
-        return $this->hasMany(DosenKegiatanModel::class, 'kegiatan_id', 'id_kegiatan');
+        return $this->hasMany(DosenDetailModel::class, 'kegiatan_id', 'id_kegiatan');
     }
     public function suratTugas()
     {

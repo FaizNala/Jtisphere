@@ -15,24 +15,24 @@ class WelcomeController extends Controller
 
         $activeMenu = 'dashboard';
 
-        $totalKegiatan = DB::table('t_kegiatan as k')
+        $totalKegiatan = DB::table('m_kegiatan as k')
             ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
             ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
             ->count();
 
-        $kegiatanBelum = DB::table('t_kegiatan as k')
+        $kegiatanBelum = DB::table('m_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
         ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Belum')
         ->count();
 
-        $kegiatanBerlangsung = DB::table('t_kegiatan as k')
+        $kegiatanBerlangsung = DB::table('m_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
         ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Berjalan')
         ->count();
 
-        $kegiatanSelesai = DB::table('t_kegiatan as k')
+        $kegiatanSelesai = DB::table('m_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
         ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Selesai')

@@ -49,6 +49,7 @@
                     <p>Kalender</p>
                 </a>
             </li>
+
             <!-- Data Pengguna Section -->
             <li class="nav-header">Data Pengguna</li>
             <li class="nav-item">
@@ -63,6 +64,16 @@
                     <p>Data Pengguna</p>
                 </a>
             </li>
+
+            <!-- Data Kegiatan Section -->
+            <li class="nav-header">Data Periode</li>
+            <li class="nav-item">
+                <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-clock"></i>
+                    <p>Periode</p>
+                </a>
+            </li>
+
             <!-- Data Kegiatan Section -->
             <li class="nav-header">Data Kegiatan</li>
             <li class="nav-item">
@@ -81,6 +92,12 @@
                 <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
                     <i class="nav-icon far fa-list-alt"></i>
                     <p>Data Kegiatan</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/detail_kegiatan') }}" class="nav-link {{ $activeMenu == 'detail_kegiatan' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-info-circle"></i>
+                    <p>Detail Kegiatan</p>
                 </a>
             </li>
         </ul>
