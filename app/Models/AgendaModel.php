@@ -17,7 +17,7 @@ class AgendaModel extends Model
         return $this->hasMany(KegiatanAgendaModel::class, 'agenda_id', 'agenda_id');
     }
 
-    public function agendaDosen(): HasMany {
-        return $this->hasMany(AgendaDosenModel::class, 'agenda_id', 'agenda_id');
+    public function agendaDetail(): HasMany {
+        return $this->hasMany(AgendaDetailModel::class, 'agenda_id', 'agenda_id');
     }
 }
