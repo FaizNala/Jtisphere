@@ -13,7 +13,11 @@ class AgendaModel extends Model
     protected $primaryKey = 'agenda_id';
     protected $fillable = ['nama', 'tanggal_mulai', 'tanggal_selesai', 'progress_persen', 'progress_deskripsi'];
 
-    public function agendaDetail(): HasMany {
-        return $this->hasMany(AgendaDetailModel::class, 'agenda_id', 'agenda_id');
+    public function kegiatanAgenda(): HasMany {
+        return $this->hasMany(KegiatanAgendaModel::class, 'agenda_id', 'agenda_id');
+    }
+
+    public function agendaDosen(): HasMany {
+        return $this->hasMany(AgendaDosenModel::class, 'agenda_id', 'agenda_id');
     }
 }

@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_dosen_detail', function (Blueprint $table) {
-            $table->unsignedBigInteger('kegiatan_detail_id')->index();
+        Schema::create('t_dosen_kegiatan', function (Blueprint $table) {
+            $table->id('dosen_kegiatan_id');
+            $table->unsignedBigInteger('kegiatan_id')->index();
             $table->unsignedBigInteger('dosen_id')->index();
             $table->unsignedBigInteger('peran_id')->index();
             $table->boolean('is_pic')->default(false);
             $table->timestamps();
 
-            $table->foreign('kegiatan_detail_id')->references('kegiatan_detail_id')->on('t_kegiatan_detail');
+            $table->foreign('kegiatan_id')->references('kegiatan_id')->on('t_kegiatan');
             $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen');
             $table->foreign('peran_id')->references('peran_id')->on('m_peran');
         });
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('t_dosen_detail');
+        Schema::dropIfExists('t_dosen_kegiatan');
     }
 };

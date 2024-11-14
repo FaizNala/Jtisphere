@@ -10,12 +10,12 @@ class SuratTugasModel extends Model
 {
     use HasFactory;
     protected $table = 't_surat_tugas';
-    protected $fillable = ['dokumen_id', 'kegiatan_detail_id'];
+    protected $fillable = ['dokumen_id', 'kegiatan_id'];
 
     public function dokumen(): BelongsTo {
         return $this->belongsTo(DokumenModel::class, 'dokumen_id', 'dokumen_id');
     }
     public function kegiatan(): BelongsTo {
-        return $this->belongsTo(KegiatanDetailModel::class, 'kegiatan_detail_id', 'kegiatan_detail_id');
+        return $this->belongsTo(KegiatanModel::class, 'kegiatan_id', 'kegiatan_id');
     }
 }
