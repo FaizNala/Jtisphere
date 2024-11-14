@@ -13,8 +13,8 @@ class PeranModel extends Model
     protected $primaryKey = 'peran_id';
     protected $fillable = ['peran_kode', 'peran_nama'];
 
-    public function dosen_kegiatan(): HasMany {
-        return $this->hasMany(DosenKegiatanModel::class, 'peran_id', 'peran_id');
+    public function dosenDetail(): HasMany {
+        return $this->hasMany(DosenDetailModel::class, 'peran_id', 'peran_id');
     }
 
 }
