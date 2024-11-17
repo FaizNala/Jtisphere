@@ -44,6 +44,12 @@ class WelcomeController extends Controller
         ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
         ->where('l.level_nama', 'Pimpinan')
         ->count();
+    // Hitung jumlah Pimpinan
+    $pimpinan = DB::table('m_dosen as d')
+        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+        ->where('l.level_nama', 'Pimpinan')
+        ->count();
 
     // Hitung jumlah Admin
     $admin = DB::table('m_dosen as d')
@@ -51,7 +57,19 @@ class WelcomeController extends Controller
         ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
         ->where('l.level_nama', 'Administrator')
         ->count();
+    // Hitung jumlah Admin
+    $admin = DB::table('m_dosen as d')
+        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+        ->where('l.level_nama', 'Administrator')
+        ->count();
 
+    // Hitung jumlah Dosen (asumsi nama levelnya adalah 'Dosen')
+    $dosen = DB::table('m_dosen as d')
+        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+        ->where('l.level_nama', 'Dosen')
+        ->count();
     // Hitung jumlah Dosen (asumsi nama levelnya adalah 'Dosen')
     $dosen = DB::table('m_dosen as d')
         ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
