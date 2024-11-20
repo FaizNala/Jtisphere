@@ -122,8 +122,8 @@
             <li>Dokumen</li>
         </ul>
         <div>
-            <a href="login.html" class="login">Login</a>
-            <a href="admin.html" class="admin">Login Administrator</a>
+            <a href="{{ route('login') }}" class="login">Login</a>
+            <a href="{{ route('login') }}" class="admin">Login Administrator</a>
         </div>
     </nav>
     <main>
@@ -134,9 +134,15 @@
             <fitur>Sistem Informasi Manajemen SDM JTI Polinema merupakan platform berbasis web dan mobile yang mempermudah distribusi tugas serta pemantauan beban kerja dosen dan staf di Jurusan Teknologi Informasi Polinema.
                 Fitur real-time monitoring pada sistem ini membantu memastikan pemerataan tugas yang optimal, mendukung efisiensi kerja, serta menjaga keseimbangan beban di lingkungan JTI.</p>
         </div>
-        <div class="footer-box">
+        {{-- <div class="footer-box">
             <h2>Struktur Organisasi</h2>
             <img src="struktur.png" alt="Struktur Organisasi" style="width: 100%; max-width: 600px; height: auto;">
+        </div> --}}
+        <div class="footer-box">
+            <h2>Struktur Organisasi Jurusan Teknologi Informasi POLINEMA</h2>
+                <div class="footer-box">
+                    <img src="SO.png" alt="Struktur Organisasi" style="width: 100%; max-width: 600px; height: auto;">
+                </div>
         </div>
     </main>
     <footer>
