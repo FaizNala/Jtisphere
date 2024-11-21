@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('peran_id');
             $table->string('peran_kode', 10)->unique();
             $table->string('peran_nama', 100);
+            $table->boolean('is_pic')->default(false);
             $table->timestamps();
         });
     }

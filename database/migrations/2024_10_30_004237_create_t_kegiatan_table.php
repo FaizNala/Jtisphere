@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id('kegiatan_id');
             $table->unsignedBigInteger('kategori_id')->index();
             $table->string('kegiatan_nama');
-            $table->enum('status', ['Belum', 'Berjalan', 'Selesai']);
             $table->text('deskripsi');
+            $table->enum('skala', ['Internal','Nasional','Internasional','Lain-Lain']);
+            $table->bigInteger('anggaran');
+            $table->enum('status', ['Belum', 'Berjalan', 'Selesai']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->timestamps();

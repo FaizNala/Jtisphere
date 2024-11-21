@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('agenda_dosen_id');
             $table->unsignedBigInteger('agenda_id')->index();
             $table->unsignedBigInteger('dosen_id')->index();
-            $table->tinyInteger('bobot');
             $table->timestamps();
 
             $table->foreign('agenda_id')->references('agenda_id')->on('t_agenda');
