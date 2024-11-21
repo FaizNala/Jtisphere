@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\KegiatanModel;
+use Illuminate\Support\Facades\DB;
 
 class KalenderController extends Controller
 {
@@ -16,7 +17,7 @@ class KalenderController extends Controller
         $activeMenu = 'kalender';
 
         // Ambil data kegiatan dari database
-        $data = KegiatanModel::select('kegiatan_nama as title', 'tanggal_mulai as start', 'tanggal_selesai as end')->get();
+        $data = KegiatanModel::select('kegiatan_nama as title', 'tanggal_mulai as start',DB::raw('DATE_ADD(tanggal_selesai, INTERVAL 1 DAY) as end'))->get();
 
         return view('kalender', compact(
             'breadcrumb',

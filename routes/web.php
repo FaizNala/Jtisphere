@@ -9,6 +9,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KalenderController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\KegiatanDosenController;
+use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -122,7 +124,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kegiatan routes
-    Route::middleware(['authorize:ADM,PMN'])->group(function () {
+    Route::middleware(['authorize:ADM,PMN,DSN'])->group(function () {
         Route::group(['prefix' => 'kegiatan'], function () {
             Route::get('/', [KegiatanController::class, 'index']);
             Route::post('/list', [KegiatanController::class, 'list']);
@@ -138,6 +140,79 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/export_excel', [KegiatanController::class, 'export_excel']);
             Route::get('/export_pdf', [KegiatanController::class, 'export_pdf']);
             Route::get('/{id}/export_draft_surat_tugas', [KegiatanController::class, 'export_draft_surat_tugas']);
+        });
+    });
+
+    Route::middleware(['authorize:DSN'])->group(function () {
+        Route::group(['prefix' => 'kegiatan_dosen'], function () {
+            Route::get('/', [KegiatanDosenController::class, 'index']);
+            Route::post('/list', [KegiatanDosenController::class, 'list']);
+            Route::get('/create_ajax', [KegiatanDosenController::class, 'create_ajax']);
+            Route::post('/ajax', [KegiatanDosenController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [KegiatanDosenController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [KegiatanDosenController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [KegiatanDosenController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [KegiatanDosenController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [KegiatanDosenController::class, 'delete_ajax']);
+            Route::get('/import', [KegiatanDosenController::class, 'import']);
+            Route::post('/import_ajax', [KegiatanDosenController::class, 'import_ajax']);
+            Route::get('/export_excel', [KegiatanDosenController::class, 'export_excel']);
+            Route::get('/export_pdf', [KegiatanDosenController::class, 'export_pdf']);
+        });
+    });
+
+    Route::middleware(['authorize:DSN'])->group(function () {
+        Route::group(['prefix' => 'agenda'], function () {
+            Route::get('/', [AgendaController::class, 'index']);
+            Route::get('/{id}/add', [AgendaController::class, 'index2']);
+            Route::post('/list', [AgendaController::class, 'list']);
+            Route::get('/create_ajax', [AgendaController::class, 'create_ajax']);
+            Route::post('/{id}/ajax', [AgendaController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [AgendaController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [AgendaController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [AgendaController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [AgendaController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [AgendaController::class, 'delete_ajax']);
+            Route::get('/import', [AgendaController::class, 'import']);
+            Route::post('/import_ajax', [AgendaController::class, 'import_ajax']);
+            Route::get('/export_excel', [AgendaController::class, 'export_excel']);
+            Route::get('/export_pdf', [AgendaController::class, 'export_pdf']);
+        });
+    });
+
+    // Route::middleware(['authorize:DSN'])->group(function () {
+    //     Route::group(['prefix' => 'agenda'], function () {
+    //         Route::get('/', [AgendaController::class, 'index']);
+    //         Route::post('/list', [AgendaController::class, 'list']);
+    //         Route::get('/create_ajax', [AgendaController::class, 'create_ajax']);
+    //         Route::post('/ajax', [AgendaController::class, 'store_ajax']);
+    //         Route::get('/{id}/show_ajax', [AgendaController::class, 'show_ajax']);
+    //         Route::get('/{id}/edit_ajax', [AgendaController::class, 'edit_ajax']);
+    //         Route::put('/{id}/update_ajax', [AgendaController::class, 'update_ajax']);
+    //         Route::get('/{id}/delete_ajax', [AgendaController::class, 'confirm_ajax']);
+    //         Route::delete('/{id}/delete_ajax', [AgendaController::class, 'delete_ajax']);
+    //         Route::get('/import', [AgendaController::class, 'import']);
+    //         Route::post('/import_ajax', [AgendaController::class, 'import_ajax']);
+    //         Route::get('/export_excel', [AgendaController::class, 'export_excel']);
+    //         Route::get('/export_pdf', [AgendaController::class, 'export_pdf']);
+    //     });
+    // });
+
+    Route::middleware(['authorize:DSN'])->group(function () {
+        Route::group(['prefix' => 'agenda_dosen'], function () {
+            Route::get('/', [KegiatanDosenController::class, 'index']);
+            Route::post('/list', [KegiatanDosenController::class, 'list']);
+            Route::get('/create_ajax', [KegiatanDosenController::class, 'create_ajax']);
+            Route::post('/ajax', [KegiatanDosenController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [KegiatanDosenController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [KegiatanDosenController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [KegiatanDosenController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [KegiatanDosenController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [KegiatanDosenController::class, 'delete_ajax']);
+            Route::get('/import', [KegiatanDosenController::class, 'import']);
+            Route::post('/import_ajax', [KegiatanDosenController::class, 'import_ajax']);
+            Route::get('/export_excel', [KegiatanDosenController::class, 'export_excel']);
+            Route::get('/export_pdf', [KegiatanDosenController::class, 'export_pdf']);
         });
     });
 
