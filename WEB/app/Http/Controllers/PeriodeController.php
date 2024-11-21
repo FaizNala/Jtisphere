@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\PeriodeModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 
 class PeriodeController extends Controller
@@ -158,6 +160,68 @@ class PeriodeController extends Controller
             }
             return redirect('/');
         }
+    }
+
+    public function export_excel()
+    {
+        // ambil data periode yang akan di export
+        $periode = PeriodeModel::select('periode', 'tanggal_mulai', 'tanggal_selesai', 'status')->get();
+
+        // load library excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'periode');
+        $sheet->setCellValue('C1', 'tanggal mulai');
+        $sheet->setCellValue('D1', 'tanggal akhir');
+        $sheet->setCellValue('E1', 'status');
+
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+
+        $no = 1; // no data dimulai dari 1
+        $baris = 2; // baris data dimulai dari baris ke 2
+        foreach ($periode as $key => $value) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $value->periode);
+            $sheet->setCellValue('C' . $baris, $value->tanggal_mulai);
+            $sheet->setCellValue('D' . $baris, $value->tanggal_selesai);
+            $sheet->setCellValue('E' . $baris, $value->status);
+            $baris++;
+            $no++;
+        }
+
+        foreach (range('A', 'E') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->setTitle('Data Periode');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data periode ' . date('Y-m-d H:i:s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . 'GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $periode = periodeModel::select('periode', 'tanggal_mulai', 'tanggal_selesai', 'status')->get();
+
+        $pdf = Pdf::loadView('periode.export_pdf', ['periode' => $periode]);
+        $pdf->setPaper('a4', 'potrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        return $pdf->stream('Data Periode' . date('Y-m-d H:i:s') . '.pdf');
     }
 
 }

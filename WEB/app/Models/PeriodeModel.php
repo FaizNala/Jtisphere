@@ -12,12 +12,7 @@ class PeriodeModel extends Model
     use HasFactory;
     protected $table = 'm_periode';
     protected $primaryKey = 'periode_id';
-    protected $fillable = [
-        'periode',
-        'tanggal_mulai',
-        'tanggal_selesai',
-        'status'
-    ];
+    protected $fillable = ['periode','tanggal_mulai','tanggal_selesai','status'];
 
     public function kegiatan(): HasMany {
         return $this->hasMany(KegiatanModel::class, 'periode_id', 'periode_id');

@@ -4,8 +4,8 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Periode</h3>
             <div class="card-tools">
-                <a href="{{ url('/periode/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Peran</a>
-                <a href="{{ url('/periode/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Peran</a>
+                <a href="{{ url('/periode/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Periode</a>
+                <a href="{{ url('/periode/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Periode</a>
                 <button onclick="modalAction('{{ url('/periode/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
             </div>
         </div>
