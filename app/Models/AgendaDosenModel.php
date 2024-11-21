@@ -13,10 +13,18 @@ class AgendaDosenModel extends Model
     protected $primaryKey = 'agenda_dosen_id';
     protected $fillable = ['agenda_id', 'dosen_id', 'bobot'];
 
-    public function agenda(): BelongsTo {
+    public function agenda(): BelongsTo
+    {
         return $this->belongsTo(AgendaModel::class, 'agenda_id', 'agenda_id');
     }
-    public function dosen(): BelongsTo {
+    public function dosen(): BelongsTo
+    {
         return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+    }
+
+    // Di AgendaDosenModel
+    public function kegiatanAgenda()
+    {
+        return $this->belongsTo(KegiatanAgendaModel::class, 'agenda_id', 'agenda_id');
     }
 }
