@@ -1,4 +1,4 @@
-<form action="{{ url('/kegiatan/ajax') }}" method="POST" id="form-tambah" enctype="multipart/form-data">
+<form action="{{ url('/kegiatan_dosen/ajax') }}" method="POST" id="form-tambah" enctype="multipart/form-data">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg">
@@ -16,32 +16,6 @@
                     <input type="text" name="kegiatan_nama" id="kegiatan_nama" class="form-control"
                         placeholder="Masukkan nama kegiatan" required>
                     <small id="error-kegiatan_nama" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-tags mr-2"></i>Kategori</label>
-                    <select name="kategori_id" id="kategori_id" class="form-control" required>
-                        <option value="">Pilih Kategori</option>
-                        @foreach ($kategori as $k)
-                            <option value="{{ $k->kategori_id }}">{{ $k->kategori_nama }}</option>
-                        @endforeach
-                    </select>
-                    <small id="error-kategori_id" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-globe mr-2"></i>Skala</label>
-                    <select name="skala" id="skala" class="form-control" required>
-                        <option value="">Pilih Skala</option>
-                        <option value="Internal">Internal</option>
-                        <option value="Nasional">Nasional</option>
-                        <option value="Internasional">Internasional</option>
-                        <option value="Lain-Lain">Lain-Lain</option>
-                    </select>
-                    <small id="error-skala" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-money-bill-wave mr-2"></i>Anggaran</label>
-                    <input type="number" name="anggaran" id="anggaran" class="form-control" placeholder="Masukkan anggaran" required>
-                    <small id="error-anggaran" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-check-circle mr-2"></i>Status</label>
@@ -69,36 +43,6 @@
                     <small id="error-tanggal_selesai" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-users mr-2"></i>Dosen dan Peran</label>
-                    <div id="dosen-peran-container">
-                        <div class="row mb-2">
-                            <div class="col-md-6">
-                                <select name="dosen[]" class="form-control dosen-select" required>
-                                    <option value="">Pilih Dosen</option>
-                                    @foreach ($dosen as $d)
-                                        <option value="{{ $d->dosen_id }}">{{ $d->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-5">
-                                <select name="peran[]" class="form-control peran-select" required>
-                                    <option value="">Pilih Peran</option>
-                                    @foreach ($peran as $p)
-                                        <option value="{{ $p->peran_id }}">{{ $p->peran_nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-1">
-                                <button type="button" class="btn btn-danger btn-sm remove-dosen"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-success btn-sm mt-2" id="add-dosen">
-                        <i class="fas fa-plus mr-2"></i>Tambah Dosen
-                    </button>
-                    <small id="error-dosen" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
                     <label><i class="fas fa-file-upload mr-2"></i>Surat Tugas</label>
                     <input type="file" name="surat_tugas" id="surat_tugas" class="form-control-file">
                     <small id="error-surat_tugas" class="error-text form-text text-danger"></small>
@@ -118,58 +62,12 @@
 
 <script>
     $(document).ready(function() {
-        let dosenCount = 1;
-
-        $('#add-dosen').click(function() {
-            dosenCount++;
-            let newRow = `
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <select name="dosen[]" class="form-control dosen-select" required>
-                        <option value="">Pilih Dosen</option>
-                        @foreach ($dosen as $d)
-                            <option value="{{ $d->dosen_id }}">{{ $d->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-5">
-                    <select name="peran[]" class="form-control peran-select" required>
-                        <option value="">Pilih Peran</option>
-                        @foreach ($peran as $p)
-                            <option value="{{ $p->peran_id }}">{{ $p->peran_nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger btn-sm remove-dosen"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-        `;
-            $('#dosen-peran-container').append(newRow);
-        });
-
-        $(document).on('click', '.remove-dosen', function() {
-            if (dosenCount > 1) {
-                $(this).closest('.row').remove();
-                dosenCount--;
-            }
-        });
-
         $("#form-tambah").validate({
             rules: {
                 kegiatan_nama: {
                     required: true,
                     minlength: 3,
                     maxlength: 255
-                },
-                kategori_id: {
-                    required: true
-                },
-                skala: {
-                    required: true
-                },
-                anggaran: {
-                    minlength: 1000
                 },
                 status: {
                     required: true
@@ -187,12 +85,6 @@
                     required: true,
                     date: true,
                     greaterThan: "#tanggal_mulai"
-                },
-                'dosen[]': {
-                    required: true
-                },
-                'peran[]': {
-                    required: true
                 },
                 surat_tugas: {
                     extension: "pdf|doc|docx"

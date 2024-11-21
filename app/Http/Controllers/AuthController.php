@@ -23,6 +23,10 @@ class AuthController extends Controller
             if (Auth::attempt($credentials)) {
                 $defaultLevelId = Auth::user()->dosen->dosenLevel->first()->level_id ?? null;
                 session(['current_level_id' => $defaultLevelId]);
+                $userId = Auth::user()->user_id;
+                session(['user_id' => $userId]);
+                $dosenId = Auth::user()->dosen->dosen_id;
+                session(['dosen_id' => $dosenId]);
                 return response()->json([
                     'status' => true,
                     'message' => 'Login berhasil',

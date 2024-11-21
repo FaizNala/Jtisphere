@@ -3,25 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\DokumenModel;
-use App\Models\KegiatanModel;
-use App\Models\KategoriModel;
-use App\Models\DosenModel;
-use App\Models\PeranModel;
 use App\Models\DosenKegiatanModel;
+use App\Models\DosenModel;
+use App\Models\KategoriModel;
+use App\Models\KegiatanModel;
+use App\Models\PeranModel;
 use App\Models\SuratTugasModel;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
-class KegiatanController extends Controller
+class KegiatanDosenController extends Controller
 {
     public function index()
     {
@@ -34,7 +29,7 @@ class KegiatanController extends Controller
         $kegiatan = KegiatanModel::all();
         $kategori = KategoriModel::all();
 
-        return view('kegiatan.index', [
+        return view('kegiatan_dosen.index', [
             'activeMenu' => $activeMenu,
             'breadcrumb' => $breadcrumb,
             'kegiatan' => $kegiatan,
@@ -44,28 +39,44 @@ class KegiatanController extends Controller
 
     public function list(Request $request)
     {
-        $kegiatan = KegiatanModel::with('kategori');
+        // Ambil dosen_id dari session
+        $dosenId = session('dosen_id');
 
+        // Mulai query untuk mendapatkan kegiatan
+        $kegiatan = DB::table('t_kegiatan as k')
+            ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
+            ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
+            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
+            ->select('k.*', 'dk.*', 'kt.kategori_nama', 'd.*')
+            ->where('dk.dosen_id', $dosenId);
+
+        // Filter berdasarkan kategori jika ada
         $kategori_id = $request->input('filter_kategori');
         if (!empty($kategori_id)) {
-            $kegiatan->where('kategori_id', $kategori_id);
+            $kegiatan->where('k.kategori_id', $kategori_id);
         }
 
+        // Ambil hasil query
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('kategori_nama', function ($kegiatan) {
-                return $kegiatan->kategori->kategori_nama;
+                return $kegiatan->kategori_nama;
             })
-            ->addColumn('aksi', function ($kegiatan) {
+            ->addColumn('aksi', function ($kegiatan) use ($dosenId) {
+                // Periksa apakah dosen adalah PIC untuk kegiatan spesifik ini
+                $is_pic = DB::table('t_dosen_kegiatan')
+                    ->where('kegiatan_id', $kegiatan->kegiatan_id)
+                    ->where('dosen_id', $dosenId)
+                    ->where('is_pic', 1)
+                    ->exists();
+
                 $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $currentLevelId = session('current_level_id');
-                $userRole = optional(
-                    optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level,
-                )->level_kode;
-                if ($userRole == 'ADM') {
-                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+
+                if ($is_pic) {
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 }
+
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -78,7 +89,7 @@ class KegiatanController extends Controller
         $dosen = DosenModel::select('dosen_id', 'nama')->get();
         $peran = PeranModel::select('peran_id', 'peran_nama')->get();
 
-        return view('kegiatan.create_ajax', [
+        return view('kegiatan_dosen.create_ajax', [
             'kategori' => $kategori,
             'dosen' => $dosen,
             'peran' => $peran
@@ -89,18 +100,11 @@ class KegiatanController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'kategori_id' => 'required|exists:m_kategori,kategori_id',
                 'kegiatan_nama' => 'required|string|min:3|max:255',
                 'status' => 'required|in:Belum,Berjalan,Selesai',
-                'skala' => 'required|in:Internal,Nasional,Internasional,Lain-Lain',
-                'anggaran' => 'required|integer|min:1000',
                 'deskripsi' => 'required|string|',
                 'tanggal_mulai' => 'required|date',
                 'tanggal_selesai' => 'required|date',
-                'dosen' => 'required|array|min:1',
-                'dosen.*' => 'exists:m_dosen,dosen_id',
-                'peran' => 'required|array|min:1',
-                'peran.*' => 'exists:m_peran,peran_id',
                 'surat_tugas' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
             ];
 
@@ -115,27 +119,12 @@ class KegiatanController extends Controller
             }
 
             DB::beginTransaction();
-            $tanggalMulai = Carbon::parse($request->input('tanggal_mulai'));
-            $tanggalSelesai = Carbon::parse($request->input('tanggal_selesai'));
-
-            // Hitung selisih (dalam hari)
-            $selisihHari = $tanggalMulai->diffInDays($tanggalSelesai);
-
-            $p1 = $request->skala;
-            $p2 = $request->anggaran;
-            $p3 = $selisihHari;
-            $b1 = 0;
-            $b2 = 0;
-            $b3 = 0;
-            $b4 = 0;
 
             try {
                 // Simpan data kegiatan
                 $kegiatan = KegiatanModel::create([
-                    'kategori_id' => $request->kategori_id,
+                    'kategori_id' => 3,
                     'kegiatan_nama' => $request->kegiatan_nama,
-                    'skala' => $request->skala,
-                    'anggaran' =>$request->anggaran,
                     'status' => $request->status,
                     'deskripsi' => $request->deskripsi,
                     'tanggal_mulai' => $request->tanggal_mulai,
@@ -143,59 +132,13 @@ class KegiatanController extends Controller
                 ]);
 
                 // Simpan dosen kegiatan dengan peran
-                foreach ($request->dosen as $index => $dosen_id) {
-                    $p4 = $request->peran_id;
-
-                    if ($p1 == 'Internal') {
-                        $b1 += 2;
-                    } else if ($p1 == 'Nasional') {
-                        $b1 += 3;
-                    } else if ($p1 == 'Internasional') {
-                        $b1 += 4;
-                    } else {
-                        $b1 += 1;
-                    }
-
-                    if ($p2 >= 1000000000) {
-                        $b2 += 4;
-                    } else if ($p2 >= 100000000) {
-                        $b2 += 3;
-                    } else if ($p2 >= 10000000) {
-                        $b2 += 2;
-                    } else if ($p2 <= 10000000) {
-                        $b2 += 1;
-                    }
-
-                    if ($p3 > 365) {
-                        $b3 += 5;
-                    } else if ($p3 >= 274) {
-                        $b3 += 4;
-                    } else if ($p3 >= 183) {
-                        $b3 += 3;
-                    } else if ($p3 >= 91) {
-                        $b3 += 2;
-                    } else if ($p3 <= 91) {
-                        $b3 += 1;
-                    }
-
-
-                    if ($p4 == 1) {
-                        $b4 += 5;
-                    } else if ($p4 == 2||3) {
-                        $b4 += 3;
-                    } else {
-                        $b4 += 1;
-                    }
-
-                    $bobot = round(($b1 + $b2 + $b3 + $b4)/4);
-                    DosenKegiatanModel::create([
-                        'kegiatan_id' => $kegiatan->kegiatan_id,
-                        'dosen_id' => $dosen_id,
-                        'peran_id' => $request->peran[$index],
-                        'is_pic' => $request->peran[$index] == 1 ? true : false,
-                        'bobot' => $bobot,
-                    ]);
-                }
+                $dosenId = session('dosen_id');
+                DosenKegiatanModel::create([
+                    'kegiatan_id' => $kegiatan->kegiatan_id,
+                    'dosen_id' => $dosenId,
+                    'peran_id' => 1,
+                    'is_pic' => 1
+                ]);
 
                 // Upload dan simpan surat tugas jika ada
                 if ($request->hasFile('surat_tugas')) {
@@ -237,35 +180,6 @@ class KegiatanController extends Controller
         return redirect('/');
     }
 
-    public function show_ajax($id)
-    {
-        $kegiatan = KegiatanModel::select(
-            't_kegiatan.*',
-            'm_kategori.kategori_nama',
-            'm_dokumen.dokumen_nama'
-        )
-            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
-            ->leftJoin('t_surat_tugas', 't_kegiatan.kegiatan_id', '=', 't_surat_tugas.kegiatan_id')
-            ->leftJoin('m_dokumen', 't_surat_tugas.dokumen_id', '=', 'm_dokumen.dokumen_id')
-            ->where('t_kegiatan.kegiatan_id', $id)
-            ->first();
-
-        if (!$kegiatan) {
-            return response()->json(['message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
-        // Ambil dosen dan peran terkait
-        $dosenKegiatan = DosenKegiatanModel::with(['dosen', 'peran'])
-            ->where('kegiatan_id', $id)
-            ->get();
-
-        $kategori = KategoriModel::select('kategori_id', 'kategori_nama')->get();
-        $dosen = DosenModel::select('dosen_id', 'nama')->get();
-        $peran = PeranModel::select('peran_id', 'peran_nama')->get();
-
-        return view('kegiatan.show_ajax', compact('kegiatan', 'kategori', 'dosenKegiatan', 'dosen', 'peran'));
-    }
-
     public function edit_ajax($id)
     {
         $kegiatan = KegiatanModel::select(
@@ -293,23 +207,18 @@ class KegiatanController extends Controller
         $dosen = DosenModel::select('dosen_id', 'nama')->get();
         $peran = PeranModel::select('peran_id', 'peran_nama')->get();
 
-        return view('kegiatan.edit_ajax', compact('kegiatan', 'dosenKegiatan', 'kategori', 'dosen', 'peran'));
+        return view('kegiatan_dosen.edit_ajax', compact('kegiatan', 'dosenKegiatan', 'kategori', 'dosen', 'peran'));
     }
 
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'kategori_id' => 'required|exists:m_kategori,kategori_id',
                 'kegiatan_nama' => 'required|string|min:3|max:255',
                 'status' => 'required|in:Belum,Berjalan,Selesai',
                 'deskripsi' => 'required|string',
                 'tanggal_mulai' => 'required|date',
                 'tanggal_selesai' => 'required|date',
-                'dosen' => 'required|array|min:1',
-                'dosen.*' => 'exists:m_dosen,dosen_id',
-                'peran' => 'required|array|min:1',
-                'peran.*' => 'exists:m_peran,peran_id',
                 'surat_tugas' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
             ];
 
@@ -330,7 +239,7 @@ class KegiatanController extends Controller
 
                 // Update data kegiatan
                 $kegiatan->update([
-                    'kategori_id' => $request->kategori_id,
+                    'kategori_id' => 3,
                     'kegiatan_nama' => $request->kegiatan_nama,
                     'status' => $request->status,
                     'deskripsi' => $request->deskripsi,
@@ -342,14 +251,13 @@ class KegiatanController extends Controller
                 DosenKegiatanModel::where('kegiatan_id', $id)->delete();
 
                 // Simpan dosen kegiatan yang baru
-                foreach ($request->dosen as $index => $dosen_id) {
-                    DosenKegiatanModel::create([
-                        'kegiatan_id' => $kegiatan->kegiatan_id,
-                        'dosen_id' => $dosen_id,
-                        'peran_id' => $request->peran[$index],
-                        'is_pic' => $request->peran[$index] == 1 ? true : false
-                    ]);
-                }
+                $dosenId = session('dosen_id');
+                DosenKegiatanModel::create([
+                    'kegiatan_id' => $kegiatan->kegiatan_id,
+                    'dosen_id' => $dosenId,
+                    'peran_id' => 1,
+                    'is_pic' => 1
+                ]);
 
                 // Update surat tugas jika ada
                 if ($request->hasFile('surat_tugas')) {
@@ -426,7 +334,7 @@ class KegiatanController extends Controller
         $dosen = DosenModel::select('dosen_id', 'nama')->get();
         $peran = PeranModel::select('peran_id', 'peran_nama')->get();
 
-        return view('kegiatan.confirm_ajax', compact('kegiatan', 'kategori', 'dosenKegiatan', 'dosen', 'peran'));
+        return view('kegiatan_dosen.confirm_ajax', compact('kegiatan', 'kategori', 'dosenKegiatan', 'dosen', 'peran'));
     }
 
     public function delete_ajax(Request $request, $id)
@@ -483,120 +391,5 @@ class KegiatanController extends Controller
             }
         }
         return redirect('/');
-    }
-
-    public function export_excel()
-    {
-        // ambil data kegiatan yang akan di export
-        $kegiatan = KegiatanModel::select(
-            't_kegiatan.kegiatan_nama',
-            'm_kategori.kategori_nama',
-            't_kegiatan.status',
-            't_kegiatan.tanggal_mulai',
-            't_kegiatan.tanggal_selesai'
-        )
-            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
-            ->get();
-
-        // load library excel
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Nama Kegiatan');
-        $sheet->setCellValue('C1', 'Kategori');
-        $sheet->setCellValue('D1', 'Status');
-        $sheet->setCellValue('E1', 'Tanggal Mulai');
-        $sheet->setCellValue('F1', 'Tanggal Selesai');
-
-        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
-
-        $no = 1; // no data dimulai dari 1
-        $baris = 2; // baris data dimulai dari baris ke 2
-        foreach ($kegiatan as $key => $value) {
-            $sheet->setCellValue('A' . $baris, $no);
-            $sheet->setCellValue('B' . $baris, $value->kegiatan_nama);
-            $sheet->setCellValue('C' . $baris, $value->kategori_nama);
-            $sheet->setCellValue('D' . $baris, $value->status);
-            $sheet->setCellValue('E' . $baris, $value->tanggal_mulai);
-            $sheet->setCellValue('F' . $baris, $value->tanggal_selesai);
-            $baris++;
-            $no++;
-        }
-
-        foreach (range('A', 'F') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-
-        $sheet->setTitle('Data Kegiatan');
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = 'Data Kegiatan ' . date('Y-m-d H:i:s') . '.xlsx';
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-        header('Cache-Control: max-age=1');
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . 'GMT');
-        header('Cache-Control: cache, must-revalidate');
-        header('Pragma: public');
-
-        $writer->save('php://output');
-        exit;
-    }
-
-    public function export_pdf()
-    {
-        $kegiatan = KegiatanModel::select(
-            't_kegiatan.kegiatan_nama',
-            'm_kategori.kategori_nama',
-            't_kegiatan.status',
-            't_kegiatan.tanggal_mulai',
-            't_kegiatan.tanggal_selesai'
-        )
-            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
-            ->get();
-
-        $pdf = Pdf::loadView('kegiatan.export_pdf', ['kegiatan' => $kegiatan]);
-        $pdf->setPaper('a4', 'potrait');
-        $pdf->setOption('isRemoteEnabled', true);
-        $pdf->render();
-
-        return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
-    }
-
-    public function export_draft_surat_tugas($id)
-    {
-        $kegiatan = KegiatanModel::select(
-            't_kegiatan.kegiatan_nama',
-            'm_kategori.kategori_nama',
-            't_kegiatan.tanggal_mulai',
-            't_kegiatan.tanggal_selesai'
-        )
-            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
-            ->where('t_kegiatan.kegiatan_id', $id)
-            ->first();
-
-        if (!$kegiatan) {
-            return response()->json(['message' => 'Kegiatan tidak ditemukan'], 404);
-        }
-
-        $dosenKegiatan = DosenKegiatanModel::with(['dosen', 'peran'])
-            ->where('kegiatan_id', $id)
-            ->get();
-
-        $pdf = Pdf::loadView('kegiatan.export_draft_surat_tugas', [
-            'kegiatan' => $kegiatan,
-            'dosenKegiatan' => $dosenKegiatan
-        ]);
-        $pdf->setPaper('a4', 'potrait');
-        $pdf->setOption('isRemoteEnabled', true);
-        $pdf->render();
-
-        // Membuat nama file yang aman untuk digunakan
-        $safeFileName = preg_replace('/[^a-z0-9]+/', '-', strtolower($kegiatan->kegiatan_nama));
-        $fileName = 'Draft Surat Tugas - ' . $safeFileName . ' - ' . date('Y-m-d H:i:s') . '.pdf';
-
-        return $pdf->stream($fileName);
     }
 }
