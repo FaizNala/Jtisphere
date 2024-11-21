@@ -37,10 +37,10 @@ class LevelController extends Controller
             ->addColumn('aksi', function ($level) {
                 $btn  = '<button onclick="modalAction(\''.url('/level/' . $level->level_id .
                 '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\''.url('/level/' . $level->level_id .
-                '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\''.url('/level/' . $level->level_id .
-                '/delete_ajax').'\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                // $btn .= '<button onclick="modalAction(\''.url('/level/' . $level->level_id .
+                // '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';
+                // $btn .= '<button onclick="modalAction(\''.url('/level/' . $level->level_id .
+                // '/delete_ajax').'\')"  class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
