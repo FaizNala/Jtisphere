@@ -1,0 +1,181 @@
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                <i class="fas fa-bars"></i>
+            </a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="{{ url('/') }}" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="{{ url('/contact') }}" class="nav-link">Contact</a>
+        </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+        <!-- Navbar Search -->
+        <li class="nav-item">
+            <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                <i class="fas fa-search"></i>
+            </a>
+            <div class="navbar-search-block">
+                <form class="form-inline">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-navbar" type="search" placeholder="Search"
+                            aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </li>
+
+        <!-- Messages Dropdown Menu -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="far fa-comments"></i>
+                <span class="badge badge-danger navbar-badge">3</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <a href="#" class="dropdown-item">
+                    <div class="media">
+                        <img src="{{ asset('images/user1.jpg') }}" alt="User Avatar"
+                            class="img-size-50 mr-3 img-circle">
+                        <div class="media-body">
+                            <h3 class="dropdown-item-title">
+                                Brad Diesel
+                                <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                            </h3>
+                            <p class="text-sm">Call me whenever you can...</p>
+                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <div class="media">
+                        <img src="{{ asset('images/user2.jpg') }}" alt="User Avatar"
+                            class="img-size-50 img-circle mr-3">
+                        <div class="media-body">
+                            <h3 class="dropdown-item-title">
+                                John Pierce
+                                <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                            </h3>
+                            <p class="text-sm">I got your message bro</p>
+                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <div class="media">
+                        <img src="{{ asset('images/user3.jpg') }}" alt="User Avatar"
+                            class="img-size-50 img-circle mr-3">
+                        <div class="media-body">
+                            <h3 class="dropdown-item-title">
+                                Nora Silvester
+                                <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+                            </h3>
+                            <p class="text-sm">The subject goes here</p>
+                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+            </div>
+        </li>
+
+        <!-- Notifications Dropdown Menu -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="far fa-bell"></i>
+                <span class="badge badge-warning navbar-badge">15</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <span class="dropdown-item dropdown-header">15 Notifications</span>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-envelope mr-2"></i> 4 new messages
+                    <span class="float-right text-muted text-sm">3 mins</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-users mr-2"></i> 8 friend requests
+                    <span class="float-right text-muted text-sm">12 hours</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-file mr-2"></i> 3 new reports
+                    <span class="float-right text-muted text-sm">2 days</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+            </div>
+        </li>
+
+        <!-- Fullscreen Button -->
+        <li class="nav-item">
+            <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                <i class="fas fa-expand-arrows-alt"></i>
+            </a>
+        </li>
+
+        <!-- User Info (Avatar and Username) -->
+        @if (Auth::check())
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
+                    aria-expanded="false">
+                    <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
+                        class="img-circle mr-2" alt="User Avatar" style="width: 30px; height: 30px;">
+                    @php
+                        // Ngambil id current user
+                        $currentLevelId = session('current_level_id');
+                        // Ngambil nama current user
+                        $currentRoleName = optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first()->level ?? null)->level_nama;
+                    @endphp
+                    <!-- Menampilkan -->
+                    <span>{{ Auth::user()->username }}@if($currentRoleName) ({{ $currentRoleName }}) @endif</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow"
+                    aria-labelledby="navbarDropdown">
+                    <div class="dropdown-header text-center bg-primary text-white">
+                        <strong>Welcome, {{ Auth::user()->username }}@if($currentRoleName) ({{ $currentRoleName }}) @endif</strong>
+                    </div>
+                    <div class="dropdown-divider"></div>
+
+                    <!-- Role Switching -->
+                    @if (Auth::user()->dosen && Auth::user()->dosen->dosenLevel->isNotEmpty())
+                        <div class="dropdown-header text-center">
+                            <strong>Available Roles</strong>
+                        </div>
+                        @foreach (Auth::user()->dosen->dosenLevel as $dosenLevel)
+                            <a href="{{ url('/switch-role/' . $dosenLevel->level->level_id) }}" class="dropdown-item">
+                                <i class="fas fa-briefcase mr-2"></i> {{ $dosenLevel->level->level_nama }}
+                            </a>
+                        @endforeach
+                        <div class="dropdown-divider"></div>
+                    @else
+                        <div class="dropdown-header text-center">
+                            <strong>No Roles Available</strong>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                    @endif
+                    <!-- Logout link -->
+                    <a href="{{ url('logout') }}" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </a>
+                </div>
+            </li>
+        @endif
+    </ul>
+</nav>
