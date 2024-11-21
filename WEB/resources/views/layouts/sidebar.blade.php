@@ -74,6 +74,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>Periode Kegiatan</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ url('/peran') }}" class="nav-link {{ $activeMenu == 'peran' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-tie"></i>
                         <p>Peran Kegiatan</p>

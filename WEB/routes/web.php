@@ -11,6 +11,7 @@ use App\Http\Controllers\KalenderController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KegiatanDosenController;
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -101,6 +102,24 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [KategoriController::class, 'import_ajax']);
             Route::get('/export_excel', [KategoriController::class, 'export_excel']);
             Route::get('/export_pdf', [KategoriController::class, 'export_pdf']);
+        });
+    });
+
+    Route::middleware(['authorize:ADM'])->group(function () {
+        Route::group(['prefix' => 'periode'], function () {
+            Route::get('/', [PeriodeController::class, 'index']);
+            Route::post('/list', [PeriodeController::class, 'list']);
+            Route::get('/create_ajax', [PeriodeController::class, 'create_ajax']);
+            Route::post('/ajax', [PeriodeController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [PeriodeController::class, 'show_ajax']);
+            Route::get('/{id}/edit_ajax', [PeriodeController::class, 'edit_ajax']);
+            Route::put('/{id}/update_ajax', [PeriodeController::class, 'update_ajax']);
+            Route::get('/{id}/delete_ajax', [PeriodeController::class, 'confirm_ajax']);
+            Route::delete('/{id}/delete_ajax', [PeriodeController::class, 'delete_ajax']);
+            Route::get('/import', [PeriodeController::class, 'import']);
+            Route::post('/import_ajax', [PeriodeController::class, 'import_ajax']);
+            Route::get('/export_excel', [PeriodeController::class, 'export_excel']);
+            Route::get('/export_pdf', [PeriodeController::class, 'export_pdf']);
         });
     });
 

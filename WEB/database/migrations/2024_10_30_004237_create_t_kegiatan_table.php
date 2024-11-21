@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('t_kegiatan', function (Blueprint $table) {
             $table->id('kegiatan_id');
             $table->unsignedBigInteger('kategori_id')->index();
+            $table->unsignedBigInteger('periode_id')->index();
             $table->string('kegiatan_nama');
             $table->text('deskripsi');
             $table->enum('skala', ['Internal','Nasional','Internasional','Lain-Lain']);
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori');
+            $table->foreign('periode_id')->references('periode_id')->on('m_periode');
         });
     }
 

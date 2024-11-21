@@ -17,6 +17,9 @@ class KegiatanModel extends Model
     public function kategori(): BelongsTo {
         return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');
     }
+    public function periode(): BelongsTo {
+        return $this->belongsTo(PeriodeModel::class, 'periode_id', 'periode_id');
+    }
     public function kegiatanAgenda(): HasMany {
         return $this->hasMany(agendaModel::class, 'kegiatan_id', 'kegiatan_id');
     }
