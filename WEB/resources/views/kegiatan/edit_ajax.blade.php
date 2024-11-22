@@ -1,4 +1,4 @@
-@empty($kegiatan)
+@if (!$kegiatan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-danger text-white">
@@ -21,8 +21,7 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/kegiatan/' . $kegiatan->kegiatan_id . '/update_ajax') }}" method="POST" id="form-edit"
-        enctype="multipart/form-data">
+    <form action="{{ url('/kegiatan/' . $kegiatan->kegiatan_id . '/update_ajax') }}" method="POST" id="form-edit" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -38,8 +37,7 @@
                 <div class="modal-body p-4">
                     <div class="form-group">
                         <label><i class="fas fa-calendar-alt mr-2"></i>Nama Kegiatan</label>
-                        <input type="text" name="kegiatan_nama" id="kegiatan_nama" class="form-control"
-                            placeholder="Masukkan nama kegiatan" value="{{ $kegiatan->kegiatan_nama }}" required>
+                        <input type="text" name="kegiatan_nama" id="kegiatan_nama" class="form-control" placeholder="Masukkan nama kegiatan" value="{{ $kegiatan->kegiatan_nama }}" required>
                         <small id="error-kegiatan_nama" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
@@ -47,8 +45,7 @@
                         <select name="kategori_id" id="kategori_id" class="form-control" required>
                             <option value="">Pilih Kategori</option>
                             @foreach ($kategori as $k)
-                                <option value="{{ $k->kategori_id }}"
-                                    {{ $kegiatan->kategori_id == $k->kategori_id ? 'selected' : '' }}>
+                                <option value="{{ $k->kategori_id }}" {{ $kegiatan->kategori_id == $k->kategori_id ? 'selected' : '' }}>
                                     {{ $k->kategori_nama }}
                                 </option>
                             @endforeach
@@ -56,53 +53,55 @@
                         <small id="error-kategori_id" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
+                        <label><i class="fas fa-calendar mr-2"></i>Periode</label>
+                        <select name="periode_id" id="periode_id" class="form-control" required>
+                            <option value="">Pilih Periode</option>
+                            @foreach ($periode as $p)
+                                <option value="{{ $p->periode_id }}" {{ $kegiatan->periode_id == $p->periode_id ? 'selected' : '' }}>
+                                    {{ $p->periode }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small id="error-periode_id" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
                         <label><i class="fas fa-globe mr-2"></i>Skala</label>
                         <select name="skala" id="skala" class="form-control" required>
                             <option value="">Pilih Skala</option>
-                            <option value="Internal" {{ $kegiatan->skala == 'Internal' ? 'selected' : '' }}>Internal
-                            </option>
-                            <option value="Nasional" {{ $kegiatan->skala == 'Nasional' ? 'selected' : '' }}>Nasional
-                            </option>
-                            <option value="Internasional" {{ $kegiatan->skala == 'Internasional' ? 'selected' : '' }}>
-                                Internasional</option>
-                            <option value="Lain-Lain" {{ $kegiatan->skala == 'Lain-Lain' ? 'selected' : '' }}>Lain-Lain
-                            </option>
+                            <option value="Internal" {{ $kegiatan->skala == 'Internal' ? 'selected' : '' }}>Internal</option>
+                            <option value="Nasional" {{ $kegiatan->skala == 'Nasional' ? 'selected' : '' }}>Nasional</option>
+                            <option value="Internasional" {{ $kegiatan->skala == 'Internasional' ? 'selected' : '' }}>Internasional</option>
+                            <option value="Lain-Lain" {{ $kegiatan->skala == 'Lain-Lain' ? 'selected' : '' }}>Lain-Lain</option>
                         </select>
                         <small id="error-skala" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-money-bill-wave mr-2"></i>Anggaran</label>
-                        <input type="number" name="anggaran" id="anggaran" class="form-control"
-                            placeholder="Masukkan anggaran" value="{{ $kegiatan->anggaran }}" required>
+                        <input type="number" name="anggaran" id="anggaran" class="form-control" placeholder="Masukkan anggaran" value="{{ $kegiatan->anggaran }}" required>
                         <small id="error-anggaran" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-check-circle mr-2"></i>Status</label>
                         <select name="status" id="status" class="form-control" required>
                             <option value="Belum" {{ $kegiatan->status == 'Belum' ? 'selected' : '' }}>Belum</option>
-                            <option value="Berjalan" {{ $kegiatan->status == 'Berjalan' ? 'selected' : '' }}>Berjalan
-                            </option>
+                            <option value="Berjalan" {{ $kegiatan->status == 'Berjalan' ? 'selected' : '' }}>Berjalan</option>
                             <option value="Selesai" {{ $kegiatan->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                         </select>
                         <small id="error-status" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-align-left mr-2"></i>Deskripsi</label>
-                        <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi kegiatan"
-                            required>{{ $kegiatan->deskripsi }}</textarea>
+                        <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi kegiatan" required>{{ $kegiatan->deskripsi }}</textarea>
                         <small id="error-deskripsi" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-calendar-alt mr-2"></i>Tanggal Mulai</label>
-                        <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
-                            value="{{ $kegiatan->tanggal_mulai }}" required>
+                        <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control" value="{{ $kegiatan->tanggal_mulai }}" required>
                         <small id="error-tanggal_mulai" class="error-text form-text text-danger"></small>
                     </div>
-
                     <div class="form-group">
                         <label><i class="fas fa-calendar-check mr-2"></i>Tanggal Selesai</label>
-                        <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control"
-                            value="{{ $kegiatan->tanggal_selesai }}" required>
+                        <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control" value="{{ $kegiatan->tanggal_selesai }}" required>
                         <small id="error-tanggal_selesai" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
@@ -114,8 +113,7 @@
                                         <select name="dosen[]" class="form-control dosen-select" required>
                                             <option value="">Pilih Dosen</option>
                                             @foreach ($dosen as $d)
-                                                <option value="{{ $d->dosen_id }}"
-                                                    {{ $dk->dosen_id == $d->dosen_id ? 'selected' : '' }}>
+                                                <option value="{{ $d->dosen_id }}" {{ $dk->dosen_id == $d->dosen_id ? 'selected' : '' }}>
                                                     {{ $d->nama }}
                                                 </option>
                                             @endforeach
@@ -125,16 +123,14 @@
                                         <select name="peran[]" class="form-control peran-select" required>
                                             <option value="">Pilih Peran</option>
                                             @foreach ($peran as $p)
-                                                <option value="{{ $p->peran_id }}"
-                                                    {{ $dk->peran_id == $p->peran_id ? 'selected' : '' }}>
+                                                <option value="{{ $p->peran_id }}" {{ $dk->peran_id == $p->peran_id ? 'selected' : '' }}>
                                                     {{ $p->peran_nama }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-1">
-                                        <button type="button" class="btn btn-danger btn-sm remove-dosen"><i
-                                                class="fas fa-times"></i></button>
+                                        <button type="button" class="btn btn-danger btn-sm remove-dosen"><i class="fas fa-times"></i></button>
                                     </div>
                                 </div>
                             @endforeach
@@ -151,8 +147,7 @@
                         @if ($kegiatan->suratTugas && $kegiatan->suratTugas->dokumen)
                             <p class="mt-2">File saat ini: {{ $kegiatan->suratTugas->dokumen->dokumen_nama }}</p>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="remove_surat_tugas"
-                                    id="remove_surat_tugas">
+                                <input class="form-check-input" type="checkbox" name="remove_surat_tugas" id="remove_surat_tugas">
                                 <label class="form-check-label" for="remove_surat_tugas">
                                     Hapus surat tugas saat ini
                                 </label>
@@ -178,33 +173,33 @@
             $('#add-dosen').click(function() {
                 dosenCount++;
                 let newRow = `
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <select name="dosen[]" class="form-control dosen-select" required>
-                        <option value="">Pilih Dosen</option>
-                        @foreach ($dosen as $d)
-                            <option value="{{ $d->dosen_id }}">{{ $d->nama }}</option>
-                        @endforeach
-                    </select>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <select name="dosen[]" class="form-control dosen-select" required>
+                            <option value="">Pilih Dosen</option>
+                            @foreach ($dosen as $d)
+                                <option value="{{ $d->dosen_id }}">{{ $d->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <select name="peran[]" class="form-control peran-select" required>
+                            <option value="">Pilih Peran</option>
+                            @foreach ($peran as $p)
+                                <option value="{{ $p->peran_id }}">{{ $p->peran_nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-sm remove-dosen"><i class="fas fa-times"></i></button>
+                    </div>
                 </div>
-                <div class="col-md-5">
-                    <select name="peran[]" class="form-control peran-select" required>
-                        <option value="">Pilih Peran</option>
-                        @foreach ($peran as $p)
-                            <option value="{{ $p->peran_id }}">{{ $p->peran_nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger btn-sm remove-dosen"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            `;
+                `;
                 $('#dosen-peran-container').append(newRow);
             });
 
             $(document).on('click', '.remove-dosen', function() {
-                if (dosenCount > 1) {
+                if (dosenCount > 0) {
                     $(this).closest('.row').remove();
                     dosenCount--;
                 }
@@ -220,12 +215,15 @@
                     kategori_id: {
                         required: true
                     },
+                    periode_id: {
+                        required: true
+                    },
                     skala: {
                         required: true
                     },
                     anggaran: {
-                        minlength: 1000
-                    }
+                        required: true,
+                        min: 1000 },
                     status: {
                         required: true
                     },
@@ -320,4 +318,4 @@
             });
         });
     </script>
-@endempty
+@endif

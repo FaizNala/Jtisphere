@@ -12,7 +12,7 @@ class KegiatanModel extends Model
     use HasFactory;
     protected $table = 't_kegiatan';
     protected $primaryKey = 'kegiatan_id';
-    protected $fillable = ['kategori_id', 'kegiatan_nama', 'status', 'deskripsi', 'tanggal_mulai', 'tanggal_selesai'];
+    protected $fillable = ['kategori_id', 'periode_id', 'kegiatan_nama', 'deskripsi', 'skala', 'anggaran', 'status', 'deskripsi', 'tanggal_mulai', 'tanggal_selesai'];
 
     public function kategori(): BelongsTo {
         return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');
@@ -24,7 +24,7 @@ class KegiatanModel extends Model
         return $this->hasMany(agendaModel::class, 'kegiatan_id', 'kegiatan_id');
     }
     public function dosenKegiatan(): HasMany {
-        return $this->hasMany(DosenKegiatanModel::class, 'kegiatan_id', 'id_kegiatan');
+        return $this->hasMany(DosenKegiatanModel::class, 'kegiatan_id', 'kegiatan_id');
     }
     public function suratTugas()
     {

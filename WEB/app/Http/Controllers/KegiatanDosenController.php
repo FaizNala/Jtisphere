@@ -64,14 +64,21 @@ class KegiatanDosenController extends Controller
             })
             ->addColumn('aksi', function ($kegiatan) use ($dosenId) {
                 // Periksa apakah dosen adalah PIC untuk kegiatan spesifik ini
-                $is_pic = DB::table('t_dosen_kegiatan')
+                // $is_pic = DB::table('t_dosen_kegiatan')
+                //     ->where('kegiatan_id', $kegiatan->kegiatan_id)
+                //     ->where('dosen_id', $dosenId)
+                //     ->where('is_pic', 1)
+                //     ->exists();
+
+                $is_pic = DosenKegiatanModel::with('peran')
                     ->where('kegiatan_id', $kegiatan->kegiatan_id)
                     ->where('dosen_id', $dosenId)
-                    ->where('is_pic', 1)
-                    ->exists();
+                    ->whereHas('peran', function ($query) {
+                        $query->where('is_pic', 1);
+                    })
+                    ->get();
 
                 $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-
                 if ($is_pic) {
                     $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                     $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';

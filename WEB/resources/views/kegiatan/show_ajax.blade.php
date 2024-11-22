@@ -39,11 +39,19 @@
                                 <th>Dokumen</th>
                                 <td>
                                     @if($kegiatan->dokumen_nama)
-                                        <a href="{{ asset('storage/surat_tugas/' . $kegiatan->dokumen_nama) }}" download class="btn btn-sm btn-primary">
-                                            <i class="fas fa-download mr-2"></i>Download Surat Tugas
-                                        </a>
+                                        <div class="d-flex align-items-center">
+                                            <a href="{{ asset('storage/surat_tugas/' . $kegiatan->dokumen_nama) }}" download class="btn btn-sm btn-primary mr-2">
+                                                <i class="fas fa-download mr-2"></i>Download Surat Tugas
+                                            </a>
+                                            <span class="text-success"><i class="fas fa-file-alt mr-1"></i>Dokumen tersedia</span>
+                                        </div>
                                     @else
                                         <span class="text-muted"><i class="fas fa-file-alt mr-2"></i>Tidak ada dokumen</span>
+                                        <div class="mt-2">
+                                            <a href="{{ url('kegiatan/' . $kegiatan->kegiatan_id . '/export_draft_surat_tugas') }}" class="text-primary" style="cursor: pointer;">
+                                                <i class="fas fa-download mr-1"></i>Unduh Draft Surat Tugas
+                                            </a>
+                                        </div>
                                     @endif
                                 </td>
                             </tr>
@@ -74,9 +82,6 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <i class="fas fa-times mr-2"></i>Tutup
             </button>
-            <a href="{{ url('kegiatan/' . $kegiatan->kegiatan_id . '/export_draft_surat_tugas') }}" class="btn btn-primary">
-                <i class="fas fa-download mr-2"></i>Unduh Draft Surat Tugas
-            </a>
         </div>
     </div>
 </div>

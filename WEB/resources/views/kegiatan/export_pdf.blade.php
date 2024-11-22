@@ -98,6 +98,9 @@
                 <th class="text-center">No</th>
                 <th>Nama Kegiatan</th>
                 <th>Kategori</th>
+                <th>Periode</th>
+                <th>Skala</th>
+                <th>Jumlah Anggota</th>
                 <th>Status</th>
                 <th>Tanggal Mulai</th>
                 <th>Tanggal Selesai</th>
@@ -109,6 +112,9 @@
                     <td class="text-center">{{ $loop->iteration }}</td>
                     <td>{{ $k->kegiatan_nama }}</td>
                     <td>{{ $k->kategori_nama }}</td>
+                    <td>{{ $k->periode }}</td>
+                    <td>{{ $k->skala }}</td>
+                    <td>{{ $k->jumlah_anggota }}</td>
                     <td>{{ $k->status }}</td>
                     <td>{{ $k->tanggal_mulai }}</td>
                     <td>{{ $k->tanggal_selesai }}</td>

@@ -4,15 +4,17 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Kegiatan</h3>
             <div class="card-tools">
-                @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
-                    <button onclick="modalAction('{{ url('/kegiatan/import') }}')" class="btn btn-info">Import Kegiatan</button>
+                @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
+                    <button onclick="modalAction('{{ url('/kegiatan/import') }}')" class="btn btn-info">Import
+                        Kegiatan</button>
                 @endif
                 <a href="{{ url('/kegiatan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
                     Kegiatan</a>
                 <a href="{{ url('/kegiatan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
                     Kegiatan</a>
-                @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
-                    <button onclick="modalAction('{{ url('/kegiatan/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
+                @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
+                    <button onclick="modalAction('{{ url('/kegiatan/create_ajax') }}')" class="btn btn-success">Tambah Data
+                        (Ajax)</button>
                 @endif
             </div>
         </div>
@@ -47,6 +49,9 @@
                         <th>ID</th>
                         <th>Nama Kegiatan</th>
                         <th>Kategori</th>
+                        <th>Periode</th>
+                        <th>Skala</th>
+                        <th>Jumlah Dosen</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -79,7 +84,7 @@
                     "type": "POST",
                     "data": function(d) {
                         d.filter_kategori = $('.filter_kategori')
-                    .val(); // Menggunakan class filter_kategori
+                            .val(); // Menggunakan class filter_kategori
                     }
                 },
                 columns: [{
@@ -97,6 +102,21 @@
                         data: "kategori_nama",
                         orderable: true,
                         searchable: true
+                    },
+                    {
+                        data: "periode", // Kolom baru untuk jumlah dosen
+                        orderable: true,
+                        searchable: false
+                    },
+                    {
+                        data: "skala", // Kolom baru untuk jumlah dosen
+                        orderable: true,
+                        searchable: false
+                    },
+                    {
+                        data: "jumlah_dosen", // Kolom baru untuk jumlah dosen
+                        orderable: true,
+                        searchable: false
                     },
                     {
                         data: "status",

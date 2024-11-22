@@ -28,6 +28,16 @@
                     <small id="error-kategori_id" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label><i class="fas fa-calendar mr-2"></i>Periode</label>
+                    <select name="periode_id" id="periode_id" class="form-control" required>
+                        <option value="">Pilih Periode</option>
+                        @foreach ($periode as $p)
+                            <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-periode_id" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
                     <label><i class="fas fa-globe mr-2"></i>Skala</label>
                     <select name="skala" id="skala" class="form-control" required>
                         <option value="">Pilih Skala</option>
@@ -165,11 +175,15 @@
                 kategori_id: {
                     required: true
                 },
+                periode_id: {
+                    required: true
+                },
                 skala: {
                     required: true
                 },
                 anggaran: {
-                    minlength: 1000
+                    required: true,
+                    number: true
                 },
                 status: {
                     required: true
