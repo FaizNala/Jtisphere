@@ -33,30 +33,31 @@ class UserController extends Controller
     }
 
     public function list(Request $request)
-    {
-        $users = UserModel::select(
-            'm_user.user_id',
-            'm_user.username',
-            'm_dosen.nama',
-            'm_dosen.nip',
-            DB::raw('GROUP_CONCAT(m_level.level_id) as level_ids'),
-            DB::raw('GROUP_CONCAT(m_level.level_nama SEPARATOR ", ") as level_nama')
-        )
-            ->join('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
-            ->join('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
-            ->join('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
-            ->groupBy('m_user.user_id', 'm_user.username', 'm_dosen.nama', 'm_dosen.nip');
+{
+    // Menggunakan with untuk memuat relasi
+    $users = UserModel::with(['dosen.dosenLevel.level']) // Memuat relasi dosen dan level
+        ->get(); // Mengambil semua data
 
-        $level_ids = $request->input('filter_level');
-        if (!empty($level_ids)) {
-            if (!is_array($level_ids)) {
-                $level_ids = [$level_ids];
-            }
-            $users->havingRaw('FIND_IN_SET(?, level_ids)', [$level_ids]);
+    // Filter berdasarkan level
+    $level_ids = $request->input('filter_level');
+    if (!empty($level_ids)) {
+        if (!is_array($level_ids)) {
+            $level_ids = [$level_ids];
         }
+        $users = $users->filter(function ($user) use ($level_ids) {
+            // Memeriksa apakah user memiliki level yang sesuai
+            return collect($user->dosen->dosenLevel)->pluck('level_id')->intersect($level_ids)->isNotEmpty();
+        });
+    }
 
-        return DataTables::of($users)
+    return DataTables::of($users)
         ->addIndexColumn()
+        ->addColumn('nama', function ($user) {
+            return $user->dosen->nama ?? ''; // Menampilkan nama dosen
+        })
+        ->addColumn('level_nama', function ($user) {
+            return $user->dosen->dosenLevel->pluck('level.level_nama')->implode(', '); // Menggabungkan nama level
+        })
         ->addColumn('aksi', function ($user) {
             $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
             $userRole = optional(optional(auth()->user()->dosen)->dosenLevel)->first()->level->level_kode ?? null;
@@ -68,7 +69,7 @@ class UserController extends Controller
         })
         ->rawColumns(['aksi'])
         ->make(true);
-    }
+}
 
     public function create_ajax()
     {
@@ -463,5 +464,4 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Access denied for this role.');
         }
     }
-    
 }
