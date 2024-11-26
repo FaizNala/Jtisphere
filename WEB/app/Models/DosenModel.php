@@ -22,4 +22,8 @@ class DosenModel extends Model
     public function dosenLevel(): HasMany {
         return $this->hasMany(DosenLevelModel::class, 'dosen_id', 'dosen_id');
     }
+
+    public function dosenKegiatan(): HasMany {
+        return $this->hasMany(DosenKegiatanModel::class, 'dosen_id', 'dosen_id');
+    }
 }
