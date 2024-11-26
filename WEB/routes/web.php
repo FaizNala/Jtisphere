@@ -13,6 +13,7 @@ use App\Http\Controllers\KegiatanDosenController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatistikController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -232,6 +233,19 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [KegiatanDosenController::class, 'import_ajax']);
             Route::get('/export_excel', [KegiatanDosenController::class, 'export_excel']);
             Route::get('/export_pdf', [KegiatanDosenController::class, 'export_pdf']);
+        });
+    });
+
+    Route::middleware(['authorize:ADM,PMN'])->group(function () {
+        Route::group(['prefix' => 'statistik'], function () {
+            Route::get('/', [StatistikController::class, 'index']);
+            Route::post('/list', [StatistikController::class, 'list']);
+            Route::get('/create_ajax', [StatistikController::class, 'create_ajax']);
+            Route::post('/ajax', [StatistikController::class, 'store_ajax']);
+            Route::get('/{id}/show_ajax', [StatistikController::class, 'show_ajax']);
+            Route::get('/export_excel', [StatistikController::class, 'export_excel']);
+            Route::get('/export_pdf', [StatistikController::class, 'export_pdf']);
+            Route::get('/{id}/export_statistik', [StatistikController::class, 'export_statistik']);
         });
     });
 
