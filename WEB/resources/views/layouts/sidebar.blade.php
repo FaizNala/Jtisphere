@@ -91,6 +91,13 @@
                         <p>Data Kegiatan</p>
                     </a>
                 </li>
+                <li class="nav-header">Statistik</li>
+                <li class="nav-item">
+                    <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Statistik Kegiatan</p>
+                    </a>
+                </li>
             </ul>
         @endif
         {{-- Pimpinan Sidebar --}}
@@ -125,6 +132,13 @@
                     <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
                         <i class="nav-icon far fa-list-alt"></i>
                         <p>Data Kegiatan</p>
+                    </a>
+                </li>
+                <li class="nav-header">Statistik</li>
+                <li class="nav-item">
+                    <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Statistik Kegiatan</p>
                     </a>
                 </li>
             </ul>
