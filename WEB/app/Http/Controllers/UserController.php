@@ -33,43 +33,43 @@ class UserController extends Controller
     }
 
     public function list(Request $request)
-{
-    // Menggunakan with untuk memuat relasi
-    $users = UserModel::with(['dosen.dosenLevel.level']) // Memuat relasi dosen dan level
-        ->get(); // Mengambil semua data
+    {
+        // Menggunakan with untuk memuat relasi
+        $users = UserModel::with(['dosen.dosenLevel.level']) // Memuat relasi dosen dan level
+            ->get(); // Mengambil semua data
 
-    // Filter berdasarkan level
-    $level_ids = $request->input('filter_level');
-    if (!empty($level_ids)) {
-        if (!is_array($level_ids)) {
-            $level_ids = [$level_ids];
-        }
-        $users = $users->filter(function ($user) use ($level_ids) {
-            // Memeriksa apakah user memiliki level yang sesuai
-            return collect($user->dosen->dosenLevel)->pluck('level_id')->intersect($level_ids)->isNotEmpty();
-        });
-    }
-
-    return DataTables::of($users)
-        ->addIndexColumn()
-        ->addColumn('nama', function ($user) {
-            return $user->dosen->nama ?? ''; // Menampilkan nama dosen
-        })
-        ->addColumn('level_nama', function ($user) {
-            return $user->dosen->dosenLevel->pluck('level.level_nama')->implode(', '); // Menggabungkan nama level
-        })
-        ->addColumn('aksi', function ($user) {
-            $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-            $userRole = optional(optional(auth()->user()->dosen)->dosenLevel)->first()->level->level_kode ?? null;
-            if ($userRole == 'ADM') {
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+        // Filter berdasarkan level
+        $level_ids = $request->input('filter_level');
+        if (!empty($level_ids)) {
+            if (!is_array($level_ids)) {
+                $level_ids = [$level_ids];
             }
-            return $btn;
-        })
-        ->rawColumns(['aksi'])
-        ->make(true);
-}
+            $users = $users->filter(function ($user) use ($level_ids) {
+                // Memeriksa apakah user memiliki level yang sesuai
+                return collect($user->dosen->dosenLevel)->pluck('level_id')->intersect($level_ids)->isNotEmpty();
+            });
+        }
+
+        return DataTables::of($users)
+            ->addIndexColumn()
+            ->addColumn('nama', function ($user) {
+                return $user->dosen->nama ?? ''; // Menampilkan nama dosen
+            })
+            ->addColumn('level_nama', function ($user) {
+                return $user->dosen->dosenLevel->pluck('level.level_nama')->implode(', '); // Menggabungkan nama level
+            })
+            ->addColumn('aksi', function ($user) {
+                $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $userRole = optional(optional(auth()->user()->dosen)->dosenLevel)->first()->level->level_kode ?? null;
+                if ($userRole == 'ADM') {
+                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                }
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
 
     public function create_ajax()
     {
