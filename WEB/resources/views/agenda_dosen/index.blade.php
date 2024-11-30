@@ -2,46 +2,23 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Daftar Kegiatan</h3>
+            <h3 class="card-title">Daftar Agenda Dosen</h3>
             <div class="card-tools">
-                <a href="{{ url('/agenda/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
-                    Kegiatan</a>
-                <a href="{{ url('/agenda/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
-                    Kegiatan</a>
-                    <button onclick="modalAction('{{ url('/agenda/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
+                <a href="{{ url('/agenda_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
+                    Agenda</a>
+                <a href="{{ url('/agenda_dosen/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
+                    Agenda</a>
             </div>
         </div>
         <div class="card-body">
-            <div id="filter" class="form-horizontal filter-date p-2 border-bottom mb-2">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group form-group-sm row text-sm mb-0">
-                            <label for="filter_date" class="col-md-1 col-form-label">Filter</label>
-                            <div class="col-md-3">
-                                <select name="filter_kategori" class="form-control form-control-sm filter_kategori">
-                                    <option value="">- Semua -</option>
-                                    @foreach ($kategori as $l)
-                                        <option value="{{ $l->kategori_id }}">{{ $l->kategori_nama }}</option>
-                                    @endforeach
-                                </select>
-                                <small class="form-text text-muted">Kategori Kagiatan</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-error">{{ session('error') }}</div>
-            @endif
-            <table class="table table-bordered table-striped table-hover table-sm" id="table-kegiatan">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table-agenda">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No</th>
                         <th>Nama Kegiatan</th>
-                        <th>Kategori</th>
+                        <th>Agenda</th>
+                        <th>Tanggal Mulai</th>
+                        <th>Tanggal Selesai</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -63,13 +40,13 @@
                 $('#myModal').modal('show');
             })
         }
-        var dataKegiatan;
+        var dataAgenda;
         $(document).ready(function() {
-            dataKegiatan = $('#table-kegiatan').DataTable({
+            dataAgenda = $('#table-agenda').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('agenda/list') }}",
+                    "url": "{{ url('agenda_dosen/list') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": function(d) {
@@ -89,7 +66,17 @@
                         searchable: true
                     },
                     {
-                        data: "kategori_nama",
+                        data: "nama",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "tanggal_mulai",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "tanggal_selesai",
                         orderable: true,
                         searchable: true
                     },
@@ -108,12 +95,12 @@
 
             $('#table-kegiatan_filter input').unbind().bind('keyup', function(e) {
                 if (e.keyCode == 13) {
-                    dataKegiatan.search(this.value).draw();
+                    dataAgenda.search(this.value).draw();
                 }
             });
 
             $('.filter_kategori').change(function() {
-                dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
+                dataAgenda.ajax.reload(); // Reload data ketika filter berubah
             });
         });
     </script>
