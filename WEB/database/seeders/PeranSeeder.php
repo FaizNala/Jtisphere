@@ -14,8 +14,10 @@ class PeranSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['peran_kode' => 'PIC'  , 'peran_nama' => 'Penanggung Jawab'],
-            ['peran_kode' => 'AGT', 'peran_nama' => 'Anggota']
+            ['peran_kode' => 'PIC'  , 'peran_nama' => 'Penanggung Jawab', 'is_pic' => true],
+            ['peran_kode' => 'AGT'  , 'peran_nama' => 'Anggota', 'is_pic' => false],
+            ['peran_kode' => 'SKR'  , 'peran_nama' => 'Sekretaris', 'is_pic' => true],
+            ['peran_kode' => 'BEN'  , 'peran_nama' => 'Bendahara', 'is_pic' => true]
         ];
         DB::table('m_peran')->insert($data);
     }
