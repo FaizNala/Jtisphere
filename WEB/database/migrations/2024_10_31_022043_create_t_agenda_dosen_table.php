@@ -17,8 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('dosen_id')->index();
             $table->timestamps();
 
-            $table->foreign('agenda_id')->references('agenda_id')->on('t_agenda');
-            $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen');
+            $table->foreign('agenda_id')->references('agenda_id')->on('t_agenda')->onDelete('cascade');
+            $table->foreign('dosen_id')->references('dosen_id')->on('m_dosen')->onDelete('cascade');
         });
     }
 
