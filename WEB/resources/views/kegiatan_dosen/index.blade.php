@@ -43,6 +43,9 @@
                         <th>ID</th>
                         <th>Nama Kegiatan</th>
                         <th>Kategori</th>
+                        <th>Periode</th>
+                        <th>Skala</th>
+                        <th>Jumlah Dosen</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -93,6 +96,21 @@
                         data: "kategori_nama",
                         orderable: true,
                         searchable: true
+                    },
+                    {
+                        data: "periode", // Kolom baru untuk jumlah dosen
+                        orderable: true,
+                        searchable: false
+                    },
+                    {
+                        data: "skala", // Kolom baru untuk jumlah dosen
+                        orderable: true,
+                        searchable: false
+                    },
+                    {
+                        data: "jumlah_dosen", // Kolom baru untuk jumlah dosen
+                        orderable: true,
+                        searchable: false
                     },
                     {
                         data: "status",

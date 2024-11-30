@@ -53,12 +53,12 @@
                 </li>
                 <!-- Data Pengguna Section -->
                 <li class="nav-header">Data Pengguna</li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-layer-group"></i>
                         <p>Level Pengguna</p>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                         <i class="nav-icon far fa-user"></i>
@@ -174,14 +174,14 @@
                     </a>
                 </li>
 
-                <!-- Agenda Kegiatan Link -->
+                {{-- <!-- Agenda Kegiatan Link -->
                 <li class="nav-item">
                     <a href="{{ url('/agenda') }}"
                         class="nav-link {{ $activeMenu == 'agenda' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>Agenda Kegiatan</p>
                     </a>
-                </li>
+                </li> --}}
 
                 <!-- Agenda Dosen Link -->
                 <li class="nav-item">

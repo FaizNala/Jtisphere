@@ -410,7 +410,6 @@ class KegiatanController extends Controller
                         'dosen_id' => $dosen_id,
                         'peran_id' => $request->peran[$index],
                         'bobot' => $bobot,
-                        'is_pic' => $request->peran[$index] == 1 ? true : false
                     ]);
                 }
 
