@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DokumenModel;
 use App\Models\DosenKegiatanModel;
 use App\Models\DosenModel;
+use App\Models\PeriodeModel;
 use App\Models\KategoriModel;
 use App\Models\KegiatanModel;
 use App\Models\PeranModel;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class KegiatanDosenController extends Controller
 {
@@ -39,49 +41,44 @@ class KegiatanDosenController extends Controller
 
     public function list(Request $request)
     {
-        // Ambil dosen_id dari session
         $dosenId = session('dosen_id');
+        $kegiatan = KegiatanModel::with(['dosenKegiatan', 'kategori', 'periode'])
+            ->whereHas('dosenKegiatan', function ($query) {
+                $dosenId = session('dosen_id');
+                $query->where('dosen_id', $dosenId);
+            })
+            ->withCount('dosenKegiatan');
 
-        // Mulai query untuk mendapatkan kegiatan
-        $kegiatan = DB::table('t_kegiatan as k')
-            ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
-            ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
-            ->select('k.*', 'dk.*', 'kt.kategori_nama', 'd.*')
-            ->where('dk.dosen_id', $dosenId);
-
-        // Filter berdasarkan kategori jika ada
         $kategori_id = $request->input('filter_kategori');
         if (!empty($kategori_id)) {
-            $kegiatan->where('k.kategori_id', $kategori_id);
+            $kegiatan->where('kategori_id', $kategori_id);
         }
 
-        // Ambil hasil query
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('kategori_nama', function ($kegiatan) {
-                return $kegiatan->kategori_nama;
+                return $kegiatan->kategori->kategori_nama ?? 'Tidak Berkategori';
+            })
+            ->addColumn('periode', function ($kegiatan) {
+                return $kegiatan->periode->periode ?? 'Tidak Ada Periode';
+            })
+            ->addColumn('jumlah_dosen', function ($kegiatan) {
+                return $kegiatan->dosen_kegiatan_count;
             })
             ->addColumn('aksi', function ($kegiatan) use ($dosenId) {
-                // Periksa apakah dosen adalah PIC untuk kegiatan spesifik ini
-                // $is_pic = DB::table('t_dosen_kegiatan')
-                //     ->where('kegiatan_id', $kegiatan->kegiatan_id)
-                //     ->where('dosen_id', $dosenId)
-                //     ->where('is_pic', 1)
-                //     ->exists();
-
-                $is_pic = DosenKegiatanModel::with('peran')
-                    ->where('kegiatan_id', $kegiatan->kegiatan_id)
+                $is_pic = DosenKegiatanModel::where('kegiatan_id', $kegiatan->kegiatan_id)
                     ->where('dosen_id', $dosenId)
                     ->whereHas('peran', function ($query) {
                         $query->where('is_pic', 1);
                     })
-                    ->get();
+                    ->exists(); // Gunakan exists() untuk efisiensi
 
-                $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+
                 if ($is_pic) {
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/add_agenda') . '\')" class="btn btn-success btn-sm">Tambah Agenda</button> ';
                     $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
                 }
 
                 return $btn;
@@ -93,11 +90,13 @@ class KegiatanDosenController extends Controller
     public function create_ajax()
     {
         $kategori = KategoriModel::select('kategori_id', 'kategori_nama')->get();
+        $periode = PeriodeModel::select('periode_id', 'periode')->where('status', 'Aktif')->get();
         $dosen = DosenModel::select('dosen_id', 'nama')->get();
         $peran = PeranModel::select('peran_id', 'peran_nama')->get();
 
         return view('kegiatan_dosen.create_ajax', [
             'kategori' => $kategori,
+            'periode' => $periode,
             'dosen' => $dosen,
             'peran' => $peran
         ]);
@@ -107,11 +106,14 @@ class KegiatanDosenController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
+                'periode_id' => 'required|exists:m_periode,periode_id',
                 'kegiatan_nama' => 'required|string|min:3|max:255',
                 'status' => 'required|in:Belum,Berjalan,Selesai',
-                'deskripsi' => 'required|string|',
+                'skala' => 'required|in:Internal,Nasional,Internasional,Lain-Lain',
+                'anggaran' => 'required|integer|min:1000',
+                'deskripsi' => 'required|string|min:10|max:1000',
                 'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after:tanggal_mulai',
                 'surat_tugas' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
             ];
 
@@ -121,45 +123,52 @@ class KegiatanDosenController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Validasi Gagal',
-                    'errors' => $validator->errors(),
-                ]);
+                    'msgField' => $validator->errors()
+                ], 422);
             }
 
             DB::beginTransaction();
-
             try {
                 // Simpan data kegiatan
                 $kegiatan = KegiatanModel::create([
                     'kategori_id' => 3,
+                    'periode_id' => $request->periode_id,
                     'kegiatan_nama' => $request->kegiatan_nama,
+                    'skala' => $request->skala,
+                    'anggaran' => $request->anggaran,
                     'status' => $request->status,
                     'deskripsi' => $request->deskripsi,
                     'tanggal_mulai' => $request->tanggal_mulai,
                     'tanggal_selesai' => $request->tanggal_selesai
                 ]);
 
-                // Simpan dosen kegiatan dengan peran
+                // Proses perhitungan bobot yang lebih jelas
+                $bobot = $this->hitungBobot(
+                    $request->skala,
+                    $request->anggaran,
+                    Carbon::parse($request->tanggal_mulai)->diffInDays(Carbon::parse($request->tanggal_selesai)),
+                    1 // Menggunakan peran_id default 1
+                );
+
+                // Simpan dosen kegiatan
                 $dosenId = session('dosen_id');
                 DosenKegiatanModel::create([
                     'kegiatan_id' => $kegiatan->kegiatan_id,
-                    'dosen_id' => $dosenId,
-                    'peran_id' => 1,
-                    'is_pic' => 1
+                    'dosen_id' => $dosenId, // Menggunakan dosen_id dari session
+                    'peran_id' => 1, // Menggunakan peran_id default 1
+                    'bobot' => $bobot,
                 ]);
 
-                // Upload dan simpan surat tugas jika ada
+                // Upload surat tugas
                 if ($request->hasFile('surat_tugas')) {
-                    // Upload surat tugas baru
                     $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
                     $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
 
-                    // Buat record dokumen
                     $dokumen = DokumenModel::create([
                         'dokumen_nama' => $fileName,
                         'dokumen_kategori' => 'Surat Tugas'
                     ]);
 
-                    // Buat record surat tugas
                     SuratTugasModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dokumen_id' => $dokumen->dokumen_id
@@ -175,16 +184,81 @@ class KegiatanDosenController extends Controller
             } catch (\Exception $e) {
                 DB::rollback();
                 Log::error('Error in store_ajax: ' . $e->getMessage());
-                Log::error($e->getTraceAsString());
 
                 return response()->json([
                     'status' => false,
-                    'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
-                    'trace' => $e->getTraceAsString() // Hanya untuk debugging
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
                 ], 500);
             }
         }
         return redirect('/');
+    }
+
+    private function hitungBobot($skala, $anggaran, $selisihHari, $peranId = 1) // Default peranId ke 1
+    {
+        // Bobot Skala
+        $b1 = match ($skala) {
+            'Internal' => 2,
+            'Nasional' => 3,
+            'Internasional' => 4,
+            default => 1
+        };
+
+        // Bobot Anggaran
+        $b2 = match (true) {
+            $anggaran >= 1000000000 => 4,
+            $anggaran >= 100000000 => 3,
+            $anggaran >= 10000000 => 2,
+            default => 1
+        };
+
+        // Bobot Waktu
+        $b3 = match (true) {
+            $selisihHari > 365 => 5,
+            $selisihHari >= 274 => 4,
+            $selisihHari >= 183 => 3,
+            $selisihHari >= 91 => 2,
+            default => 1
+        };
+
+        // Bobot Peran
+        $b4 = match ($peranId) {
+            1 => 5,
+            2, 3 => 3,
+            default => 1
+        };
+
+        // Hitung rata-rata
+        return round(($b1 + $b2 + $b3 + $b4) / 4);
+    }
+
+    public function show_ajax($id)
+    {
+        $kegiatan = KegiatanModel::select(
+            't_kegiatan.*',
+            'm_kategori.kategori_nama',
+            'm_dokumen.dokumen_nama'
+        )
+            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
+            ->leftJoin('t_surat_tugas', 't_kegiatan.kegiatan_id', '=', 't_surat_tugas.kegiatan_id')
+            ->leftJoin('m_dokumen', 't_surat_tugas.dokumen_id', '=', 'm_dokumen.dokumen_id')
+            ->where('t_kegiatan.kegiatan_id', $id)
+            ->first();
+
+        if (!$kegiatan) {
+            return response()->json(['message' => 'Kegiatan tidak ditemukan'], 404);
+        }
+
+        // Ambil dosen dan peran terkait
+        $dosenKegiatan = DosenKegiatanModel::with(['dosen', 'peran'])
+            ->where('kegiatan_id', $id)
+            ->get();
+
+        $kategori = KategoriModel::select('kategori_id', 'kategori_nama')->get();
+        $dosen = DosenModel::select('dosen_id', 'nama')->get();
+        $peran = PeranModel::select('peran_id', 'peran_nama')->get();
+
+        return view('kegiatan_dosen.show_ajax', compact('kegiatan', 'kategori', 'dosenKegiatan', 'dosen', 'peran'));
     }
 
     public function edit_ajax($id)
@@ -211,21 +285,25 @@ class KegiatanDosenController extends Controller
             ->get();
 
         $kategori = KategoriModel::select('kategori_id', 'kategori_nama')->get();
+        $periode = PeriodeModel::select('periode_id', 'periode')->where('status', 'Aktif')->get(); // Menambahkan periode
         $dosen = DosenModel::select('dosen_id', 'nama')->get();
         $peran = PeranModel::select('peran_id', 'peran_nama')->get();
 
-        return view('kegiatan_dosen.edit_ajax', compact('kegiatan', 'dosenKegiatan', 'kategori', 'dosen', 'peran'));
+        return view('kegiatan.edit_ajax', compact('kegiatan', 'dosenKegiatan', 'kategori', 'periode', 'dosen', 'peran'));
     }
 
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
+                'periode_id' => 'required|exists:m_periode,periode_id',
                 'kegiatan_nama' => 'required|string|min:3|max:255',
                 'status' => 'required|in:Belum,Berjalan,Selesai',
-                'deskripsi' => 'required|string',
+                'skala' => 'required|in:Internal,Nasional,Internasional,Lain-Lain',
+                'anggaran' => 'required|integer|min:1000',
+                'deskripsi' => 'required|string|min:10|max:1000',
                 'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after:tanggal_mulai',
                 'surat_tugas' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
             ];
 
@@ -236,18 +314,21 @@ class KegiatanDosenController extends Controller
                     'status' => false,
                     'message' => 'Validasi Gagal',
                     'errors' => $validator->errors(),
-                ], 422); // Tambahkan status 422 untuk validasi gagal
+                ], 422);
             }
 
             DB::beginTransaction();
 
             try {
-                $kegiatan = KegiatanModel::findOrFail($id); // Gunakan findOrFail untuk otomatis menangani kesalahan
+                $kegiatan = KegiatanModel::findOrFail($id);
 
                 // Update data kegiatan
                 $kegiatan->update([
                     'kategori_id' => 3,
+                    'periode_id' => $request->periode_id,
                     'kegiatan_nama' => $request->kegiatan_nama,
+                    'skala' => $request->skala,
+                    'anggaran' => $request->anggaran,
                     'status' => $request->status,
                     'deskripsi' => $request->deskripsi,
                     'tanggal_mulai' => $request->tanggal_mulai,
@@ -258,13 +339,22 @@ class KegiatanDosenController extends Controller
                 DosenKegiatanModel::where('kegiatan_id', $id)->delete();
 
                 // Simpan dosen kegiatan yang baru
-                $dosenId = session('dosen_id');
-                DosenKegiatanModel::create([
-                    'kegiatan_id' => $kegiatan->kegiatan_id,
-                    'dosen_id' => $dosenId,
-                    'peran_id' => 1,
-                    'is_pic' => 1
-                ]);
+                foreach ($request->dosen as $index => $dosen_id) {
+                    $bobot = $this->hitungBobot(
+                        $request->skala,
+                        $request->anggaran,
+                        Carbon::parse($request->tanggal_mulai)->diffInDays(Carbon::parse($request->tanggal_selesai)),
+                        1
+                    );
+
+                    $dosenId = session('dosen_id');
+                    DosenKegiatanModel::create([
+                        'kegiatan_id' => $kegiatan->kegiatan_id,
+                        'dosen_id' => $dosenId,
+                        'peran_id' => 1,
+                        'bobot' => $bobot,
+                    ]);
+                }
 
                 // Update surat tugas jika ada
                 if ($request->hasFile('surat_tugas')) {
@@ -293,7 +383,7 @@ class KegiatanDosenController extends Controller
                     // Buat record surat tugas baru
                     SuratTugasModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
-                        'dokumen _id' => $dokumen->dokumen_id
+                        'dokumen_id' => $dokumen->dokumen_id
                     ]);
                 }
 
@@ -338,10 +428,11 @@ class KegiatanDosenController extends Controller
             ->get();
 
         $kategori = KategoriModel::select('kategori_id', 'kategori_nama')->get();
+        $periode = PeriodeModel::select('periode_id', 'periode')->where('status', 'Aktif')->get(); // Menambahkan periode
         $dosen = DosenModel::select('dosen_id', 'nama')->get();
         $peran = PeranModel::select('peran_id', 'peran_nama')->get();
 
-        return view('kegiatan_dosen.confirm_ajax', compact('kegiatan', 'kategori', 'dosenKegiatan', 'dosen', 'peran'));
+        return view('kegiatan.confirm_ajax', compact('kegiatan', 'kategori', 'dosenKegiatan', 'dosen', 'peran'));
     }
 
     public function delete_ajax(Request $request, $id)

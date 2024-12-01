@@ -68,16 +68,6 @@
         <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
     </div>
 </div>
-
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Halo, apa kabar!</h3>
-        <div class="card-tools"></div>
-    </div>
-    <div class="card-body">
-        Selamat datang semua, ini adalah halaman utama dari aplikasi ini.
-    </div>
-</div>
 @endsection
 
 @push('css')

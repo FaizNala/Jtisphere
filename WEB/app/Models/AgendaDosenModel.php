@@ -11,7 +11,7 @@ class AgendaDosenModel extends Model
     use HasFactory;
     protected $table = 't_agenda_dosen';
     protected $primaryKey = 'agenda_dosen_id';
-    protected $fillable = ['agenda_id', 'dosen_id', 'bobot'];
+    protected $fillable = ['agenda_id', 'dosen_id'];
 
     public function agenda(): BelongsTo
     {

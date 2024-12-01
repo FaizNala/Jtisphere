@@ -33,7 +33,14 @@
                 <div class="user-profile">
                     <div class="profile-header">
                         <div class="avatar">
-                            {{ strtoupper(substr($user->nama, 0, 1)) }}
+                            @if ($user->avatar)
+                                <img src="{{ asset('storage/avatars/' . $user->avatar) }}"
+                                    alt="{{ $user->nama }}'s Avatar" class="img-fluid rounded-circle"
+                                    style="width: 150px; height: 150px;">
+                            @else
+                                <img src="{{ asset('default-avatar.png') }}" alt="Default Avatar"
+                                    class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                            @endif
                         </div>
                         <h4>{{ $user->nama }}</h4>
                         <p class="text-muted">{{ $user->nip }}</p>
@@ -62,9 +69,9 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     <i class="fas fa-times mr-2"></i>Tutup
                 </button>
-                <button type="button" class="btn btn-primary" onclick="modalAction('{{ url('/user/' . $user->user_id . '/edit_ajax') }}')">
+                {{-- <button type="button" class="btn btn-primary" onclick="modalAction('{{ url('/user/' . $user->user_id . '/edit_ajax') }}')">
                     <i class="fas fa-user-edit mr-2"></i>Edit
-                </button>
+                </button> --}}
             </div>
         </div>
     </div>
@@ -83,20 +90,6 @@
         .profile-header {
             text-align: center;
             margin-bottom: 30px;
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            background: #007bff;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0 auto 15px;
         }
 
         .user-level {

@@ -142,14 +142,10 @@
             <tr>
                 <td width="15%" class="text-center"><img src="{{ asset('polinema-bw.png') }}" width="130%"></td>
                 <td width="85%">
-                    <span class="text-center d-block font-12 font-bold mb-1">KEMENTERIAN
-                        PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
-                    <span class="text-center d-block font-11 font-bold mb-1">POLITEKNIK NEGERI
-                        MALANG</span>
-                    <span class="text-center d-block font-10">Jl. Soekarno-Hatta No. 9 Malang
-                        65141</span>
-                    <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101
-                        105, 0341-404420, Fax. (0341) 404420</span>
+                    <span class="text-center d-block font-12 text-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
+                    <span class="text-center d-block font-11 text-bold mb-1">POLITEKNIK NEGERI MALANG</span>
+                    <span class="text-center d-block font-10">Jalan Soekarno-Hatta Nomor 9 Malang 65141</span>
+                    <span class="text-center d-block font-10">Telepon (0341) 404424 Pesawat 101, 105, Faksimile (0341) 404420</span>
                     <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
                 </td>
             </tr>
@@ -158,44 +154,57 @@
 
     <div class="text-center title-spacing">
         <h3>SURAT TUGAS</h3>
-        <p>Nomor: ....../....../....../.......</p>
+        <p>Nomor: ....../....../....../......</p>
     </div>
 
     <div class="content-spacing">
         <p>Yang bertanda tangan di bawah ini:</p>
+
+        <table>
+            <tr>
+                <td width="25%">Nama</td>
+                <td width="2%">:</td>
+                <td>SUPRIATNA ADHISUWIGNJO, ST., MT</td>
+            </tr>
+            <tr>
+                <td>NIP</td>
+                <td>:</td>
+                <td>19710108 199031 001</td>
+            </tr>
+            <tr>
+                <td>Jabatan</td>
+                <td>:</td>
+                <td>Direktur Politeknik Negeri Malang</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="content-spacing">
         <p>Dengan ini menugaskan kepada:</p>
     </div>
 
-    <table class="dosen-spacing">
+    <table border="1" class="dosen-spacing" style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+        <thead>
+            <tr>
+                <th style="text-align: center; border: 1px solid black; padding: 5px;">No</th>
+                <th style="border: 1px solid black; padding: 5px;">Nama</th>
+                <th style="border: 1px solid black; padding: 5px;">NIP</th>
+                <th style="border: 1px solid black; padding: 5px;">Peran dalam Kegiatan</th>
+            </tr>
+        </thead>
         <tbody>
             @foreach ($dosenKegiatan as $dk)
             <tr>
-                <td width="5%">{{ $loop->iteration }}.</td>
-                <td width="25%">Nama</td>
-                <td width="2%">:</td>
-                <td>{{ $dk->dosen->nama }}</td>
+                <td style="text-align: center; border: 1px solid black; padding: 5px;">{{ $loop->iteration }}</td>
+                <td style="border: 1px solid black; padding: 5px;">{{ $dk->dosen->nama }}</td>
+                <td style="border: 1px solid black; padding: 5px;">{{ $dk->dosen->nip }}</td>
+                <td style="border: 1px solid black; padding: 5px;">{{ $dk->peran->peran_nama }}</td>
             </tr>
-            <tr>
-                <td></td>
-                <td>NIP</td>
-                <td>:</td>
-                <td>{{ $dk->dosen->nip }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>Jabatan</td>
-                <td>:</td>
-                <td>{{ $dk->peran->peran_nama }}</td>
-            </tr>
-            @if (!$loop->last)
-            <tr><td colspan="4">&nbsp;</td></tr>
-            @endif
             @endforeach
         </tbody>
     </table>
 
     <div class="content-spacing">
-        <br>
         <p>Untuk melaksanakan kegiatan:</p>
         <table>
             <tr>
@@ -204,31 +213,31 @@
                 <td>{{ $kegiatan->kegiatan_nama }}</td>
             </tr>
             <tr>
-                <td>Kategori</td>
+                <td>Kategori Kegiatan</td>
                 <td>:</td>
                 <td>{{ $kegiatan->kategori_nama }}</td>
             </tr>
             <tr>
                 <td>Waktu Pelaksanaan</td>
                 <td>:</td>
-                <td>{{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->isoFormat('D MMMM Y') }} s/d {{ \Carbon\Carbon::parse($kegiatan->tanggal_selesai)->isoFormat('D MMMM Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->isoFormat('D MMMM Y') }} sampai dengan {{ \Carbon\Carbon::parse($kegiatan->tanggal_selesai)->isoFormat('D MMMM Y') }}</td>
             </tr>
         </table>
     </div>
 
     <div class="content-spacing">
-        <p>Demikian surat tugas ini dibuat untuk dilaksanakan dengan penuh tanggung jawab.</p>
+        <p>Pegawai yang namanya tersebut di atas, wajib melaksanakan tugas dengan penuh tanggung jawab dan membuat laporan kegiatan setelah selesai melaksanakan tugas.</p>
     </div>
 
     <div class="signature signature-spacing">
         <div class="signature-content">
-            <p>Malang, {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</p>
+            <p>Ditetapkan di Malang</p>
+            <p>Pada tanggal {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</p>
             <p>Direktur,</p>
             <div class="signature-space"></div>
             <p class="text-bold">SUPRIATNA ADHISUWIGNJO, ST., MT</p>
-            <p>NIP. 19710108199031001</p>
+            <p>NIP. 19710108 199031 001</p>
         </div>
     </div>
-
 </body>
 </html>

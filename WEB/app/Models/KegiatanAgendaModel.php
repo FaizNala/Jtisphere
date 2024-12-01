@@ -14,6 +14,9 @@ class KegiatanAgendaModel extends Model
     protected $fillable = ['kegiatan_id', 'agenda_id', 'status'];
 
     public function kegiatan(): BelongsTo {
-        return $this->belongsTo(KegiatanModel::class, 'kegiatan_id', 'id_kegiatan');
+        return $this->belongsTo(KegiatanModel::class, 'kegiatan_id', 'kegiatan_id');
+    }
+    public function agenda(): BelongsTo {
+        return $this->belongsTo(AgendaModel::class, 'agenda_id', 'agenda_id');
     }
 }

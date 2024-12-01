@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('nama');
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
-            $table->decimal('progress_persen', 3, 2);
-            $table->text('progress_deskripsi');
             $table->timestamps();
         });
     }

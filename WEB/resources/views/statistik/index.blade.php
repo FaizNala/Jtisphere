@@ -1,31 +1,31 @@
 @extends('layouts.template')
+
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Daftar Kegiatan</h3>
+            <h3 class="card-title">Daftar User</h3>
             <div class="card-tools">
-                <a href="{{ url('/kegiatan_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
-                    Kegiatan</a>
-                <a href="{{ url('/kegiatan_dosen/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
-                    Kegiatan</a>
-                <button onclick="modalAction('{{ url('/kegiatan_dosen/create_ajax') }}')" class="btn btn-success">Tambah Data
-                    (Ajax)</button>
+                <a href="{{ url('/statistik/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
+                    Statistik</a>
+                <a href="{{ url('/statistik/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
+                    Statistik</a>
             </div>
         </div>
         <div class="card-body">
+            <!-- untuk Filter data -->
             <div id="filter" class="form-horizontal filter-date p-2 border-bottom mb-2">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group form-group-sm row text-sm mb-0">
                             <label for="filter_date" class="col-md-1 col-form-label">Filter</label>
                             <div class="col-md-3">
-                                <select name="filter_kategori" class="form-control form-control-sm filter_kategori">
+                                <select name="filter_level" class="form-control form-control-sm filter_level">
                                     <option value="">- Semua -</option>
-                                    @foreach ($kategori as $l)
-                                        <option value="{{ $l->kategori_id }}">{{ $l->kategori_nama }}</option>
+                                    @foreach ($level as $l)
+                                        <option value="{{ $l->level_id }}">{{ $l->level_nama }}</option>
                                     @endforeach
                                 </select>
-                                <small class="form-text text-muted">Kategori Kagiatan</small>
+                                <small class="form-text text-muted">Level User</small>
                             </div>
                         </div>
                     </div>
@@ -37,24 +37,22 @@
             @if (session('error'))
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
-            <table class="table table-bordered table-striped table-hover table-sm" id="table-kegiatan">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table-user">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nama Kegiatan</th>
-                        <th>Kategori</th>
-                        <th>Periode</th>
-                        <th>Skala</th>
-                        <th>Jumlah Dosen</th>
-                        <th>Status</th>
+                        <th>Username</th>
+                        <th>Nama</th>
+                        <th>Level Pengguna</th>
+                        <th>Total Kegiatan</th>
+                        <th>Beban Kerja</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
-        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -65,20 +63,29 @@
         function modalAction(url = '') {
             $('#myModal').load(url, function() {
                 $('#myModal').modal('show');
+                // Inisialisasi Select2 setelah modal dimuat
+                if ($('.select2-multiple').length) {
+                    $('.select2-multiple').select2({
+                        placeholder: "Pilih Level Pengguna",
+                        allowClear: true,
+                        dropdownParent: $('#myModal') // Penting untuk Select2 dalam modal
+                    });
+                }
             })
         }
-        var dataKegiatan;
+
+        var dataUser;
         $(document).ready(function() {
-            dataKegiatan = $('#table-kegiatan').DataTable({
+            dataUser = $('#table-user').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('kegiatan_dosen/list') }}",
+                    "url": "{{ url('statistik/list') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": function(d) {
-                        d.filter_kategori = $('.filter_kategori')
-                            .val(); // Menggunakan class filter_kategori
+                        d.filter_level = $('.filter_level').val();
+                        d._token = "{{ csrf_token() }}";
                     }
                 },
                 columns: [{
@@ -88,35 +95,31 @@
                         searchable: false
                     },
                     {
-                        data: "kegiatan_nama",
+                        data: "username",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "kategori_nama",
+                        data: "nama",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "periode", // Kolom baru untuk jumlah dosen
-                        orderable: true,
+                        data: "level_nama",
+                        orderable: false,
                         searchable: false
                     },
                     {
-                        data: "skala", // Kolom baru untuk jumlah dosen
-                        orderable: true,
+                        data: 'total_kegiatan',
+                        orderable: false,
                         searchable: false
                     },
                     {
-                        data: "jumlah_dosen", // Kolom baru untuk jumlah dosen
-                        orderable: true,
+                        data: "total_bobot",
+                        orderable: false,
                         searchable: false
                     },
-                    {
-                        data: "status",
-                        orderable: true,
-                        searchable: true
-                    },
+
                     {
                         data: "aksi",
                         orderable: false,
@@ -125,15 +128,22 @@
                 ]
             });
 
-            $('#table-kegiatan_filter input').unbind().bind('keyup', function(e) {
+            $('#table-user_filter input').unbind().bind().on('keyup', function(e) {
                 if (e.keyCode == 13) {
-                    dataKegiatan.search(this.value).draw();
+                    dataUser.search(this.value).draw();
                 }
             });
 
-            $('.filter_kategori').change(function() {
-                dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
+            $('.filter_level').change(function() {
+                dataUser.draw();
             });
+        });
+
+        // Tambahkan handler untuk membersihkan Select2 saat modal ditutup
+        $('#myModal').on('hidden.bs.modal', function () {
+            if ($('.select2-multiple').length) {
+                $('.select2-multiple').select2('destroy');
+            }
         });
     </script>
 @endpush

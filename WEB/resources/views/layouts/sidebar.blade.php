@@ -53,12 +53,12 @@
                 </li>
                 <!-- Data Pengguna Section -->
                 <li class="nav-header">Data Pengguna</li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-layer-group"></i>
                         <p>Level Pengguna</p>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                         <i class="nav-icon far fa-user"></i>
@@ -89,6 +89,13 @@
                     <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
                         <i class="nav-icon far fa-list-alt"></i>
                         <p>Data Kegiatan</p>
+                    </a>
+                </li>
+                <li class="nav-header">Statistik</li>
+                <li class="nav-item">
+                    <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Statistik Kegiatan</p>
                     </a>
                 </li>
             </ul>
@@ -127,6 +134,13 @@
                         <p>Data Kegiatan</p>
                     </a>
                 </li>
+                <li class="nav-header">Statistik</li>
+                <li class="nav-item">
+                    <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Statistik Kegiatan</p>
+                    </a>
+                </li>
             </ul>
         @endif
 
@@ -160,14 +174,14 @@
                     </a>
                 </li>
 
-                <!-- Agenda Kegiatan Link -->
+                {{-- <!-- Agenda Kegiatan Link -->
                 <li class="nav-item">
                     <a href="{{ url('/agenda') }}"
                         class="nav-link {{ $activeMenu == 'agenda' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>Agenda Kegiatan</p>
                     </a>
-                </li>
+                </li> --}}
 
                 <!-- Agenda Dosen Link -->
                 <li class="nav-item">

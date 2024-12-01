@@ -18,6 +18,32 @@
                     <small id="error-kegiatan_nama" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label><i class="fas fa-calendar mr-2"></i>Periode</label>
+                    <select name="periode_id" id="periode_id" class="form-control" required>
+                        <option value="">Pilih Periode</option>
+                        @foreach ($periode as $p)
+                            <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-periode_id" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-globe mr-2"></i>Skala</label>
+                    <select name="skala" id="skala" class="form-control" required>
+                        <option value="">Pilih Skala</option>
+                        <option value="Internal">Internal</option>
+                        <option value="Nasional">Nasional</option>
+                        <option value="Internasional">Internasional</option>
+                        <option value="Lain-Lain">Lain-Lain</option>
+                    </select>
+                    <small id="error-skala" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-money-bill-wave mr-2"></i>Anggaran</label>
+                    <input type="number" name="anggaran" id="anggaran" class="form-control" placeholder="Masukkan anggaran" required>
+                    <small id="error-anggaran" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
                     <label><i class="fas fa-check-circle mr-2"></i>Status</label>
                     <select name="status" id="status" class="form-control" required>
                         <option value="Belum">Belum</option>
@@ -68,6 +94,19 @@
                     required: true,
                     minlength: 3,
                     maxlength: 255
+                },
+                kategori_id: {
+                    required: true
+                },
+                periode_id: {
+                    required: true
+                },
+                skala: {
+                    required: true
+                },
+                anggaran: {
+                    required: true,
+                    number: true
                 },
                 status: {
                     required: true
