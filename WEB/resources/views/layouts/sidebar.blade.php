@@ -53,12 +53,6 @@
                 </li>
                 <!-- Data Pengguna Section -->
                 <li class="nav-header">Data Pengguna</li>
-                {{-- <li class="nav-item">
-                    <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-layer-group"></i>
-                        <p>Level Pengguna</p>
-                    </a>
-                </li> --}}
                 <li class="nav-item">
                     <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                         <i class="nav-icon far fa-user"></i>
@@ -67,33 +61,51 @@
                 </li>
                 <!-- Data Kegiatan Section -->
                 <li class="nav-header">Data Kegiatan</li>
-                <li class="nav-item">
-                    <a href="{{ url('/kategori') }}" class="nav-link {{ $activeMenu == 'kategori' ? 'active' : '' }}">
-                        <i class="nav-icon far fa-bookmark"></i>
-                        <p>Kategori Kegiatan</p>
+                <li
+                    class="nav-item has-treeview {{ in_array($activeMenu, ['kategori', 'periode', 'peran', 'kegiatan']) ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ in_array($activeMenu, ['kategori', 'periode', 'peran', 'kegiatan']) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-folder"></i>
+                        <p>
+                            Data Kegiatan
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-calendar-alt"></i>
-                        <p>Periode Kegiatan</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url('/peran') }}" class="nav-link {{ $activeMenu == 'peran' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-tie"></i>
-                        <p>Peran Kegiatan</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
-                        <i class="nav-icon far fa-list-alt"></i>
-                        <p>Data Kegiatan</p>
-                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ url('/kategori') }}"
+                                class="nav-link {{ $activeMenu == 'kategori' ? 'active' : '' }}">
+                                <i class="nav-icon far fa-bookmark"></i>
+                                <p>Kategori Kegiatan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/periode') }}"
+                                class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-calendar-alt"></i>
+                                <p>Periode Kegiatan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/peran') }}"
+                                class="nav-link {{ $activeMenu == 'peran' ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-user-tie"></i>
+                                <p>Peran Kegiatan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/kegiatan') }}"
+                                class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
+                                <i class="nav-icon far fa-list-alt"></i>
+                                <p>Data Kegiatan</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-header">Statistik</li>
                 <li class="nav-item">
-                    <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+                    <a href="{{ url('/statistik') }}"
+                        class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>Statistik Kegiatan</p>
                     </a>
@@ -136,7 +148,8 @@
                 </li>
                 <li class="nav-header">Statistik</li>
                 <li class="nav-item">
-                    <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+                    <a href="{{ url('/statistik') }}"
+                        class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>Statistik Kegiatan</p>
                     </a>
@@ -158,7 +171,8 @@
 
                 <!-- Kalender Link -->
                 <li class="nav-item">
-                    <a href="{{ url('/kalender') }}" class="nav-link {{ $activeMenu == 'kalender' ? 'active' : '' }}">
+                    <a href="{{ url('/kalender') }}"
+                        class="nav-link {{ $activeMenu == 'kalender' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-alt"></i>
                         <p>Kalender</p>
                     </a>
@@ -166,30 +180,32 @@
 
                 <!-- Kegiatan Link -->
                 <li class="nav-header">Data Kegiatan</li>
-                <li class="nav-item">
-                    <a href="{{ url('/kegiatan_dosen') }}"
-                        class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-list-alt"></i>
-                        <p>Kegiatan</p>
+                <li
+                    class="nav-item has-treeview {{ in_array($activeMenu, ['kegiatan', 'agenda_dosen']) ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ in_array($activeMenu, ['kegiatan', 'agenda_dosen']) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-folder"></i>
+                        <p>
+                            Data Kegiatan
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
-                </li>
-
-                {{-- <!-- Agenda Kegiatan Link -->
-                <li class="nav-item">
-                    <a href="{{ url('/agenda') }}"
-                        class="nav-link {{ $activeMenu == 'agenda' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-calendar-check"></i>
-                        <p>Agenda Kegiatan</p>
-                    </a>
-                </li> --}}
-
-                <!-- Agenda Dosen Link -->
-                <li class="nav-item">
-                    <a href="{{ url('/agenda_dosen') }}"
-                        class="nav-link {{ $activeMenu == 'agenda_dosen' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p>Agenda Dosen</p>
-                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ url('/kegiatan_dosen') }}"
+                                class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-list-alt"></i>
+                                <p>Kegiatan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/agenda_dosen') }}"
+                                class="nav-link {{ $activeMenu == 'agenda_dosen' ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <p>Agenda Dosen</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         @endif
