@@ -55,4 +55,8 @@ class UserModel extends Authenticatable implements JWTSubject
         $level = $this->getLevel();
         return $level ? $level->level_kode : null;
     }
+
+    public function notifikasi() {
+        return $this->hasMany(NotifikasiModel::class, 'user_id', 'user_id');
+    }
 }
