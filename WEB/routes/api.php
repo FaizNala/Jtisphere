@@ -29,7 +29,7 @@ Route::group(['prefix' => 'user'], function () {
 
 Route::group(['prefix' => 'kegiatan'], function () {
     Route::get('/get_kegiatan', [KegiatanController::class, 'get_kegiatan']);
-    Route::get('/{id}/get_kegiatan_dosen', [KegiatanController::class, 'get_kegiatan_dosen']);
-    Route::get('/{id}/get_kegiatan_detail', [KegiatanController::class, 'get_kegiatan_detail']);
-    Route::get('/{id}/get_kegiatan_detail2', [KegiatanController::class, 'get_kegiatan_detail']);
+    Route::get('/get_kegiatan_dosen/{id}', [KegiatanController::class, 'get_kegiatan_dosen']);
+    Route::get('/get_kegiatan_detail/{id}', [KegiatanController::class, 'get_kegiatan_detail']);
+    Route::get('/get_kegiatan_detail2/{id}', [KegiatanController::class, 'get_kegiatan_detail2']);
 });
