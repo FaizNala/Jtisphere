@@ -10,6 +10,7 @@ use App\Models\PeranModel;
 use App\Models\DosenKegiatanModel;
 use App\Models\PeriodeModel;
 use App\Models\SuratTugasModel;
+use App\Models\NotifikasiModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -155,6 +156,25 @@ class KegiatanController extends Controller
                         'peran_id' => $request->peran[$index],
                         'bobot' => $bobot,
                     ]);
+
+                    $notif = [
+                        'user_id' => $dosen_id,
+                        'judul' => 'Kegiatan Baru',
+                        'isi' => 'Selamat anda ditunjuk untuk mengikuti kegiatan ' . $kegiatan->kegiatan_nama . ' sebagai ' . PeranModel::find($request->peran[$index])->peran_nama,
+                        'aksi' => $kegiatan->kegiatan_id . '/show_ajax',
+                        'is_read' => false,
+                    ];
+                    DB::table('t_notifikasi')->insert($notif);
+
+                    // NotifikasiModel::create([
+                    //     'kegiatan_id' => $kegiatan->kegiatan_id,
+                    //     'user_id' => $dosen_id,
+                    //     'judul' => 'Kegiatan Baru',
+                    //     'isi' => 'Selamat anda ditunjuk untuk mengikuti kegiatan ' . $kegiatan->kegiatan_nama,
+                    //     // 'aksi' => $kegiatan->kegiatan_id . '/show_ajax',
+                    //     // 'is_read' => 0,
+                    // ]);
+
                 }
 
                 // Upload surat tugas
@@ -191,6 +211,7 @@ class KegiatanController extends Controller
         }
         return redirect('/');
     }
+
     private function hitungBobot($skala, $anggaran, $selisihHari, $peranId)
     {
         // Bobot Skala
