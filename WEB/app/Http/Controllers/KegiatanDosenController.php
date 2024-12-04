@@ -10,6 +10,7 @@ use App\Models\KategoriModel;
 use App\Models\KegiatanModel;
 use App\Models\PeranModel;
 use App\Models\SuratTugasModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class KegiatanDosenController extends Controller
 {
@@ -498,5 +501,118 @@ class KegiatanDosenController extends Controller
             }
         }
         return redirect('/');
+    }
+
+    public function export_excel()
+    {
+        // ambil data kegiatan yang akan di export
+        $dosenId = session('dosen_id');
+        $kegiatan = KegiatanModel::select(
+            't_kegiatan.kegiatan_nama',
+            'm_kategori.kategori_nama',
+            't_kegiatan.status',
+            't_kegiatan.tanggal_mulai',
+            't_kegiatan.tanggal_selesai',
+            'm_periode.periode',
+            DB::raw('count(t_dosen_kegiatan.dosen_id) as jumlah_dosen') // Menggunakan DB::raw untuk alias
+        )
+            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
+            ->join('m_periode', 't_kegiatan.periode_id', '=', 'm_periode.periode_id')
+            ->leftJoin('t_dosen_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id') // Perbaikan alias
+            ->groupBy(
+                't_kegiatan.kegiatan_nama',
+                'm_kategori.kategori_nama',
+                't_kegiatan.status',
+                't_kegiatan.tanggal_mulai',
+                't_kegiatan.tanggal_selesai',
+                'm_periode.periode'
+            )
+            ->where('t_dosen_kegiatan.dosen_id', $dosenId)
+            ->get();
+
+        // load library excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Kegiatan');
+        $sheet->setCellValue('C1', 'Kategori');
+        $sheet->setCellValue('D1', 'Periode');
+        $sheet->setCellValue('E1', 'Status');
+        $sheet->setCellValue('F1', 'Tanggal Mulai');
+        $sheet->setCellValue('G1', 'Tanggal Selesai');
+        $sheet->setCellValue('H1', 'Jumlah Dosen');
+
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        $no = 1; // no data dimulai dari 1
+        $baris = 2; // baris data dimulai dari baris ke 2
+        foreach ($kegiatan as $key => $value) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $value->kegiatan_nama);
+            $sheet->setCellValue('C' . $baris, $value->kategori_nama);
+            $sheet->setCellValue('D' . $baris, $value->periode);
+            $sheet->setCellValue('E' . $baris, $value->skala);
+            $sheet->setCellValue('F' . $baris, $value->jumlah_dosen);
+            $sheet->setCellValue('G' . $baris, $value->status);
+            $sheet->setCellValue('H' . $baris, $value->tanggal_mulai);
+            $sheet->setCellValue('I' . $baris, $value->tanggal_selesai);
+            $baris++;
+            $no++;
+        }
+
+        foreach (range('A', 'I') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->setTitle('Data Kegiatan');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data Kegiatan ' . date('Y-m-d H:i:s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . 'GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $dosenId = session('dosen_id');
+        $kegiatan = KegiatanModel::select(
+            't_kegiatan.kegiatan_nama',
+            'm_kategori.kategori_nama',
+            't_kegiatan.status',
+            't_kegiatan.tanggal_mulai',
+            't_kegiatan.tanggal_selesai',
+            'm_periode.periode',
+            DB::raw('count(t_dosen_kegiatan.dosen_id) as jumlah_dosen') // Menggunakan DB::raw untuk alias
+        )
+            ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
+            ->join('m_periode', 't_kegiatan.periode_id', '=', 'm_periode.periode_id')
+            ->leftJoin('t_dosen_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id') // Perbaikan alias
+            ->groupBy(
+                't_kegiatan.kegiatan_nama',
+                'm_kategori.kategori_nama',
+                't_kegiatan.status',
+                't_kegiatan.tanggal_mulai',
+                't_kegiatan.tanggal_selesai',
+                'm_periode.periode'
+            )
+            ->where('t_dosen_kegiatan.dosen_id', $dosenId)
+            ->get();
+
+        $pdf = Pdf::loadView('kegiatan_dosen.export_pdf', ['kegiatan' => $kegiatan]);
+        $pdf->setPaper('a4', 'potrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        return $pdf->stream('Data Kegiatan ' . date('Y-m-d H:i:s') . '.pdf');
     }
 }
