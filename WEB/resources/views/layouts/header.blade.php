@@ -9,9 +9,9 @@
         <li class="nav-item d-none d-sm-inline-block">
             <a href="{{ url('/') }}" class="nav-link">Home</a>
         </li>
-        {{-- <li class="nav-item d-none d-sm-inline-block">
+        <li class="nav-item d-none d-sm-inline-block">
             <a href="{{ url('/contact') }}" class="nav-link">Contact</a>
-        </li> --}}
+        </li>
     </ul>
 
     <!-- Right navbar links -->
@@ -39,42 +39,87 @@
             </div>
         </li>
 
-        @php
-            $unreadNotifications = Auth::user()
-                ->notifikasi()
-                ->where('is_read', false)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        @endphp
+        <!-- Messages Dropdown Menu -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="far fa-comments"></i>
+                <span class="badge badge-danger navbar-badge">3</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <a href="#" class="dropdown-item">
+                    <div class="media">
+                        <img src="{{ asset('images/user1.jpg') }}" alt="User Avatar"
+                            class="img-size-50 mr-3 img-circle">
+                        <div class="media-body">
+                            <h3 class="dropdown-item-title">
+                                Brad Diesel
+                                <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                            </h3>
+                            <p class="text-sm">Call me whenever you can...</p>
+                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <div class="media">
+                        <img src="{{ asset('images/user2.jpg') }}" alt="User Avatar"
+                            class="img-size-50 img-circle mr-3">
+                        <div class="media-body">
+                            <h3 class="dropdown-item-title">
+                                John Pierce
+                                <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                            </h3>
+                            <p class="text-sm">I got your message bro</p>
+                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <div class="media">
+                        <img src="{{ asset('images/user3.jpg') }}" alt="User Avatar"
+                            class="img-size-50 img-circle mr-3">
+                        <div class="media-body">
+                            <h3 class="dropdown-item-title">
+                                Nora Silvester
+                                <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+                            </h3>
+                            <p class="text-sm">The subject goes here</p>
+                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+            </div>
+        </li>
 
+        <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-bell"></i>
-                @if ($unreadNotifications->count() > 0)
-                    <span class="badge badge-warning navbar-badge">{{ $unreadNotifications->count() }}</span>
-                @endif
+                <span class="badge badge-warning navbar-badge">15</span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">{{ $unreadNotifications->count() }} Unread
-                    Notifications</span>
+                <span class="dropdown-item dropdown-header">15 Notifications</span>
                 <div class="dropdown-divider"></div>
-
-                @forelse($unreadNotifications as $notification)
-                    <a href="{{ url('/mark-as-read/'. $notification->notifikasi_id) }}" class="dropdown-item mark-as-read">
-                        <i class="fas fa-info-circle mr-2"></i>
-                        <strong>{{ $notification->judul }}</strong>
-                        <p class="text-sm text-muted">{{ $notification->isi }}</p>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                @empty
-                    <span class="dropdown-item text-center text-muted">No Unread Notifications</span>
-                @endforelse
-
-                @if ($unreadNotifications->count() > 0)
-                    {{-- <a href="{{ route('notifications.index') }}" class="dropdown-item dropdown-footer">
-                        See All Notifications
-                    </a> --}}
-                @endif
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-envelope mr-2"></i> 4 new messages
+                    <span class="float-right text-muted text-sm">3 mins</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-users mr-2"></i> 8 friend requests
+                    <span class="float-right text-muted text-sm">12 hours</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-file mr-2"></i> 3 new reports
+                    <span class="float-right text-muted text-sm">2 days</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
             </div>
         </li>
 
@@ -96,22 +141,15 @@
                         // Ngambil id current user
                         $currentLevelId = session('current_level_id');
                         // Ngambil nama current user
-                        $currentRoleName = optional(
-                            Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first()->level ?? null,
-                        )->level_nama;
+                        $currentRoleName = optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first()->level ?? null)->level_nama;
                     @endphp
                     <!-- Menampilkan -->
-                    <span>{{ Auth::user()->username }}@if ($currentRoleName)
-                            ({{ $currentRoleName }})
-                        @endif
-                    </span>
+                    <span>{{ Auth::user()->username }}@if($currentRoleName) ({{ $currentRoleName }}) @endif</span>
                 </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow" aria-labelledby="navbarDropdown">
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow"
+                    aria-labelledby="navbarDropdown">
                     <div class="dropdown-header text-center bg-primary text-white">
-                        <strong>Welcome, {{ Auth::user()->username }}@if ($currentRoleName)
-                                ({{ $currentRoleName }})
-                            @endif
-                        </strong>
+                        <strong>Welcome, {{ Auth::user()->username }}@if($currentRoleName) ({{ $currentRoleName }}) @endif</strong>
                     </div>
                     <div class="dropdown-divider"></div>
 

@@ -15,7 +15,7 @@ use App\Http\Controllers\AgendaDosenController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
-use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,16 +41,29 @@ Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister']);
 
+
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
 // Routes that require authentication
 Route::middleware(['auth'])->group(function () {
 
+    // Route::middleware(['authorize:ADM'])->group(function () {
+    //     Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
+    // });
+
+    // Route::middleware(['authorize:PMN'])->group(function () {
+    //     Route::get('/pimpinan/dashboard', [DashboardController::class, 'pimpinanDashboard'])->name('pimpinan.dashboard');
+    // });
+
+    // Route::middleware(['authorize:DSN'])->group(function () {
+    //     Route::get('/dosen-anggota/dashboard', [DashboardController::class, 'dosenAnggotaDashboard'])->name('dosenAnggota.dashboard');
+    //     Route::get('/dosen-pic/dashboard', [DashboardController::class, 'dosenPICDashboard'])->name('dosenPIC.dashboard');
+    // });
+
     // Welcome route
     Route::get('/', [WelcomeController::class, 'index']);
     Route::get('/switch-role/{level_id}', [UserController::class, 'switchRole'])->name('switch.role');
     Route::get('/kalender', [KalenderController::class, 'index']);
-    Route::get('/mark-as-read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // Semua route di dalam group ini harus punya role ADM
     Route::middleware(['authorize:ADM'])->group(function () {
@@ -68,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/import_ajax', [LevelController::class, 'import_ajax']);
             Route::get('/export_excel', [LevelController::class, 'export_excel']);
             Route::get('/export_pdf', [LevelController::class, 'export_pdf']);
+            Route::get('/statistik/{id}/show_ajax', [WelcomeController::class, 'show_ajax'])->name('statistik.show_ajax');
         });
     });
 

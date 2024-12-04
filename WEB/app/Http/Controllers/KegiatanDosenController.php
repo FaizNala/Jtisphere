@@ -159,15 +159,6 @@ class KegiatanDosenController extends Controller
                     'bobot' => $bobot,
                 ]);
 
-                $notif = [
-                    'user_id' => $dosenId,
-                    'judul' => 'Kegiatan Baru',
-                    'isi' => 'Selamat anda ditunjuk untuk mengikuti kegiatan ' . $kegiatan->kegiatan_nama . ' sebagai Penanggung Jawab',
-                    'aksi' => $kegiatan->kegiatan_id . '/show_ajax',
-                    'is_read' => false,
-                ];
-                DB::table('t_notifikasi')->insert($notif);
-
                 // Upload surat tugas
                 if ($request->hasFile('surat_tugas')) {
                     $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();

@@ -30,6 +30,7 @@
                 <div class="form-group">
                     <label><i class="fas fa-calendar mr-2"></i>Periode</label>
                     <select name="periode_id" id="periode_id" class="form-control" required>
+                        <option value="">Pilih Periode</option>
                         @foreach ($periode as $p)
                             <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
                         @endforeach

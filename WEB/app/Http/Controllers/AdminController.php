@@ -8,7 +8,7 @@ use App\Models\PeranModel;
 use App\Models\KegiatanModel;
 use App\Models\DosenKegiatanModel;
 
-class WelcomeController extends Controller
+class AdminController extends Controller
 {
     public function index()
     {
@@ -98,7 +98,7 @@ class WelcomeController extends Controller
         ->get();
 
 
-        return view('welcome', compact(
+        return view('dashboard', compact(
             'breadcrumb',
             'activeMenu',
             'totalKegiatan',

@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\KegiatanController;
-use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,19 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
-
-Route::group(['prefix' => 'user'], function () {
-    Route::get('/get_user', [UserController::class, 'get_user']);
-    Route::get('/get_dosen', [UserController::class, 'get_dosen']);
-});
-
-Route::group(['prefix' => 'kegiatan'], function () {
-    Route::get('/get_kegiatan', [KegiatanController::class, 'get_kegiatan']);
-    Route::get('/get_kegiatan_dosen/{id}', [KegiatanController::class, 'get_kegiatan_dosen']);
-    Route::get('/get_kegiatan_detail/{id}', [KegiatanController::class, 'get_kegiatan_detail']);
-    Route::get('/get_kegiatan_detail2/{id}', [KegiatanController::class, 'get_kegiatan_detail2']);
 });

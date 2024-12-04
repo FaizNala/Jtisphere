@@ -4,11 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-
-class UserModel extends Authenticatable implements JWTSubject
+class UserModel extends Authenticatable
 {
     use HasFactory;
 
@@ -19,13 +17,6 @@ class UserModel extends Authenticatable implements JWTSubject
     protected $hidden = ['password'];
 
     protected $casts = ['password' => 'hashed'];
-
-    public function getJWTIdentifier() {
-        return $this->getKey();
-    }
-    public function getJWTCustomClaims() {
-        return [];
-    }
 
     public function dosen(): BelongsTo {
         return $this->belongsTo(DosenModel::class, 'user_id', 'user_id');
@@ -54,9 +45,5 @@ class UserModel extends Authenticatable implements JWTSubject
     {
         $level = $this->getLevel();
         return $level ? $level->level_kode : null;
-    }
-
-    public function notifikasi() {
-        return $this->hasMany(NotifikasiModel::class, 'user_id', 'user_id');
     }
 }
