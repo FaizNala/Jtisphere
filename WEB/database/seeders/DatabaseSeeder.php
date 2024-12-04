@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             AgendaDosenSeeder::class,
             DosenKegiatanSeeder::class,
             KegiatanAgendaSeeder::class,
+            DummySeeder::class,
         ]);
     }
 }
