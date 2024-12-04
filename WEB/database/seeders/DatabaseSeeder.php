@@ -26,10 +26,10 @@ class DatabaseSeeder extends Seeder
             KategoriSeeder::class,
             KegiatanSeeder::class,
             PeranSeeder::class,
-            // AgendaDosenSeeder::class,
-            // AgendaSeeder::class,
-            // DosenKegiatanSeeder::class,
-            // KegiatanAgendaSeeder::class,
+            AgendaSeeder::class,
+            AgendaDosenSeeder::class,
+            DosenKegiatanSeeder::class,
+            KegiatanAgendaSeeder::class,
         ]);
     }
 }
