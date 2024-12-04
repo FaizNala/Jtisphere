@@ -1,0 +1,215 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\AgendaDosenModel;
+use App\Models\AgendaModel;
+use App\Models\BuktiAgendaModel;
+use App\Models\DokumenModel;
+use App\Models\KegiatanAgendaModel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
+
+class AgendaDosenController extends Controller
+{
+    public function index()
+    {
+        $activeMenu = 'agenda_dosen';
+        $breadcrumb = (object) [
+            'title' => 'Daftar Agenda Dosen',
+            'list' => ['Home', 'Agenda Dosen']
+        ];
+
+        return view('agenda_dosen.index', [
+            'activeMenu' => $activeMenu,
+            'breadcrumb' => $breadcrumb,
+        ]);
+    }
+
+    public function list(Request $request)
+    {
+        $agenda = AgendaModel::with([
+            'kegiatanAgenda',
+            'kegiatanAgenda.kegiatan' // Load the kegiatan through kegiatanAgenda
+        ])
+            ->whereHas('agendaDosen', function ($query) {
+                $dosenId = session('dosen_id');
+                $query->where('dosen_id', $dosenId);
+            })
+            ->get(); // Explicitly get the collection
+
+        return DataTables::of($agenda)
+            ->addIndexColumn()
+            ->addColumn('kegiatan_nama', function ($agenda) {
+                // Explicitly name the column 'kegiatan_nama'
+                // $kegiatanAgenda = $agenda->kegiatanAgenda->first();
+                return $agenda->kegiatanAgenda->first()->kegiatan->kegiatan_nama;
+            })
+            ->addColumn('status', function ($agenda) {
+                $kegiatanAgenda = $agenda->kegiatanAgenda->first();
+                return $kegiatanAgenda->status;
+            })
+            ->addColumn('aksi', function ($agenda) {
+                $btn  = '<button onclick="modalAction(\'' . url('/agenda_dosen/' . $agenda->agenda_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/agenda_dosen/' . $agenda->agenda_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Update Progres</button> ';
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+
+    public function show_ajax($id)
+    {
+        $agenda = DB::table('t_agenda as a')
+            ->join('t_kegiatan_agenda as ka', 'a.agenda_id', '=', 'ka.agenda_id')
+            ->join('t_kegiatan as k', 'ka.kegiatan_id', '=', 'k.kegiatan_id')
+            ->select('a.*', 'ka.*', 'k.*')
+            ->where('a.agenda_id', $id)
+            ->first();
+
+        $dosen = DB::table('m_dosen as d')
+            ->join('t_agenda_dosen as ad', 'd.dosen_id', '=', 'ad.dosen_id')
+            ->join('t_kegiatan_agenda as ka', 'ad.agenda_id', '=', 'ka.agenda_id')
+            ->join('t_kegiatan as k', 'ka.kegiatan_id', '=', 'k.kegiatan_id')
+            ->join('t_agenda as a', 'a.agenda_id', '=', 'ka.agenda_id')
+            ->select('d.*')
+            ->where('a.agenda_id', $id)
+            ->get();
+
+        $agenda->dosen = $dosen; // Set the dosen property on the $agenda object
+
+        return view('agenda_dosen.show_ajax', [
+            'agenda' => $agenda,
+            'dosenList' => $dosen,
+        ]);
+    }
+
+    public function edit_ajax($id)
+    {
+        // Ambil data agenda
+        $agenda = DB::table('t_agenda as a')
+            ->join('t_kegiatan_agenda as ka', 'a.agenda_id', '=', 'ka.agenda_id')
+            ->join('t_kegiatan as k', 'ka.kegiatan_id', '=', 'k.kegiatan_id')
+            ->select('a.*', 'ka.status', 'k.kegiatan_id', 'k.kegiatan_nama')
+            ->where('a.agenda_id', $id)
+            ->first();
+
+        // Ambil bukti agenda
+        $buktiAgenda = DB::table('t_bukti_agenda as ba')
+            ->join('m_dokumen as d', 'ba.dokumen_id', '=', 'd.dokumen_id')
+            ->join('t_agenda_dosen as ad', 'ba.agenda_dosen_id', '=', 'ad.agenda_dosen_id')
+            ->join('t_agenda as a', 'ad.agenda_id', '=', 'a.agenda_id')
+            ->select('d.*', 'ba.*') // Tambahkan seleksi untuk detail bukti agenda
+            ->where('a.agenda_id', $id)
+            ->get();
+
+        return view('agenda_dosen.edit_ajax', [
+            'agenda' => $agenda,
+            'buktiAgenda' => $buktiAgenda,
+        ]);
+    }
+
+    public function update_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Aturan validasi
+            $rules = [
+                'kegiatan_id' => 'required|exists:t_kegiatan,kegiatan_id',
+                'status' => 'required|in:Belum,Berjalan,Selesai',
+                'bukti_agenda' => 'nullable|file|mimes:pdf,doc,docx,jpg,png,jpeg|max:2048'
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            try {
+                // Temukan agenda yang akan diupdate
+                $agenda = AgendaModel::findOrFail($id);
+
+                // Update status di tabel kegiatan agenda
+                KegiatanAgendaModel::where('agenda_id', $id)->delete();
+                KegiatanAgendaModel::create([
+                    'agenda_id' => $id,
+                    'kegiatan_id' => $request->kegiatan_id,
+                    'status' => $request->status,
+                ]);
+
+                // Proses upload bukti agenda jika ada file
+                if ($request->hasFile('bukti_agenda')) {
+                    $dosenId = session('dosen_id');
+                    $agendaDosenId = AgendaDosenModel::where('dosen_id', $dosenId)
+                        ->where('agenda_id', $id)
+                        ->firstOrFail(); // Gunakan firstOrFail untuk memudahkan debugging
+
+                    // Hapus bukti dan dokumen lama
+                    $buktiAgenda = BuktiAgendaModel::where('agenda_dosen_id', $agendaDosenId->agenda_dosen_id)
+                        ->first();
+
+                    if ($buktiAgenda) {
+                        // Periksa apakah dokumen terkait ada
+                        $dokumen = DokumenModel::find($buktiAgenda->dokumen_id);
+                        if ($dokumen) {
+                            $buktiAgenda = BuktiAgendaModel::where('agenda_dosen_id', $agendaDosenId->agenda_dosen_id)
+                            ->first();
+                            // $dokumen->delete(); // Hapus dokumen dari database
+                            DokumenModel::where('dokumen_id', $buktiAgenda->dokumen_id)->delete();
+                            Storage::delete('public/bukti_agenda/' . $dokumen->dokumen_nama); // Hapus file fisik dari storage
+                        }
+
+                        $agendaDosenId = AgendaDosenModel::where('dosen_id', $dosenId)
+                        ->where('agenda_id', $id)
+                        ->firstOrFail();
+                        BuktiAgendaModel::where('agenda_dosen_id', $agendaDosenId->agenda_dosen_id)->delete();
+                        // $buktiAgenda->delete(); // Hapus data bukti agenda setelah dokumen dihapus
+                    }
+
+
+                    // Simpan dokumen baru
+                    $fileName = time() . '.' . $request->bukti_agenda->getClientOriginalExtension();
+                    $request->bukti_agenda->storeAs('public/bukti_agenda', $fileName);
+
+                    $dokumen = DokumenModel::create([
+                        'dokumen_nama' => $fileName,
+                        'dokumen_kategori' => 'Bukti Agenda'
+                    ]);
+
+                    BuktiAgendaModel::create([
+                        'agenda_dosen_id' => $agendaDosenId->agenda_dosen_id,
+                        'dokumen_id' => $dokumen->dokumen_id
+                    ]);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data agenda berhasil diupdate'
+                ]);
+            } catch (\Exception $e) {
+                DB::rollback();
+                Log::error('Error in update_ajax: ' . $e->getMessage());
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
+
+        return redirect('/');
+    }
+}

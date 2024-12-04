@@ -1,0 +1,35 @@
+<?php
+
+namespace Database\Seeders;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        // \App\Models\User::factory(10)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+        $this->call([
+            LevelSeeder::class,
+            UserSeeder::class,
+            DosenSeeder::class,
+            DosenLevelSeeder::class,
+            KategoriSeeder::class,
+            KegiatanSeeder::class,
+            PeranSeeder::class,
+            // AgendaDosenSeeder::class,
+            // AgendaSeeder::class,
+            // DosenKegiatanSeeder::class,
+            // KegiatanAgendaSeeder::class,
+        ]);
+    }
+}
