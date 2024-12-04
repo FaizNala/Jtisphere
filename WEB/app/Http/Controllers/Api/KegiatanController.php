@@ -22,6 +22,7 @@ class KegiatanController extends Controller
             't_kegiatan.anggaran',
             't_kegiatan.tanggal_mulai',
             't_kegiatan.tanggal_selesai',
+            't_kegiatan.status',
             DB::raw('COALESCE(m_dokumen.dokumen_nama, "Surat tugas tidak tersedia") as surat_tugas')
         )
         ->join('m_periode', 'm_periode.periode_id', '=', 't_kegiatan.periode_id')
@@ -47,6 +48,7 @@ class KegiatanController extends Controller
             't_kegiatan.anggaran',
             't_kegiatan.tanggal_mulai',
             't_kegiatan.tanggal_selesai',
+            't_kegiatan.status',
             DB::raw('COALESCE(m_dokumen.dokumen_nama, "Surat tugas tidak tersedia") as surat_tugas')
         )
         ->join('m_periode', 'm_periode.periode_id', '=', 't_kegiatan.periode_id')
@@ -76,6 +78,7 @@ class KegiatanController extends Controller
                 't_kegiatan.anggaran',
                 't_kegiatan.tanggal_mulai',
                 't_kegiatan.tanggal_selesai',
+                't_kegiatan.status',
                 DB::raw('COALESCE(m_dokumen.dokumen_nama, "Surat tugas tidak tersedia") as surat_tugas')
             )
             ->join('m_periode', 'm_periode.periode_id', '=', 't_kegiatan.periode_id')
@@ -103,6 +106,7 @@ class KegiatanController extends Controller
                 't_kegiatan.anggaran',
                 't_kegiatan.tanggal_mulai',
                 't_kegiatan.tanggal_selesai',
+                't_kegiatan.status',
                 DB::raw('COALESCE(m_dokumen.dokumen_nama, "Surat tugas tidak tersedia") as surat_tugas')
             )
             ->join('m_periode', 'm_periode.periode_id', '=', 't_kegiatan.periode_id')
