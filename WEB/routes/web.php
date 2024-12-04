@@ -15,6 +15,7 @@ use App\Http\Controllers\AgendaDosenController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
+use App\Http\Controllers\NotifikasiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeController::class, 'index']);
     Route::get('/switch-role/{level_id}', [UserController::class, 'switchRole'])->name('switch.role');
     Route::get('/kalender', [KalenderController::class, 'index']);
+    Route::get('/mark-as-read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // Semua route di dalam group ini harus punya role ADM
     Route::middleware(['authorize:ADM'])->group(function () {

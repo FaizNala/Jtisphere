@@ -451,6 +451,9 @@ class UserController extends Controller
         ]);
 
         $pdf->setPaper('A4', 'portrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+        
         return $pdf->stream('Data_User_' . date('Y-m-d_His') . '.pdf');
     }
     public function switchRole($level_id)
