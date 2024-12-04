@@ -130,4 +130,5 @@ class KegiatanController extends Controller
             'dosen' => $dosen
         ]);
     }
+    
 }
