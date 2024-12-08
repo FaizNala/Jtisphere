@@ -22,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class KegiatanController extends Controller
 {
@@ -166,24 +167,29 @@ class KegiatanController extends Controller
                     ];
                     DB::table('t_notifikasi')->insert($notif);
 
-                    // NotifikasiModel::create([
-                    //     'kegiatan_id' => $kegiatan->kegiatan_id,
-                    //     'user_id' => $dosen_id,
-                    //     'judul' => 'Kegiatan Baru',
-                    //     'isi' => 'Selamat anda ditunjuk untuk mengikuti kegiatan ' . $kegiatan->kegiatan_nama,
-                    //     // 'aksi' => $kegiatan->kegiatan_id . '/show_ajax',
-                    //     // 'is_read' => 0,
-                    // ]);
-
                 }
 
                 // Upload surat tugas
+                // if ($request->hasFile('surat_tugas')) {
+                //     $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
+                //     $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+
+                //     $dokumen = DokumenModel::create([
+                //         'dokumen_nama' => $fileName,
+                //         'dokumen_kategori' => 'Surat Tugas'
+                //     ]);
+
+                //     SuratTugasModel::create([
+                //         'kegiatan_id' => $kegiatan->kegiatan_id,
+                //         'dokumen_id' => $dokumen->dokumen_id
+                //     ]);
+                // }
+
                 if ($request->hasFile('surat_tugas')) {
-                    $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
-                    $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+                    $cloudinaryResponse = $this->uploadSuratTugasToCloudinary($request->file('surat_tugas'));
 
                     $dokumen = DokumenModel::create([
-                        'dokumen_nama' => $fileName,
+                        'dokumen_nama' => $cloudinaryResponse['url'],
                         'dokumen_kategori' => 'Surat Tugas'
                     ]);
 
@@ -250,61 +256,34 @@ class KegiatanController extends Controller
         return round(($b1 + $b2 + $b3 + $b4) / 4);
     }
 
-    // Metode tambahan untuk perhitungan bobot
-    // private function hitungBobot($skala, $anggaran, $selisihHari, $peranId)
-    // {
-    //     $b1 = $this->hitungBobotSkala($skala);
-    //     $b2 = $this->hitungBobotAnggaran($anggaran);
-    //     $b3 = $this->hitungBobotWaktu($selisihHari);
-    //     $b4 = $this->hitungBobotPeran($peranId);
+    private function uploadSuratTugasToCloudinary($file)
+    {
+        $cloudName = 'dotz74j1p';
+        $uploadPreset = 'yogjjkoh';
+        $apiKey = '983354314759691';
 
-    //     return round(($b1 + $b2 + $b3 + $b4) / 4);
-    // }
+        try {
+            $response = Http::attach(
+                'file',
+                file_get_contents($file),
+                $file->getClientOriginalName()
+            )->post("https://api.cloudinary.com/v1_1/{$cloudName}/raw/upload", [
+                'upload_preset' => $uploadPreset,
+                'api_key' => $apiKey
+            ]);
 
-    // private function hitungBobotSkala($skala)
-    // {
-    //     switch ($skala) {
-    //         case 'Internal':
-    //             return 2;
-    //         case 'Nasional':
-    //             return 3;
-    //         case 'Internasional':
-    //             return 4;
-    //         default:
-    //             return 1;
-    //     }
-    // }
+            $responseData = $response->json();
 
-    // private function hitungBobotAnggaran($anggaran)
-    // {
-    //     if ($anggaran >= 1000000000) return 4;
-    //     if ($anggaran >= 100000000) return 3;
-    //     if ($anggaran >= 10000000) return 2;
-    //     return 1;
-    // }
+            if (!$response->successful()) {
+                throw new \Exception('Cloudinary upload failed');
+            }
 
-    // private function hitungBobotWaktu($selisihHari)
-    // {
-    //     if ($selisihHari > 365) return 5;
-    //     if ($selisihHari >= 274) return 4;
-    //     if ($selisihHari >= 183) return 3;
-    //     if ($selisihHari >= 91) return 2;
-    //     return 1;
-    // }
-
-    // private function hitungBobotPeran($peranId)
-    // {
-    //     switch ($peranId) {
-    //         case 1:
-    //             return 5;
-    //         case 2:
-    //             return 3;
-    //         case 3:
-    //             return 3;
-    //         default:
-    //             return 1;
-    //     }
-    // }
+            return $responseData;
+        } catch (\Exception $e) {
+            Log::error('Cloudinary Upload Error: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 
     public function show_ajax($id)
     {
@@ -436,29 +415,30 @@ class KegiatanController extends Controller
 
                 // Update surat tugas jika ada
                 if ($request->hasFile('surat_tugas')) {
-                    // Hapus surat tugas lama
-                    $oldSuratTugas = SuratTugasModel::where('kegiatan_id', $id)->first();
+                    // 1. Cari surat tugas lama terkait kegiatan
+                    $oldSuratTugas = SuratTugasModel::select('kegiatan_id')
+                    ->where('kegiatan_id', $id)
+                    ->first();
+
                     if ($oldSuratTugas) {
-                        $oldDokumen = DokumenModel::find($oldSuratTugas->dokumen_id);
-                        if ($oldDokumen) {
-                            // Hapus file lama
-                            Storage::delete('public/surat_tugas/' . $oldDokumen->dokumen_nama);
-                            $oldDokumen->delete();
-                        }
-                        $oldSuratTugas->delete();
+                        // 2. Temukan dokumen lama
+                        DokumenModel::where($oldSuratTugas->dokumen_id)->delete();
+
+                        // 5. Hapus record surat tugas lama
+                        // $oldSuratTugas->delete();
+                        SuratTugasModel::where('kegiatan_id', $id)->delete();
                     }
 
-                    // Upload surat tugas baru
-                    $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
-                    $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+                    // 6. Upload surat tugas baru ke Cloudinary
+                    $cloudinaryResponse = $this->uploadSuratTugasToCloudinary($request->file('surat_tugas'));
 
-                    // Buat record dokumen baru
+                    // 7. Buat record dokumen baru
                     $dokumen = DokumenModel::create([
-                        'dokumen_nama' => $fileName,
+                        'dokumen_nama' => $cloudinaryResponse['url'], // Simpan URL Cloudinary
                         'dokumen_kategori' => 'Surat Tugas'
                     ]);
 
-                    // Buat record surat tugas baru
+                    // 8. Buat record surat tugas baru
                     SuratTugasModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dokumen_id' => $dokumen->dokumen_id
