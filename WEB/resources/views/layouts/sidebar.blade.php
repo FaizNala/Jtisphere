@@ -2,12 +2,8 @@
     <!-- User Info -->
     @if (Auth::check() && Auth::user()->dosen)
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
-                    class="rounded-circle" alt="User Image">
-            </div>
             <div class="info">
-                <a href="{{ url('/profile') }}" class="d-block">
+                <a href="{{ url('/profile') }}" class="d-block" style="text-align: center; font-size: 18px; font-weight: bold;">
                     {{ Str::words(Auth::user()->dosen->nama, 3, '') }}
                 </a>
             </div>
