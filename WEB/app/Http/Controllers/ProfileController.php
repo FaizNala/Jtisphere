@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -112,6 +111,7 @@ class ProfileController extends Controller
                     // Hapus avatar lama di Cloudinary jika perlu (opsional)
                     if ($dosen->avatar) {
                         // Tambahkan logika untuk menghapus avatar lama di Cloudinary
+                        // $this->deleteFromCloudinary($dosen->avatar);
                     }
 
                     // Simpan URL avatar dari Cloudinary
