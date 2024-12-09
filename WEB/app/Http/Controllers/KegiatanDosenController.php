@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -81,7 +82,19 @@ class KegiatanDosenController extends Controller
                 if ($is_pic) {
                     $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/add_agenda') . '\')" class="btn btn-success btn-sm">Tambah Agenda</button> ';
                     $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                }
+
+                $is_selfevent = DosenKegiatanModel::where('kegiatan_id', $kegiatan->kegiatan_id)
+                ->where('dosen_id', $dosenId)
+                ->whereHas('peran', function ($query) {
+                    $query->where('is_pic', 1);
+                })
+                ->whereHas('kegiatan', function ($query) {
+                    $query->where('kategori_id', 3);
+                })
+                ->exists();
+                if ($is_selfevent) {
+                    $btn.= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 }
 
                 return $btn;
@@ -172,12 +185,26 @@ class KegiatanDosenController extends Controller
                 DB::table('t_notifikasi')->insert($notif);
 
                 // Upload surat tugas
+                // if ($request->hasFile('surat_tugas')) {
+                //     $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
+                //     $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+
+                //     $dokumen = DokumenModel::create([
+                //         'dokumen_nama' => $fileName,
+                //         'dokumen_kategori' => 'Surat Tugas'
+                //     ]);
+
+                //     SuratTugasModel::create([
+                //         'kegiatan_id' => $kegiatan->kegiatan_id,
+                //         'dokumen_id' => $dokumen->dokumen_id
+                //     ]);
+                // }
+
                 if ($request->hasFile('surat_tugas')) {
-                    $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
-                    $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+                    $cloudinaryResponse = $this->uploadSuratTugasToCloudinary($request->file('surat_tugas'));
 
                     $dokumen = DokumenModel::create([
-                        'dokumen_nama' => $fileName,
+                        'dokumen_nama' => $cloudinaryResponse['url'],
                         'dokumen_kategori' => 'Surat Tugas'
                     ]);
 
@@ -242,6 +269,35 @@ class KegiatanDosenController extends Controller
 
         // Hitung rata-rata
         return round(($b1 + $b2 + $b3 + $b4) / 4);
+    }
+
+    private function uploadSuratTugasToCloudinary($file)
+    {
+        $cloudName = 'dotz74j1p';
+        $uploadPreset = 'yogjjkoh';
+        $apiKey = '983354314759691';
+
+        try {
+            $response = Http::attach(
+                'file',
+                file_get_contents($file),
+                $file->getClientOriginalName()
+            )->post("https://api.cloudinary.com/v1_1/{$cloudName}/raw/upload", [
+                'upload_preset' => $uploadPreset,
+                'api_key' => $apiKey
+            ]);
+
+            $responseData = $response->json();
+
+            if (!$response->successful()) {
+                throw new \Exception('Cloudinary upload failed');
+            }
+
+            return $responseData;
+        } catch (\Exception $e) {
+            Log::error('Cloudinary Upload Error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function show_ajax($id)
@@ -369,30 +425,61 @@ class KegiatanDosenController extends Controller
                 }
 
                 // Update surat tugas jika ada
+                // if ($request->hasFile('surat_tugas')) {
+                //     // Hapus surat tugas lama
+                //     $oldSuratTugas = SuratTugasModel::where('kegiatan_id', $id)->first();
+                //     if ($oldSuratTugas) {
+                //         $oldDokumen = DokumenModel::find($oldSuratTugas->dokumen_id);
+                //         if ($oldDokumen) {
+                //             // Hapus file lama
+                //             Storage::delete('public/surat_tugas/' . $oldDokumen->dokumen_nama);
+                //             $oldDokumen->delete();
+                //         }
+                //         $oldSuratTugas->delete();
+                //     }
+
+                //     // Upload surat tugas baru
+                //     $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
+                //     $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+
+                //     // Buat record dokumen baru
+                //     $dokumen = DokumenModel::create([
+                //         'dokumen_nama' => $fileName,
+                //         'dokumen_kategori' => 'Surat Tugas'
+                //     ]);
+
+                //     // Buat record surat tugas baru
+                //     SuratTugasModel::create([
+                //         'kegiatan_id' => $kegiatan->kegiatan_id,
+                //         'dokumen_id' => $dokumen->dokumen_id
+                //     ]);
+                // }
+
                 if ($request->hasFile('surat_tugas')) {
-                    // Hapus surat tugas lama
-                    $oldSuratTugas = SuratTugasModel::where('kegiatan_id', $id)->first();
+                    // 1. Cari surat tugas lama terkait kegiatan
+                    $oldSuratTugas = SuratTugasModel::select('kegiatan_id')
+                    ->where('kegiatan_id', $id)
+                    ->first();
+
                     if ($oldSuratTugas) {
-                        $oldDokumen = DokumenModel::find($oldSuratTugas->dokumen_id);
-                        if ($oldDokumen) {
-                            // Hapus file lama
-                            Storage::delete('public/surat_tugas/' . $oldDokumen->dokumen_nama);
-                            $oldDokumen->delete();
-                        }
-                        $oldSuratTugas->delete();
+                        // 2. Temukan dokumen lama
+                        DokumenModel::where($oldSuratTugas->dokumen_id)->delete();
+
+                        // 5. Hapus record surat tugas lama
+                        // $oldSuratTugas->delete();
+                        SuratTugasModel::where('kegiatan_id', $id)->delete();
                     }
 
-                    // Upload surat tugas baru
-                    $fileName = time() . '.' . $request->surat_tugas->getClientOriginalExtension();
-                    $request->surat_tugas->storeAs('public/surat_tugas', $fileName);
+                    // 6. Upload surat tugas baru ke Cloudinary
+                    $cloudinaryResponse = $this->uploadSuratTugasToCloudinary($request->file('surat_tugas'));
 
-                    // Buat record dokumen baru
+                    // 7. Buat record dokumen baru
                     $dokumen = DokumenModel::create([
-                        'dokumen_nama' => $fileName,
+                        'dokumen_nama' => $cloudinaryResponse['url'], // Simpan URL Cloudinary
                         'dokumen_kategori' => 'Surat Tugas'
                     ]);
 
-                    // Buat record surat tugas baru
+                    // 8. Buat record surat tugas baru
                     SuratTugasModel::create([
                         'kegiatan_id' => $kegiatan->kegiatan_id,
                         'dokumen_id' => $dokumen->dokumen_id
