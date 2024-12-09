@@ -248,7 +248,7 @@ class KegiatanController extends Controller
         // Bobot Peran
         $b4 = match ($peranId) {
             1 => 5,
-            2, 3 => 3,
+            3, 4 => 3,
             default => 1
         };
 

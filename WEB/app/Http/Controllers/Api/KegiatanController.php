@@ -29,6 +29,10 @@ class KegiatanController extends Controller
         ->join('m_kategori', 'm_kategori.kategori_id', '=', 't_kegiatan.kategori_id')
         ->leftJoin('t_surat_tugas', 't_surat_tugas.kegiatan_id', '=', 't_kegiatan.kegiatan_id')
         ->leftJoin('m_dokumen', 'm_dokumen.dokumen_id', '=', 't_surat_tugas.dokumen_id')
+        ->with([
+            'dosenKegiatan:dosen_id,kegiatan_id', // Dosen (ID saja)
+            'kegiatanAgenda:agenda_id,kegiatan_id,nama,tanggal_mulai,tanggal_selesai' // Data agenda
+        ])
         ->get();
 
         return response()->json([
