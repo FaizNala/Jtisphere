@@ -7,6 +7,7 @@ use App\Models\KegiatanModel;
 use App\Models\LevelModel;
 use App\Models\PeranModel;
 use App\Models\UserModel;
+use App\Models\PeriodeModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,52 +26,82 @@ class StatistikController extends Controller
         ];
 
         $level = LevelModel::select('level_id', 'level_nama')->get();
+        $periode = PeriodeModel::all();
         return view('statistik.index', [
             'activeMenu' => $activeMenu,
             'breadcrumb' => $breadcrumb,
-            'level' => $level
+            'level' => $level,
+            'periode' => $periode
         ]);
     }
 
     public function list(Request $request)
-    {
-        // Menggunakan with untuk memuat relasi
-        $users = UserModel::with(['dosen.dosenLevel.level', 'dosen.dosenKegiatan']) // Memuat relasi dosen, level, dan dosenKegiatan
-            ->get(); // Mengambil semua data
+{
+    // Query dasar dengan eager loading
+    $query = UserModel::with([
+        'dosen.dosenLevel.level',
+        'dosen.dosenKegiatan.kegiatan'
+    ]);
 
-        // Filter berdasarkan level
-        $level_ids = $request->input('filter_level');
-        if (!empty($level_ids)) {
-            if (!is_array($level_ids)) {
-                $level_ids = [$level_ids];
-            }
-            $users = $users->filter(function ($user) use ($level_ids) {
-                // Memeriksa apakah user memiliki level yang sesuai
-                return collect($user->dosen->dosenLevel)->pluck('level_id')->intersect($level_ids)->isNotEmpty();
-            });
-        }
-
-        return DataTables::of($users)
-            ->addIndexColumn()
-            ->addColumn('nama', function ($user) {
-                return $user->dosen->nama ?? ''; // Menampilkan nama dosen
-            })
-            ->addColumn('level_nama', function ($user) {
-                return $user->dosen->dosenLevel->pluck('level.level_nama')->implode(', '); // Menggabungkan nama level
-            })
-            ->addColumn('total_kegiatan', function ($user) {
-                return $user->dosen->dosenKegiatan->count(); // Menghitung total kegiatan dari dosenKegiatan
-            })
-            ->addColumn('total_bobot', function ($user) {
-                return $user->dosen->dosenKegiatan->sum('bobot'); // Menghitung total bobot dari dosenKegiatan
-            })
-            ->addColumn('aksi', function ($user) {
-                $btn = '<button onclick="modalAction(\'' . url('/statistik/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                return $btn;
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
+    // Filter berdasarkan level
+    $level_id = $request->input('filter_level');
+    if (!empty($level_id)) {
+        $query->whereHas('dosen.dosenLevel', function ($q) use ($level_id) {
+            $q->where('level_id', $level_id);
+        });
     }
+
+    // Filter berdasarkan periode
+    $periode_id = $request->input('filter_periode');
+    session(['periode' => $periode_id]);
+
+    // Ambil data
+    $users = $query->get();
+
+    return DataTables::of($users)
+        ->addIndexColumn()
+        ->addColumn('nama', function ($user) {
+            return optional($user->dosen)->nama ?? '';
+        })
+        ->addColumn('level_nama', function ($user) {
+            return $user->dosen->dosenLevel->pluck('level.level_nama')->implode(', ');
+        })
+        ->addColumn('total_kegiatan', function ($user) use ($periode_id) {
+            // Jika periode tidak dipilih, hitung semua kegiatan
+            if (empty($periode_id)) {
+                return $user->dosen->dosenKegiatan->count();
+            }
+
+            // Filter kegiatan berdasarkan periode
+            $totalKegiatan = $user->dosen->dosenKegiatan()
+                ->whereHas('kegiatan', function ($query) use ($periode_id) {
+                    $query->where('periode_id', $periode_id);
+                })
+                ->count();
+
+            return $totalKegiatan ?? 0;
+        })
+        ->addColumn('total_bobot', function ($user) use ($periode_id) {
+            // Jika periode tidak dipilih, hitung semua bobot
+            if (empty($periode_id)) {
+                return $user->dosen->dosenKegiatan->sum('bobot');
+            }
+
+            // Filter bobot berdasarkan periode
+            $totalBobot = $user->dosen->dosenKegiatan()
+                ->whereHas('kegiatan', function ($query) use ($periode_id) {
+                    $query->where('periode_id', $periode_id);
+                })
+                ->sum('bobot');
+
+            return $totalBobot ?? 0;
+        })
+        ->addColumn('aksi', function ($user) {
+            return '<button onclick="modalAction(\'' . url('/statistik/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button>';
+        })
+        ->rawColumns(['aksi'])
+        ->make(true);
+}
 
     public function show_ajax($id)
     {
@@ -92,6 +123,9 @@ class StatistikController extends Controller
 
         $dosenKegiatan = DosenKegiatanModel::with('kegiatan')
             ->where('dosen_id', $id)
+            ->whereHas('kegiatan', function ($query) {
+                $query->where('periode_id', session('periode'));
+            })
             ->get();
 
         $kegiatan = KegiatanModel::select('kegiatan_id', 'kegiatan_nama')->get();
@@ -109,29 +143,53 @@ class StatistikController extends Controller
 
     public function export_excel()
     {
-        // Ambil data pengguna dan informasi terkait
+        $periode_id = session('periode');
+        if (empty($periode_id)) {
+            return redirect()->back()->with('error', 'Pilih periode terlebih dahulu');
+        }
+
         $users = UserModel::select(
             'm_user.user_id',
             'm_user.username',
             'm_dosen.nama',
             'm_dosen.nip',
             DB::raw('GROUP_CONCAT(DISTINCT m_level.level_id) as level_ids'),
-            DB::raw('GROUP_CONCAT(DISTINCT m_level.level_nama SEPARATOR ", ") as level_nama'),
-            DB::raw('COUNT(DISTINCT t_dosen_kegiatan.kegiatan_id) as total_kegiatan'),
-            DB::raw('COALESCE(SUM(DISTINCT t_dosen_kegiatan.bobot), 0) as total_bobot')
+            DB::raw('GROUP_CONCAT(DISTINCT m_level.level_nama SEPARATOR ", ") as level_nama')
         )
-            ->join('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
-            ->leftJoin('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
-            ->leftJoin('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
-            ->leftJoin('t_dosen_kegiatan', 't_dosen_kegiatan.dosen_id', '=', 'm_dosen.dosen_id')
-            ->leftJoin('t_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
-            ->groupBy(
-                'm_user.user_id',
-                'm_user.username',
-                'm_dosen.nama',
-                'm_dosen.nip'
-            )
-            ->get();
+        ->leftJoin('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
+        ->leftJoin('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
+        ->leftJoin('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
+        ->leftJoin('t_dosen_kegiatan', 't_dosen_kegiatan.dosen_id', '=', 'm_dosen.dosen_id')
+        ->leftJoin('t_kegiatan', function($join) use ($periode_id) {
+            $join->on('t_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
+                 ->where('t_kegiatan.periode_id', $periode_id);
+        })
+        ->groupBy(
+            'm_user.user_id',
+            'm_user.username',
+            'm_dosen.nama',
+            'm_dosen.nip'
+        )
+        ->get()
+        ->map(function($user) use ($periode_id) {
+            // Hitung total kegiatan dan bobot secara manual
+            $totalKegiatan = $user->dosen->dosenKegiatan()
+                ->whereHas('kegiatan', function($query) use ($periode_id) {
+                    $query->where('periode_id', $periode_id);
+                })
+                ->count();
+
+            $totalBobot = $user->dosen->dosenKegiatan()
+                ->whereHas('kegiatan', function($query) use ($periode_id) {
+                    $query->where('periode_id', $periode_id);
+                })
+                ->sum('bobot');
+
+            $user->total_kegiatan = $totalKegiatan;
+            $user->total_bobot = $totalBobot;
+
+            return $user;
+        });
 
         // Load library excel
         $spreadsheet = new Spreadsheet();
@@ -187,30 +245,55 @@ class StatistikController extends Controller
 
     public function export_pdf()
     {
-        $user = UserModel::select(
+        $periode_id = session('periode');
+        if (empty($periode_id)) {
+            return redirect()->back()->with('error', 'Pilih periode terlebih dahulu');
+        }
+
+        $users = UserModel::select(
             'm_user.user_id',
             'm_user.username',
             'm_dosen.nama',
             'm_dosen.nip',
             DB::raw('GROUP_CONCAT(DISTINCT m_level.level_id) as level_ids'),
-            DB::raw('GROUP_CONCAT(DISTINCT m_level.level_nama SEPARATOR ", ") as level_nama'),
-            DB::raw('COUNT(DISTINCT t_dosen_kegiatan.kegiatan_id) as total_kegiatan'),
-            DB::raw('COALESCE(SUM(DISTINCT t_dosen_kegiatan.bobot), 0) as total_bobot')
+            DB::raw('GROUP_CONCAT(DISTINCT m_level.level_nama SEPARATOR ", ") as level_nama')
         )
-            ->join('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
-            ->leftJoin('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
-            ->leftJoin('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
-            ->leftJoin('t_dosen_kegiatan', 't_dosen_kegiatan.dosen_id', '=', 'm_dosen.dosen_id')
-            ->leftJoin('t_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
-            ->groupBy(
-                'm_user.user_id',
-                'm_user.username',
-                'm_dosen.nama',
-                'm_dosen.nip'
-            )
-            ->get();
+        ->leftJoin('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
+        ->leftJoin('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
+        ->leftJoin('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
+        ->leftJoin('t_dosen_kegiatan', 't_dosen_kegiatan.dosen_id', '=', 'm_dosen.dosen_id')
+        ->leftJoin('t_kegiatan', function($join) use ($periode_id) {
+            $join->on('t_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
+                 ->where('t_kegiatan.periode_id', $periode_id);
+        })
+        ->groupBy(
+            'm_user.user_id',
+            'm_user.username',
+            'm_dosen.nama',
+            'm_dosen.nip'
+        )
+        ->get()
+        ->map(function($user) use ($periode_id) {
+            // Hitung total kegiatan dan bobot secara manual
+            $totalKegiatan = $user->dosen->dosenKegiatan()
+                ->whereHas('kegiatan', function($query) use ($periode_id) {
+                    $query->where('periode_id', $periode_id);
+                })
+                ->count();
 
-        $pdf = Pdf::loadView('statistik.export_pdf', ['user' => $user]);
+            $totalBobot = $user->dosen->dosenKegiatan()
+                ->whereHas('kegiatan', function($query) use ($periode_id) {
+                    $query->where('periode_id', $periode_id);
+                })
+                ->sum('bobot');
+
+            $user->total_kegiatan = $totalKegiatan;
+            $user->total_bobot = $totalBobot;
+
+            return $user;
+        });
+
+        $pdf = Pdf::loadView('statistik.export_pdf', ['user' => $users]);
         $pdf->setPaper('a4', 'potrait');
         $pdf->setOption('isRemoteEnabled', true);
         $pdf->render();
@@ -220,21 +303,27 @@ class StatistikController extends Controller
 
     public function export_statistik($id)
     {
+        $periode_id = session('periode');
+        if (empty($periode_id)) {
+            return redirect()->back()->with('error', 'Pilih periode terlebih dahulu');
+        }
+
         $user = UserModel::select(
             'm_user.user_id',
             'm_user.username',
             'm_dosen.nama',
             'm_dosen.nip',
             DB::raw('GROUP_CONCAT(DISTINCT m_level.level_id) as level_ids'),
-            DB::raw('GROUP_CONCAT(DISTINCT m_level.level_nama SEPARATOR ", ") as level_nama'),
-            DB::raw('COUNT(DISTINCT t_dosen_kegiatan.kegiatan_id) as total_kegiatan'),
-            DB::raw('COALESCE(SUM(DISTINCT t_dosen_kegiatan.bobot), 0) as total_bobot')
+            DB::raw('GROUP_CONCAT(DISTINCT m_level.level_nama SEPARATOR ", ") as level_nama')
         )
-            ->join('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
+            ->leftJoin('m_dosen', 'm_user.user_id', '=', 'm_dosen.user_id')
             ->leftJoin('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
             ->leftJoin('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
             ->leftJoin('t_dosen_kegiatan', 't_dosen_kegiatan.dosen_id', '=', 'm_dosen.dosen_id')
-            ->leftJoin('t_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
+            ->leftJoin('t_kegiatan', function ($join) use ($periode_id) {
+                $join->on('t_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
+                    ->where('t_kegiatan.periode_id', $periode_id);
+            })
             ->where('m_user.user_id', $id)
             ->groupBy(
                 'm_user.user_id',
@@ -242,28 +331,50 @@ class StatistikController extends Controller
                 'm_dosen.nama',
                 'm_dosen.nip'
             )
-            ->first(); // Ubah menjadi first() untuk mendapatkan satu baris
+            ->first();
 
         if (!$user) {
             abort(404, 'User not found');
         }
 
-        $kegiatan = dosenKegiatanModel::select(
+        // Hitung total kegiatan dan bobot secara manual
+        $totalKegiatan = $user->dosen->dosenKegiatan()
+            ->whereHas('kegiatan', function ($query) use ($periode_id) {
+                $query->where('periode_id', $periode_id);
+            })
+            ->count();
+
+        $totalBobot = $user->dosen->dosenKegiatan()
+            ->whereHas('kegiatan', function ($query) use ($periode_id) {
+                $query->where('periode_id', $periode_id);
+            })
+            ->sum('bobot');
+
+        $user->total_kegiatan = $totalKegiatan;
+        $user->total_bobot = $totalBobot;
+
+        $kegiatan = DosenKegiatanModel::select(
             't_dosen_kegiatan.bobot',
             't_kegiatan.kegiatan_nama',
-            'm_peran.peran_nama',
+            'm_peran.peran_nama'
         )
-            ->join('t_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
+            ->join('t_kegiatan', function ($join) use ($periode_id) {
+                $join->on('t_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
+                    ->where('t_kegiatan.periode_id', $periode_id);
+            })
             ->join('m_peran', 'm_peran.peran_id', '=', 't_dosen_kegiatan.peran_id')
-            ->where('t_dosen_kegiatan.dosen_id', $id)
+            ->where('t_dosen_kegiatan.dosen_id', $user->dosen->dosen_id)
             ->get();
 
-        $pdf = Pdf::loadView('statistik.export_statistik', ['user' => $user, 'kegiatan' => $kegiatan]);
-        $pdf->setPaper('a4', 'portrait'); // Perbaiki typo 'potrait' menjadi 'portrait'
+        $pdf = Pdf::loadView('statistik.export_statistik', [
+            'user' => $user,
+            'kegiatan' => $kegiatan,
+            'periode_id' => $periode_id
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
         $pdf->setOption('isRemoteEnabled', true);
-        $pdf->render();
 
-        return $pdf->stream('Data Statistik '. $user->nama . date(' Y-m-d H:i:s') . '.pdf');
+        return $pdf->stream('Data Statistik ' . $user->nama . date(' Y-m-d H:i:s') . '.pdf');
     }
-
 }
