@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -104,15 +105,17 @@ class ProfileController extends Controller
                 $dosen->nip = $request->nip;
 
                 if ($request->hasFile('avatar')) {
-                    // Hapus avatar lama jika ada
+                    // Upload ke Cloudinary
+                    $cloudinaryResponse = $this->uploadToCloudinary($request->file('avatar'));
+
+                    // Hapus avatar lama di Cloudinary jika perlu (opsional)
                     if ($dosen->avatar) {
-                        Storage::disk('public')->delete('avatars/' . $dosen->avatar);
+                        // Tambahkan logika untuk menghapus avatar lama di Cloudinary
+                        // $this->deleteFromCloudinary($dosen->avatar);
                     }
 
-                    // Upload avatar baru
-                    $avatarName = time() . '.' . $request->avatar->getClientOriginalExtension();
-                    $request->avatar->storeAs('public/avatars', $avatarName);
-                    $dosen->avatar = $avatarName;
+                    // Simpan URL avatar dari Cloudinary
+                    $dosen->avatar = $cloudinaryResponse['url'];
                 }
 
                 $dosen->save();
@@ -120,16 +123,47 @@ class ProfileController extends Controller
                 DB::commit();
                 return response()->json([
                     'status' => true,
-                    'message' => 'Profil berhasil diperbarui'
+                    'message' => 'Profil berhasil diperbarui',
+                    'avatar_url' => $dosen->avatar
                 ]);
             } catch (\Exception $e) {
                 DB::rollback();
                 return response()->json([
                     'status' => false,
-                    'message' => 'Gagal memperbarui profil'
+                    'message' => 'Gagal memperbarui profil: ' . $e->getMessage()
                 ], 500);
             }
         }
         return redirect('/');
+    }
+
+    // Method tambahan untuk upload ke Cloudinary
+    private function uploadToCloudinary($image)
+    {
+        $cloudName = 'dotz74j1p';
+        $uploadPreset = 'yogjjkoh';
+        $apiKey = '983354314759691';
+
+        try {
+            $response = Http::attach(
+                'file',
+                file_get_contents($image),
+                $image->getClientOriginalName()
+            )->post("https://api.cloudinary.com/v1_1/{$cloudName}/image/upload", [
+                'upload_preset' => $uploadPreset,
+                'api_key' => $apiKey
+            ]);
+
+            $responseData = $response->json();
+
+            if (!$response->successful()) {
+                throw new \Exception('Cloudinary upload failed');
+            }
+
+            return $responseData;
+        } catch (\Exception $e) {
+            Log::error('Cloudinary Upload Error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

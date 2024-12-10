@@ -90,8 +90,9 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
                     aria-expanded="false">
-                    <img src="{{ Auth::user()->dosen->avatar ? asset('storage/avatars/' . Auth::user()->dosen->avatar) : asset('default-avatar.png') }}"
-                        class="img-circle mr-2" alt="User Avatar" style="width: 30px; height: 30px;">
+                    <img src="{{ Auth::user()->dosen->avatar ?? asset('default-avatar.png') }}"
+                    class="img-circle mr-2" alt="User Avatar"
+                    style="width: 30px; height: 30px; object-fit: cover;">
                     @php
                         // Ngambil id current user
                         $currentLevelId = session('current_level_id');

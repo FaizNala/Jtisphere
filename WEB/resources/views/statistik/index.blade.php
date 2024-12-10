@@ -27,6 +27,16 @@
                                 </select>
                                 <small class="form-text text-muted">Level User</small>
                             </div>
+                            <!-- Di dalam div filter -->
+                            <div class="col-md-3">
+                                <select name="filter_periode" id="filter_periode" class="form-control form-control-sm">
+                                    {{-- <option value="">- Semua -</option> --}}
+                                    @foreach ($periode as $p)
+                                        <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="form-text text-muted">Pilih Periode</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -52,7 +62,8 @@
             </table>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -85,6 +96,7 @@
                     "type": "POST",
                     "data": function(d) {
                         d.filter_level = $('.filter_level').val();
+                        d.filter_periode = $('#filter_periode').val();
                         d._token = "{{ csrf_token() }}";
                     }
                 },
@@ -137,10 +149,15 @@
             $('.filter_level').change(function() {
                 dataUser.draw();
             });
+
+            // Pada script jQuery
+            $('#filter_periode').change(function() {
+                dataUser.draw(); // Gunakan draw() untuk memuat ulang tabel
+            });
         });
 
         // Tambahkan handler untuk membersihkan Select2 saat modal ditutup
-        $('#myModal').on('hidden.bs.modal', function () {
+        $('#myModal').on('hidden.bs.modal', function() {
             if ($('.select2-multiple').length) {
                 $('.select2-multiple').select2('destroy');
             }

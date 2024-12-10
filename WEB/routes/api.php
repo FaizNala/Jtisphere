@@ -33,3 +33,9 @@ Route::group(['prefix' => 'kegiatan'], function () {
     Route::get('/get_kegiatan_detail/{id}', [KegiatanController::class, 'get_kegiatan_detail']);
     Route::get('/get_kegiatan_detail2/{id}', [KegiatanController::class, 'get_kegiatan_detail2']);
 });
+
+Route::group(['prefix' => 'profile', 'middleware' => 'auth:api'], function () {
+    Route::get('/', [App\Http\Controllers\Api\ProfileController::class, 'show']);
+    Route::put('/', [App\Http\Controllers\Api\ProfileController::class, 'update']);
+    Route::delete('/', [App\Http\Controllers\Api\ProfileController::class, 'delete']);
+});

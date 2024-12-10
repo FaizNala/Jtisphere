@@ -4,10 +4,10 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Kegiatan</h3>
             <div class="card-tools">
-                @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
+                {{-- @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
                     <button onclick="modalAction('{{ url('/kegiatan/import') }}')" class="btn btn-info">Import
                         Kegiatan</button>
-                @endif
+                @endif --}}
                 <a href="{{ url('/kegiatan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
                     Kegiatan</a>
                 <a href="{{ url('/kegiatan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export

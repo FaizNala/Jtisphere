@@ -40,10 +40,10 @@
                                 <td>
                                     @if($kegiatan->dokumen_nama)
                                         <div class="d-flex align-items-center">
-                                            <a href="{{ asset('storage/surat_tugas/' . $kegiatan->dokumen_nama) }}" download class="btn btn-sm btn-primary mr-2">
+                                            <a href="{{ $kegiatan->dokumen_nama }}" download class="btn btn-sm btn-primary mr-2">
                                                 <i class="fas fa-download mr-2"></i>Download Surat Tugas
                                             </a>
-                                            <span class="text-success"><i class="fas fa-file-alt mr-1"></i>Dokumen tersedia</span>
+                                            {{-- <span class="text-success"><i class="fas fa-file-alt mr-1"></i>Dokumen tersedia</span> --}}
                                         </div>
                                     @else
                                         <span class="text-muted"><i class="fas fa-file-alt mr-2"></i>Tidak ada dokumen</span>
