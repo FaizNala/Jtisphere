@@ -57,12 +57,19 @@
                         <th class="text-right">Dosen Terlibat:</th>
                         <td>
                             @if($agenda->dosen->isEmpty())
-                                <span>Tidak ada dosen yang terlibat.</span>
+                                <span class="text-muted">Tidak ada dosen yang terlibat.</span>
                             @else
-                                <ul class="list-group">
+                                <ul class="list-unstyled">
                                     @foreach($agenda->dosen as $dosen)
-                                        <li class="list-item">
-                                            <span><i class="fas fa-user-tie text-primary mr-2"></i>{{ $dosen->nama }}</span>
+                                        <li class="mb-2 d-flex align-items-center">
+                                            <i class="fas fa-user-tie text-primary mr-2"></i>
+                                            <span class="mr-3">{{ $dosen->nama }}</span>
+                                            @if($dosen->dokumen_nama)
+                                                <a href="{{ $dosen->dokumen_nama }}"
+                                                   download class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-download mr-2"></i>Unduh
+                                                </a>
+                                            @endif
                                         </li>
                                     @endforeach
                                 </ul>

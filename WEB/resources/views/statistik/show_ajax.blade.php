@@ -36,12 +36,15 @@
                     <div class="profile-header">
                         <div class="avatar">
                             @if ($user->avatar)
-                                <img src="{{ asset('storage/avatars/' . $user->avatar) }}"
-                                    alt="{{ $user->nama }}'s Avatar" class="img-fluid rounded-circle"
-                                    style="width: 150px; height: 150px;">
+                                <img src="{{ $user->avatar }}"
+                                    alt="{{ $user->nama }}'s Avatar"
+                                    class="img-fluid rounded-circle"
+                                    style="width: 150px; height: 150px; object-fit: cover;">
                             @else
-                                <img src="{{ asset('default-avatar.png') }}" alt="Default Avatar"
-                                    class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+                                <img src="{{ asset('default-avatar.png') }}"
+                                    alt="Default Avatar"
+                                    class="img-fluid rounded-circle"
+                                    style="width: 150px; height: 150px;">
                             @endif
                         </div>
                         <h4>{{ $user->nama }}</h4>

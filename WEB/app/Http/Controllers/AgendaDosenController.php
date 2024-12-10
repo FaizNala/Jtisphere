@@ -9,6 +9,7 @@ use App\Models\DokumenModel;
 use App\Models\KegiatanAgendaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -72,14 +73,17 @@ class AgendaDosenController extends Controller
             ->where('a.agenda_id', $id)
             ->first();
 
-        $dosen = DB::table('m_dosen as d')
+            $dosen = DB::table('m_dosen as d')
             ->join('t_agenda_dosen as ad', 'd.dosen_id', '=', 'ad.dosen_id')
             ->join('t_kegiatan_agenda as ka', 'ad.agenda_id', '=', 'ka.agenda_id')
             ->join('t_kegiatan as k', 'ka.kegiatan_id', '=', 'k.kegiatan_id')
             ->join('t_agenda as a', 'a.agenda_id', '=', 'ka.agenda_id')
-            ->select('d.*')
+            ->leftJoin('t_bukti_agenda as ba', 'ba.agenda_dosen_id', '=', 'ad.agenda_dosen_id')
+            ->leftJoin('m_dokumen as b', 'ba.dokumen_id', '=', 'b.dokumen_id')
+            ->select('d.dosen_id', 'd.nama', 'b.dokumen_nama') // Ganti dengan kolom yang relevan
             ->where('a.agenda_id', $id)
             ->get();
+
 
         $agenda->dosen = $dosen; // Set the dosen property on the $agenda object
 
@@ -167,7 +171,6 @@ class AgendaDosenController extends Controller
                             ->first();
                             // $dokumen->delete(); // Hapus dokumen dari database
                             DokumenModel::where('dokumen_id', $buktiAgenda->dokumen_id)->delete();
-                            Storage::delete('public/bukti_agenda/' . $dokumen->dokumen_nama); // Hapus file fisik dari storage
                         }
 
                         $agendaDosenId = AgendaDosenModel::where('dosen_id', $dosenId)
@@ -179,11 +182,10 @@ class AgendaDosenController extends Controller
 
 
                     // Simpan dokumen baru
-                    $fileName = time() . '.' . $request->bukti_agenda->getClientOriginalExtension();
-                    $request->bukti_agenda->storeAs('public/bukti_agenda', $fileName);
+                    $cloudinaryResponse = $this->uploadBuktiAgendaToCloudinary($request->file('bukti_agenda'));
 
                     $dokumen = DokumenModel::create([
-                        'dokumen_nama' => $fileName,
+                        'dokumen_nama' => $cloudinaryResponse['url'],
                         'dokumen_kategori' => 'Bukti Agenda'
                     ]);
 
@@ -211,5 +213,34 @@ class AgendaDosenController extends Controller
         }
 
         return redirect('/');
+    }
+
+    private function uploadBuktiAgendaToCloudinary($file)
+    {
+        $cloudName = 'dotz74j1p';
+        $uploadPreset = 'yogjjkoh';
+        $apiKey = '983354314759691';
+
+        try {
+            $response = Http::attach(
+                'file',
+                file_get_contents($file),
+                $file->getClientOriginalName()
+            )->post("https://api.cloudinary.com/v1_1/{$cloudName}/raw/upload", [
+                'upload_preset' => $uploadPreset,
+                'api_key' => $apiKey
+            ]);
+
+            $responseData = $response->json();
+
+            if (!$response->successful()) {
+                throw new \Exception('Cloudinary upload failed');
+            }
+
+            return $responseData;
+        } catch (\Exception $e) {
+            Log::error('Cloudinary Upload Error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

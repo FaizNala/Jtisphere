@@ -26,7 +26,7 @@
             <div class="row mb-4">
                 <div class="col-md-12 d-flex justify-content-center">
                     <div class="avatar-container position-relative">
-                        <img src="{{ $user->avatar ? asset('storage/avatars/' . $user->avatar) : asset('default-avatar.png') }}"
+                        <img src="{{ Auth::user()->dosen->avatar ?? asset('default-avatar.png') }}"
                         alt="Profile Avatar"
                         class="rounded-circle img-thumbnail shadow"
                         style="max-width: 220px; width: 220px; height: 220px; object-fit: cover; border: 5px solid white;">

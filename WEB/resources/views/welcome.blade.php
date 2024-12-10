@@ -10,6 +10,10 @@
                 <span class="info-box-text">Total Kegiatan</span>
                 <span class="info-box-number">{{ $totalKegiatan }}</span>
             </div>
+            <div class="icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -21,6 +25,7 @@
                 <span class="info-box-text">Kegiatan Belum Berlangsung</span>
                 <span class="info-box-number">{{ $kegiatanBelum }}</span>
             </div>
+            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -32,6 +37,7 @@
                 <span class="info-box-text">Kegiatan Berlangsung</span>
                 <span class="info-box-number">{{ $kegiatanBerlangsung }}</span>
             </div>
+            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -43,6 +49,7 @@
                 <span class="info-box-text">Kegiatan Selesai</span>
                 <span class="info-box-number">{{ $kegiatanSelesai }}</span>
             </div>
+            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 </div>

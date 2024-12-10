@@ -30,7 +30,20 @@ class KegiatanController extends Controller
         ->leftJoin('t_surat_tugas', 't_surat_tugas.kegiatan_id', '=', 't_kegiatan.kegiatan_id')
         ->leftJoin('m_dokumen', 'm_dokumen.dokumen_id', '=', 't_surat_tugas.dokumen_id')
         ->get();
-
+        $kegiatan->transform(function ($item) {
+            $dosen = DB::table('t_dosen_kegiatan')
+                ->where('kegiatan_id', $item->kegiatan_id)
+                ->pluck('dosen_id');
+            $agenda = DB::table('t_kegiatan_agenda')
+                ->join('t_agenda', 't_kegiatan_agenda.agenda_id', '=', 't_agenda.agenda_id')
+                ->where('t_kegiatan_agenda.kegiatan_id', $item->kegiatan_id)
+                ->select('t_agenda.agenda_id', 't_agenda.nama', 't_agenda.tanggal_mulai', 't_agenda.tanggal_selesai')
+                ->get();
+            $item->dosen = $dosen;
+            $item->agenda = $agenda;
+    
+            return $item;
+        });
         return response()->json([
             'status' => 'success',
             'data' => $kegiatan

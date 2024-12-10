@@ -177,12 +177,14 @@ class AgendaController extends Controller
             ->where('a.agenda_id', $id)
             ->first();
 
-        $dosen = DB::table('m_dosen as d')
+            $dosen = DB::table('m_dosen as d')
             ->join('t_agenda_dosen as ad', 'd.dosen_id', '=', 'ad.dosen_id')
             ->join('t_kegiatan_agenda as ka', 'ad.agenda_id', '=', 'ka.agenda_id')
             ->join('t_kegiatan as k', 'ka.kegiatan_id', '=', 'k.kegiatan_id')
             ->join('t_agenda as a', 'a.agenda_id', '=', 'ka.agenda_id')
-            ->select('d.*')
+            ->leftJoin('t_bukti_agenda as ba', 'ba.agenda_dosen_id', '=', 'ad.agenda_dosen_id')
+            ->leftJoin('m_dokumen as b', 'ba.dokumen_id', '=', 'b.dokumen_id')
+            ->select('d.dosen_id', 'd.nama', 'b.dokumen_nama') // Ganti dengan kolom yang relevan
             ->where('a.agenda_id', $id)
             ->get();
 
