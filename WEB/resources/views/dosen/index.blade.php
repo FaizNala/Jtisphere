@@ -10,10 +10,6 @@
                 <span class="info-box-text">Total Kegiatan</span>
                 <span class="info-box-number">{{ $totalKegiatan }}</span>
             </div>
-            <div class="icon">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
-            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -25,7 +21,6 @@
                 <span class="info-box-text">Kegiatan Belum Berlangsung</span>
                 <span class="info-box-number">{{ $kegiatanBelum }}</span>
             </div>
-            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -37,7 +32,6 @@
                 <span class="info-box-text">Kegiatan Berlangsung</span>
                 <span class="info-box-number">{{ $kegiatanBerlangsung }}</span>
             </div>
-            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -49,7 +43,6 @@
                 <span class="info-box-text">Kegiatan Selesai</span>
                 <span class="info-box-number">{{ $kegiatanSelesai }}</span>
             </div>
-            <a href="{{ url('/kegiatan') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 </div>
@@ -63,10 +56,10 @@
                     <i class="fas fa-chart-pie mr-1"></i>
                     Perbandingan Kegiatan Selesai dan Belum Terlaksana
                 </h3>
-                {{-- <div class="card-tools">
+                <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                     <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-                </div> --}}
+                </div>
             </div>
             <div class="card-body">
                 <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
@@ -122,14 +115,14 @@
                 <h3 class="card-title">Daftar Kegiatan Semua Dosen</h3>
                 <div class="card-tools">
                     <div class="input-group input-group-sm" style="width: 120px;">
-                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search" onkeyup="searchTable()">
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card-body table-responsive p-0" style="height: 300px; overflow-y: auto;">
+            <div class="card-body table-responsive p-0">
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
@@ -188,28 +181,6 @@
                 alert('Data tidak ditemukan!');
             }
         });
-    }
-
-    function searchTable() {
-        var input, filter, table, tr, td, i, j, txtValue;
-        input = document.querySelector('input[name="table_search"]');
-        filter = input.value.toLowerCase();
-        table = document.getElementById("kegiatanTable");
-        tr = table.getElementsByTagName("tr");
-
-        for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
-            tr[i].style.display = "none"; // Hide all rows initially
-            td = tr[i].getElementsByTagName("td");
-            for (j = 1; j < td.length; j++) { // Start from 1 to skip the No column
-                if (td[j]) {
-                    txtValue = td[j].textContent || td[j].innerText;
-                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                        tr[i].style.display = ""; // Show the row if it matches
-                        break; // Stop searching in this row
-                    }
-                }
-            }
-        }
     }
 
     var pieData = {

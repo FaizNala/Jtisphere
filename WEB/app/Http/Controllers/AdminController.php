@@ -8,7 +8,7 @@ use App\Models\PeranModel;
 use App\Models\KegiatanModel;
 use App\Models\DosenKegiatanModel;
 
-class WelcomeController extends Controller
+class AdminController extends Controller
 {
     public function index()
     {
@@ -21,24 +21,24 @@ class WelcomeController extends Controller
 
         $totalKegiatan = DB::table('t_kegiatan as k')
             ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
             ->count();
 
         $kegiatanBelum = DB::table('t_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Belum')
         ->count();
 
         $kegiatanBerlangsung = DB::table('t_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Berjalan')
         ->count();
 
         $kegiatanSelesai = DB::table('t_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Selesai')
         ->count();
 
@@ -98,26 +98,6 @@ class WelcomeController extends Controller
 
         $totalBobotKerja = $dosenKegiatan->sum('bobot_kerja'); // Hitung total bobot kerja
 
-        // Ambil semua kegiatan
-        $kegiatan = KegiatanModel::all();
-
-        // Ambil semua kegiatan
-        $kegiatan = KegiatanModel::with(['kategori', 'periode']) // Mengambil relasi kategori dan periode
-        ->select('kegiatan_id', 'kegiatan_nama', 'status', 'tanggal_mulai', 'tanggal_selesai', 'skala')
-        ->get();
-        // Hitung total kegiatan
-        $totalKegiatan = $kegiatan->count();
-
-        // Hitung jumlah kegiatan berdasarkan status
-        $belum = $kegiatan->where('status', 'Belum')->count();
-        $berjalan = $kegiatan->where('status', 'Berjalan')->count();
-        $selesai = $kegiatan->where('status', 'Selesai')->count();
-
-        // Hitung persentase
-        $persentaseBelum = $totalKegiatan > 0 ? 0 : 0; // 0% untuk belum
-        $persentaseBerjalan = $totalKegiatan > 0 ? ($berjalan / $totalKegiatan) * 100 : 0;
-        $persentaseSelesai = $totalKegiatan > 0 ? ($selesai / $totalKegiatan) * 100 : 0;
-
         //BELUM DIUBAH
         return view('welcome', compact(
             'breadcrumb',
@@ -130,11 +110,7 @@ class WelcomeController extends Controller
             'admin',
             'dosen',
             'dosenKegiatan',
-            'totalBobotKerja',
-            'kegiatan',
-            'persentaseBelum',
-            'persentaseBerjalan',
-            'persentaseSelesai'
+            'totalBobotKerja'
         ));
     }
 
@@ -145,7 +121,7 @@ class WelcomeController extends Controller
             ->where('dosen_id', $dosen_id)
             ->get();
 
-        return view('statistik.show_ajax', compact('statistik'));
+        return view('statistik.show', compact('statistik'));
     }
 
     public function show_ajax($id)

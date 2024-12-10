@@ -8,7 +8,7 @@ use App\Models\PeranModel;
 use App\Models\KegiatanModel;
 use App\Models\DosenKegiatanModel;
 
-class WelcomeController extends Controller
+class DosenController extends Controller
 {
     public function index()
     {
@@ -21,24 +21,24 @@ class WelcomeController extends Controller
 
         $totalKegiatan = DB::table('t_kegiatan as k')
             ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
             ->count();
 
         $kegiatanBelum = DB::table('t_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Belum')
         ->count();
 
         $kegiatanBerlangsung = DB::table('t_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Berjalan')
         ->count();
 
         $kegiatanSelesai = DB::table('t_kegiatan as k')
         ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
         ->where('k.status', 'Selesai')
         ->count();
 
