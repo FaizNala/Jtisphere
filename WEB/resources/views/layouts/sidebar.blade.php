@@ -72,13 +72,13 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="{{ url('/kategori') }}"
                                 class="nav-link {{ $activeMenu == 'kategori' ? 'active' : '' }}">
                                 <i class="nav-icon far fa-bookmark"></i>
                                 <p>Kategori Kegiatan</p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="{{ url('/periode') }}"
                                 class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
@@ -86,13 +86,13 @@
                                 <p>Periode Kegiatan</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a href="{{ url('/peran') }}"
                                 class="nav-link {{ $activeMenu == 'peran' ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-user-tie"></i>
                                 <p>Peran Kegiatan</p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="{{ url('/kegiatan') }}"
                                 class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">

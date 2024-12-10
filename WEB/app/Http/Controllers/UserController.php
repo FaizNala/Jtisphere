@@ -8,11 +8,13 @@ use App\Models\DosenModel;
 use App\Models\DosenLevelModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Providers\Auth\Illuminate;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -458,13 +460,18 @@ class UserController extends Controller
     }
     public function switchRole($level_id)
     {
-        $user = auth()->user();
-        $allowedLevels = $user->dosen->dosenLevel->pluck('level_id')->toArray();
-        if (in_array($level_id, $allowedLevels)) {
+        // Check if the user has the requested role
+        $user = Auth::user();
+        $hasRole = $user->dosen->dosenLevel->contains('level_id', $level_id);
+    
+        if ($hasRole) {
+            // Set the current role in the session
             session(['current_level_id' => $level_id]);
+    
             return redirect('/')->with('success', 'Role switched successfully!');
-        } else {
-            return redirect()->back()->with('error', 'Access denied for this role.');
         }
+    
+        return redirect('/')->with('error', 'Unauthorized role switch!');
     }
+    
 }

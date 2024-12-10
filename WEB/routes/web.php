@@ -47,7 +47,22 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware(['auth'])->group(function () {
 
     // Welcome route
-    Route::get('/', [WelcomeController::class, 'index']);
+    Route::get('/', function () {
+        $currentLevelId = session('current_level_id');
+        $currentRole = optional(optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level)->level_kode;
+    
+        switch ($currentRole) {
+            case 'ADM':
+                return app(App\Http\Controllers\AdminController::class)->index();
+            case 'PMN':
+                return app(App\Http\Controllers\PimpinanController::class)->index();
+            case 'DSN':
+                return app(App\Http\Controllers\DosenController::class)->index();
+            default:
+                abort(403, 'Role not assigned or unauthorized');
+        }
+    });
+    
     Route::get('/switch-role/{level_id}', [UserController::class, 'switchRole'])->name('switch.role');
     Route::get('/kalender', [KalenderController::class, 'index']);
     Route::get('/mark-as-read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifications.markAsRead');

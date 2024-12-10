@@ -8,7 +8,7 @@
             <span class="info-box-icon bg-info"><i class="fas fa-calendar-alt"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Total Kegiatan</span>
-                <span class="info-box-number">{{ $totalKegiatan }}</span>
+                <span class="info-box-number">{{ $totalKegiatanDosen }}</span>
             </div>
         </div>
     </div>
@@ -19,7 +19,7 @@
             <span class="info-box-icon bg-success"><i class="fas fa-hourglass-start"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Kegiatan Belum Berlangsung</span>
-                <span class="info-box-number">{{ $kegiatanBelum }}</span>
+                <span class="info-box-number">{{ $kegiatanBelumDosen }}</span>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
             <span class="info-box-icon bg-warning"><i class="fas fa-play-circle"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Kegiatan Berlangsung</span>
-                <span class="info-box-number">{{ $kegiatanBerlangsung }}</span>
+                <span class="info-box-number">{{ $kegiatanBerlangsungDosen }}</span>
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@
             <span class="info-box-icon bg-danger"><i class="fas fa-check-circle"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Kegiatan Selesai</span>
-                <span class="info-box-number">{{ $kegiatanSelesai }}</span>
+                <span class="info-box-number">{{ $kegiatanSelesaiDosen }}</span>
             </div>
         </div>
     </div>
@@ -84,7 +84,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($kegiatan as $index => $item)
+                        @foreach($kegiatanDosen as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->kegiatan_nama }}</td>
@@ -112,7 +112,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Daftar Kegiatan Semua Dosen</h3>
+                <h3 class="card-title">Daftar Kegiatan Anda</h3>
                 <div class="card-tools">
                     <div class="input-group input-group-sm" style="width: 120px;">
                         <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
@@ -136,7 +136,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($kegiatan as $index => $item)
+                        @foreach($kegiatanDosen as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->kegiatan_nama }}</td>
@@ -186,7 +186,7 @@
     var pieData = {
         labels: ['Belum Terlaksana', 'Selesai'],
         datasets: [{
-            data: [{{ $kegiatanBelum }}, {{ $kegiatanSelesai }}],
+            data: [{{ $kegiatanBelumDosen }}, {{ $kegiatanSelesaiDosen }}],
             backgroundColor: ['#007bff', '#28a745'],
         }]
     };

@@ -19,92 +19,105 @@ class DosenController extends Controller
 
         $activeMenu = 'dashboard';
 
-        $totalKegiatan = DB::table('t_kegiatan as k')
-            ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-            ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+        $totalKegiatanDosen = DB::table('t_kegiatan as k')
+            ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
+            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
+            ->where('d.dosen_id', session('dosen_id'))
+            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
             ->count();
 
-        $kegiatanBelum = DB::table('t_kegiatan as k')
-        ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
-        ->where('k.status', 'Belum')
-        ->count();
+        $kegiatanBelumDosen = DB::table('t_kegiatan as k')
+            ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
+            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
+            ->where('d.dosen_id', session('dosen_id'))
+            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('k.status', 'Belum')
+            ->count();
 
-        $kegiatanBerlangsung = DB::table('t_kegiatan as k')
-        ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
-        ->where('k.status', 'Berjalan')
-        ->count();
+        $kegiatanBerlangsungDosen = DB::table('t_kegiatan as k')
+            ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
+            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
+            ->where('d.dosen_id', session('dosen_id'))
+            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('k.status', 'Berjalan')
+            ->count();
 
-        $kegiatanSelesai = DB::table('t_kegiatan as k')
-        ->join('m_kategori as kt', 'k.kategori_id', '=', 'kt.kategori_id')
-        ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
-        ->where('k.status', 'Selesai')
-        ->count();
+        $kegiatanSelesaiDosen = DB::table('t_kegiatan as k')
+            ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
+            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
+            ->where('d.dosen_id', session('dosen_id'))
+            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('k.status', 'Selesai')
+            ->count();
 
-    // Hitung jumlah Pimpinan
-    $pimpinan = DB::table('m_dosen as d')
-        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
-        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
-        ->where('l.level_nama', 'Pimpinan')
-        ->count();
-    // Hitung jumlah Pimpinan
-    $pimpinan = DB::table('m_dosen as d')
-        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
-        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
-        ->where('l.level_nama', 'Pimpinan')
-        ->count();
+        // Hitung jumlah Pimpinan
+        $pimpinan = DB::table('m_dosen as d')
+            ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+            ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+            ->where('l.level_nama', 'Pimpinan')
+            ->count();
+        // Hitung jumlah Pimpinan
+        $pimpinan = DB::table('m_dosen as d')
+            ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+            ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+            ->where('l.level_nama', 'Pimpinan')
+            ->count();
 
-    // Hitung jumlah Admin
-    $admin = DB::table('m_dosen as d')
-        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
-        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
-        ->where('l.level_nama', 'Administrator')
-        ->count();
-    // Hitung jumlah Admin
-    $admin = DB::table('m_dosen as d')
-        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
-        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
-        ->where('l.level_nama', 'Administrator')
-        ->count();
+        // Hitung jumlah Admin
+        $admin = DB::table('m_dosen as d')
+            ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+            ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+            ->where('l.level_nama', 'Administrator')
+            ->count();
+        // Hitung jumlah Admin
+        $admin = DB::table('m_dosen as d')
+            ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+            ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+            ->where('l.level_nama', 'Administrator')
+            ->count();
 
-    // Hitung jumlah Dosen (asumsi nama levelnya adalah 'Dosen')
-    $dosen = DB::table('m_dosen as d')
-        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
-        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
-        ->where('l.level_nama', 'Dosen')
-        ->count();
-    // Hitung jumlah Dosen (asumsi nama levelnya adalah 'Dosen')
-    $dosen = DB::table('m_dosen as d')
-        ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
-        ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
-        ->where('l.level_nama', 'Dosen')
-        ->count();
+        // Hitung jumlah Dosen (asumsi nama levelnya adalah 'Dosen')
+        $dosen = DB::table('m_dosen as d')
+            ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+            ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+            ->where('l.level_nama', 'Dosen')
+            ->count();
+        // Hitung jumlah Dosen (asumsi nama levelnya adalah 'Dosen')
+        $dosen = DB::table('m_dosen as d')
+            ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
+            ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
+            ->where('l.level_nama', 'Dosen')
+            ->count();
 
         $dosenKegiatan = DB::table('t_dosen_kegiatan as dk')
-        ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
-        ->join('t_kegiatan as k', 'dk.kegiatan_id', '=', 'k.kegiatan_id')
-        ->select(
-            'd.dosen_id',
-            'd.nama as dosen_nama',
-            DB::raw('COUNT(dk.kegiatan_id) as jumlah_kegiatan'),
-            DB::raw("SUM(CASE WHEN k.status = 'Belum' THEN 1 ELSE 0 END) as belum_terlaksana"),
-            DB::raw("SUM(CASE WHEN k.status = 'Berjalan' THEN 1 ELSE 0 END) as berjalan"),
-            DB::raw("SUM(CASE WHEN k.status = 'Selesai' THEN 1 ELSE 0 END) as selesai"),
-            DB::raw("SUM(dk.bobot) as bobot_kerja") // Pastikan ini menghitung total bobot
-        )
-        ->groupBy('d.dosen_id', 'd.nama')
-        ->get();
+            ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
+            ->join('t_kegiatan as k', 'dk.kegiatan_id', '=', 'k.kegiatan_id')
+            ->select(
+                'd.dosen_id',
+                'd.nama as dosen_nama',
+                DB::raw('COUNT(dk.kegiatan_id) as jumlah_kegiatan'),
+                DB::raw("SUM(CASE WHEN k.status = 'Belum' THEN 1 ELSE 0 END) as belum_terlaksana"),
+                DB::raw("SUM(CASE WHEN k.status = 'Berjalan' THEN 1 ELSE 0 END) as berjalan"),
+                DB::raw("SUM(CASE WHEN k.status = 'Selesai' THEN 1 ELSE 0 END) as selesai"),
+                DB::raw("SUM(dk.bobot) as bobot_kerja") // Pastikan ini menghitung total bobot
+            )
+            ->groupBy('d.dosen_id', 'd.nama')
+            ->get();
 
         $totalBobotKerja = $dosenKegiatan->sum('bobot_kerja'); // Hitung total bobot kerja
 
         // Ambil semua kegiatan
-        $kegiatan = KegiatanModel::all();
+        $kegiatanDosen = KegiatanModel::with(
+            ['dosenKegiatan'])
+            ->whereHas('dosenKegiatan', function($query){
+                $dosenId = session('dosen_id');
+                $query->where('dosen_id', $dosenId);
+            })->get();
 
         // Ambil semua kegiatan
         $kegiatan = KegiatanModel::with(['kategori', 'periode']) // Mengambil relasi kategori dan periode
-        ->select('kegiatan_id', 'kegiatan_nama', 'status', 'tanggal_mulai', 'tanggal_selesai', 'skala')
-        ->get();
+            ->select('kegiatan_id', 'kegiatan_nama', 'status', 'tanggal_mulai', 'tanggal_selesai', 'skala')
+            ->get();
         // Hitung total kegiatan
         $totalKegiatan = $kegiatan->count();
 
@@ -119,19 +132,19 @@ class DosenController extends Controller
         $persentaseSelesai = $totalKegiatan > 0 ? ($selesai / $totalKegiatan) * 100 : 0;
 
         //BELUM DIUBAH
-        return view('welcome', compact(
+        return view('dosen.index', compact(
             'breadcrumb',
             'activeMenu',
-            'totalKegiatan',
-            'kegiatanBelum',
-            'kegiatanBerlangsung',
-            'kegiatanSelesai',
+            'totalKegiatanDosen',
+            'kegiatanBelumDosen',
+            'kegiatanBerlangsungDosen',
+            'kegiatanSelesaiDosen',
             'pimpinan',
             'admin',
             'dosen',
             'dosenKegiatan',
             'totalBobotKerja',
-            'kegiatan',
+            'kegiatanDosen',
             'persentaseBelum',
             'persentaseBerjalan',
             'persentaseSelesai'
