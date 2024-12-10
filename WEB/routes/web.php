@@ -223,7 +223,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::middleware('authorize:ADM,MNG,STF')->group(function () {
+    Route::middleware('authorize:ADM,PMN,DSN')->group(function () {
         Route::group(['prefix' => 'profile'], function () {
             Route::get('/', [ProfileController::class, 'index']);
             Route::get('/edit_ajax', [ProfileController::class, 'edit_ajax']);
