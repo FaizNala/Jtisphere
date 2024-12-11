@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -78,9 +80,11 @@ class ProfileController extends Controller
             $dosen->nip = $request->nip;
 
             if ($request->hasFile('avatar')) {
-                // Handle avatar upload
-                $path = $request->file('avatar')->store('avatars', 'public');
-                $dosen->avatar = $path;
+                $cloudinaryResponse = $this->uploadToCloudinary($request->file('avatar'));
+                // if ($dosen->avatar) {
+                //     $this->deleteFromCloudinary($dosen->avatar);
+                // }
+                $dosen->avatar = $cloudinaryResponse['url'];
             }
 
             $dosen->save();
@@ -89,7 +93,7 @@ class ProfileController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Profile updated successfully',
-                'avatar_url' => asset('storage/' . $dosen->avatar),
+                'avatar_url' => $dosen->avatar,
             ]);
         } catch (\Exception $e) {
             DB::rollback();
@@ -106,15 +110,10 @@ class ProfileController extends Controller
 
         try {
             DB::beginTransaction();
-
-            // Delete dosen record
             $dosen = DosenModel::where('user_id', $user_id)->firstOrFail();
             $dosen->delete();
-
-            // Delete user record
             $user = UserModel::findOrFail($user_id);
             $user->delete();
-
             DB::commit();
             return response()->json(['status' => true, 'message' => 'Profile deleted successfully']);
         } catch (\Exception $e) {
@@ -123,6 +122,35 @@ class ProfileController extends Controller
                 'status' => false,
                 'message' => 'Failed to delete profile: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    private function uploadToCloudinary($image)
+    {
+        $cloudName = 'dotz74j1p';
+        $uploadPreset = 'yogjjkoh';
+        $apiKey = '983354314759691';
+
+        try {
+            $response = Http::attach(
+                'file',
+                file_get_contents($image),
+                $image->getClientOriginalName()
+            )->post("https://api.cloudinary.com/v1_1/{$cloudName}/image/upload", [
+                'upload_preset' => $uploadPreset,
+                'api_key' => $apiKey
+            ]);
+
+            $responseData = $response->json();
+
+            if (!$response->successful()) {
+                throw new \Exception('Cloudinary upload failed');
+            }
+
+            return $responseData;
+        } catch (\Exception $e) {
+            Log::error('Cloudinary Upload Error: ' . $e->getMessage());
+            throw $e;
         }
     }
 }
