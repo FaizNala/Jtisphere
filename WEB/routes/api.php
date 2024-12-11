@@ -36,6 +36,6 @@ Route::group(['prefix' => 'kegiatan'], function () {
 
 Route::group(['prefix' => 'profile', 'middleware' => 'auth:api'], function () {
     Route::get('/', [App\Http\Controllers\Api\ProfileController::class, 'show']);
-    Route::put('/', [App\Http\Controllers\Api\ProfileController::class, 'update']);
+    Route::post('/', [App\Http\Controllers\Api\ProfileController::class, 'update']);
     Route::delete('/', [App\Http\Controllers\Api\ProfileController::class, 'delete']);
 });
