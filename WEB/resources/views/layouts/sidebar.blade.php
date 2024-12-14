@@ -52,11 +52,11 @@
                     </a>
                 </li>
                 <!-- Data Pengguna Section -->
-                <li class="nav-header">Data Pengguna</li>
+                <li class="nav-header">Data User</li>
                 <li class="nav-item">
                     <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                         <i class="nav-icon far fa-user"></i>
-                        <p>Data Pengguna</p>
+                        <p>Data User</p>
                     </a>
                 </li>
                 <!-- Data Kegiatan Section -->
@@ -107,7 +107,7 @@
                     <a href="{{ url('/statistik') }}"
                         class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-line"></i>
-                        <p>Statistik Kegiatan</p>
+                        <p>Statistik Dosen</p>
                     </a>
                 </li>
             </ul>
@@ -151,7 +151,7 @@
                     <a href="{{ url('/statistik') }}"
                         class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-line"></i>
-                        <p>Statistik Kegiatan</p>
+                        <p>Statistik Dosen</p>
                     </a>
                 </li>
             </ul>
