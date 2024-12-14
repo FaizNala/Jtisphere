@@ -36,23 +36,31 @@ class KegiatanController extends Controller
 
         $kegiatan = KegiatanModel::all();
         $kategori = KategoriModel::all();
+        $periode = PeriodeModel::all();
 
         return view('kegiatan.index', [
             'activeMenu' => $activeMenu,
             'breadcrumb' => $breadcrumb,
             'kegiatan' => $kegiatan,
-            'kategori' => $kategori
+            'kategori' => $kategori,
+            'periode' => $periode
         ]);
     }
 
     public function list(Request $request)
     {
         $kegiatan = KegiatanModel::with(['kategori', 'periode'])
-            ->withCount('dosenKegiatan'); // Menghitung jumlah dosen yang terkait untuk setiap kegiatan
+            ->withCount('dosenKegiatan');
 
         $kategori_id = $request->input('filter_kategori');
+        $periode_id = $request->input('filter_periode');
+
         if (!empty($kategori_id)) {
             $kegiatan->where('kategori_id', $kategori_id);
+        }
+
+        if (!empty($periode_id)) {
+            $kegiatan->where('periode_id', $periode_id);
         }
 
         return DataTables::of($kegiatan)
@@ -64,7 +72,7 @@ class KegiatanController extends Controller
                 return $kegiatan->periode->periode;
             })
             ->addColumn('jumlah_dosen', function ($kegiatan) {
-                return $kegiatan->dosen_kegiatan_count; // Menampilkan jumlah dosen
+                return $kegiatan->dosen_kegiatan_count;
             })
             ->addColumn('aksi', function ($kegiatan) {
                 $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
@@ -166,7 +174,6 @@ class KegiatanController extends Controller
                         'is_read' => false,
                     ];
                     DB::table('t_notifikasi')->insert($notif);
-
                 }
 
                 // Upload surat tugas
@@ -417,8 +424,8 @@ class KegiatanController extends Controller
                 if ($request->hasFile('surat_tugas')) {
                     // 1. Cari surat tugas lama terkait kegiatan
                     $oldSuratTugas = SuratTugasModel::select('kegiatan_id')
-                    ->where('kegiatan_id', $id)
-                    ->first();
+                        ->where('kegiatan_id', $id)
+                        ->first();
 
                     if ($oldSuratTugas) {
                         // 2. Temukan dokumen lama
@@ -559,18 +566,20 @@ class KegiatanController extends Controller
             't_kegiatan.tanggal_mulai',
             't_kegiatan.tanggal_selesai',
             'm_periode.periode',
-            DB::raw('count(t_dosen_kegiatan.dosen_id) as jumlah_dosen') // Menggunakan DB::raw untuk alias
+            't_kegiatan.skala', // Tambahkan skala
+            DB::raw('COUNT(DISTINCT t_dosen_kegiatan.dosen_id) as jumlah_anggota') // Gunakan COUNT DISTINCT
         )
             ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
             ->join('m_periode', 't_kegiatan.periode_id', '=', 'm_periode.periode_id')
-            ->leftJoin('t_dosen_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id') // Perbaikan alias
+            ->leftJoin('t_dosen_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
             ->groupBy(
                 't_kegiatan.kegiatan_nama',
                 'm_kategori.kategori_nama',
                 't_kegiatan.status',
                 't_kegiatan.tanggal_mulai',
                 't_kegiatan.tanggal_selesai',
-                'm_periode.periode'
+                'm_periode.periode',
+                't_kegiatan.skala'
             )
             ->get();
 
@@ -582,12 +591,13 @@ class KegiatanController extends Controller
         $sheet->setCellValue('B1', 'Nama Kegiatan');
         $sheet->setCellValue('C1', 'Kategori');
         $sheet->setCellValue('D1', 'Periode');
-        $sheet->setCellValue('E1', 'Status');
-        $sheet->setCellValue('F1', 'Tanggal Mulai');
-        $sheet->setCellValue('G1', 'Tanggal Selesai');
-        $sheet->setCellValue('H1', 'Jumlah Dosen');
+        $sheet->setCellValue('E1', 'Skala');
+        $sheet->setCellValue('F1', 'Jumlah Dosen');
+        $sheet->setCellValue('H1', 'Status');
+        $sheet->setCellValue('H1', 'Tanggal Mulai');
+        $sheet->setCellValue('I1', 'Tanggal Selesai');
 
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
 
         $no = 1; // no data dimulai dari 1
         $baris = 2; // baris data dimulai dari baris ke 2
@@ -597,7 +607,7 @@ class KegiatanController extends Controller
             $sheet->setCellValue('C' . $baris, $value->kategori_nama);
             $sheet->setCellValue('D' . $baris, $value->periode);
             $sheet->setCellValue('E' . $baris, $value->skala);
-            $sheet->setCellValue('F' . $baris, $value->jumlah_dosen);
+            $sheet->setCellValue('F' . $baris, $value->jumlah_anggota);
             $sheet->setCellValue('G' . $baris, $value->status);
             $sheet->setCellValue('H' . $baris, $value->tanggal_mulai);
             $sheet->setCellValue('I' . $baris, $value->tanggal_selesai);
@@ -635,18 +645,20 @@ class KegiatanController extends Controller
             't_kegiatan.tanggal_mulai',
             't_kegiatan.tanggal_selesai',
             'm_periode.periode',
-            DB::raw('count(t_dosen_kegiatan.dosen_id) as jumlah_dosen') // Menggunakan DB::raw untuk alias
+            't_kegiatan.skala', // Tambahkan skala
+            DB::raw('COUNT(DISTINCT t_dosen_kegiatan.dosen_id) as jumlah_anggota') // Gunakan COUNT DISTINCT
         )
             ->join('m_kategori', 't_kegiatan.kategori_id', '=', 'm_kategori.kategori_id')
             ->join('m_periode', 't_kegiatan.periode_id', '=', 'm_periode.periode_id')
-            ->leftJoin('t_dosen_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id') // Perbaikan alias
+            ->leftJoin('t_dosen_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_dosen_kegiatan.kegiatan_id')
             ->groupBy(
                 't_kegiatan.kegiatan_nama',
                 'm_kategori.kategori_nama',
                 't_kegiatan.status',
                 't_kegiatan.tanggal_mulai',
                 't_kegiatan.tanggal_selesai',
-                'm_periode.periode'
+                'm_periode.periode',
+                't_kegiatan.skala'
             )
             ->get();
 

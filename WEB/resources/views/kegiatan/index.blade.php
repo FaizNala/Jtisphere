@@ -33,6 +33,15 @@
                                 </select>
                                 <small class="form-text text-muted">Kategori Kagiatan</small>
                             </div>
+                            <div class="col-md-3">
+                                <select name="filter_periode" id="filter_periode" class="form-control form-control-sm">
+                                    {{-- <option value="">- Semua -</option> --}}
+                                    @foreach ($periode as $p)
+                                        <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="form-text text-muted">Pilih Periode</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -83,8 +92,8 @@
                     "dataType": "json",
                     "type": "POST",
                     "data": function(d) {
-                        d.filter_kategori = $('.filter_kategori')
-                            .val(); // Menggunakan class filter_kategori
+                        d.filter_kategori = $('.filter_kategori').val();
+                        d.filter_periode = $('#filter_periode').val();
                     }
                 },
                 columns: [{
@@ -140,6 +149,10 @@
             $('.filter_kategori').change(function() {
                 dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
             });
+            // Di dalam script dokumentasi
+$('#filter_periode').change(function() {
+    dataKegiatan.ajax.reload(); // Reload data ketika filter periode berubah
+});
         });
     </script>
 @endpush
