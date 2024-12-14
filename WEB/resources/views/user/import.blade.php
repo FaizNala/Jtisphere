@@ -61,7 +61,7 @@ $(document).ready(function() {
                             title: 'Berhasil',
                             text: response.message
                         });
-                        tableUser.ajax.reload(); // Pastikan tableUser sudah didefinisikan
+                        dataUser.ajax.reload(); // Pastikan tableUser sudah didefinisikan
                     } else {
                         Swal.fire({
                             icon: 'error',

@@ -330,26 +330,39 @@ class UserController extends Controller
             try {
                 if (count($data) > 1) {
                     foreach ($data as $baris => $value) {
-                        if ($baris > 1) { // Skip header row
-                            // Create user
-                            $user = UserModel::create([
-                                'username' => $value['A'],
-                                'password' => Hash::make($value['B'])
-                            ]);
+                        if ($baris > 1) {
+                            // Cari atau buat user
+                            $user = UserModel::firstOrCreate(
+                                ['username' => $value['A']],
+                                [
+                                    'password' => bcrypt($value['B']),
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                ]
+                            );
 
-                            // Create dosen
-                            $dosen = DosenModel::create([
-                                'user_id' => $user->user_id,
-                                'nama' => $value['C'],
-                                'nip' => $value['D']
-                            ]);
+                            // Cari atau buat dosen
+                            $dosen = DosenModel::firstOrCreate(
+                                [
+                                    'nama' => $value['C'],
+                                    'nip' => $value['D']
+                                ],
+                                [
+                                    'user_id' => $user->user_id,
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                ]
+                            );
 
-                            // Handle multiple levels (comma-separated in column E)
-                            $levels = explode(',', $value['E']);
-                            foreach ($levels as $level_id) {
-                                DosenLevelModel::create([
+                            // Proses level dosen dengan mencegah duplikasi
+                            $levels = explode(',', $value['E'] ?? '');
+                            foreach ($levels as $level) {
+                                $trimmedLevel = trim($level);
+
+                                // Cek apakah kombinasi dosen_id dan level_id sudah ada
+                                DosenLevelModel::firstOrCreate([
                                     'dosen_id' => $dosen->dosen_id,
-                                    'level_id' => trim($level_id)
+                                    'level_id' => $trimmedLevel
                                 ]);
                             }
                         }
@@ -370,7 +383,8 @@ class UserController extends Controller
                 DB::rollback();
                 return response()->json([
                     'status' => false,
-                    'message' => 'Gagal mengimport data: ' . $e->getMessage()
+                    'message' => 'Gagal mengimport data: ' . $e->getMessage(),
+                    'error' => $e->getTraceAsString()
                 ], 500);
             }
         }
@@ -455,7 +469,7 @@ class UserController extends Controller
         $pdf->setPaper('A4', 'portrait');
         $pdf->setOption('isRemoteEnabled', true);
         $pdf->render();
-        
+
         return $pdf->stream('Data_User_' . date('Y-m-d_His') . '.pdf');
     }
     public function switchRole($level_id)
@@ -463,15 +477,14 @@ class UserController extends Controller
         // Check if the user has the requested role
         $user = Auth::user();
         $hasRole = $user->dosen->dosenLevel->contains('level_id', $level_id);
-    
+
         if ($hasRole) {
             // Set the current role in the session
             session(['current_level_id' => $level_id]);
-    
+
             return redirect('/')->with('success', 'Role switched successfully!');
         }
-    
+
         return redirect('/')->with('error', 'Unauthorized role switch!');
     }
-    
 }
