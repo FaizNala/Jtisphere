@@ -42,7 +42,7 @@ class AdminController extends Controller
             ->where('k.status', 'Selesai')
             ->count();
 
-            $pimpinan = DB::table('m_dosen as d')
+        $pimpinan = DB::table('m_dosen as d')
             ->join('t_dosen_level as dl', 'd.dosen_id', '=', 'dl.dosen_id')
             ->join('m_level as l', 'l.level_id', '=', 'dl.level_id')
             ->where('l.level_nama', 'Pimpinan')

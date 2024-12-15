@@ -482,7 +482,7 @@ class UserController extends Controller
             // Set the current role in the session
             session(['current_level_id' => $level_id]);
 
-            return redirect('/')->with('success', 'Role switched successfully!');
+            return redirect('/home')->with('success', 'Role switched successfully!');
         }
 
         return redirect('/')->with('error', 'Unauthorized role switch!');

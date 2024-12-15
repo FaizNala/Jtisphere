@@ -94,36 +94,70 @@
             color: #264585;
         }
         .footer-box {
-            background-color: #f5f6f9;
-            padding: 40px;
-            border-radius: 15px;
-            max-width: 900px;
+            max-width: 800px;
+            width: 90%;
             margin: 20px auto;
-            text-align: left;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: #f5f6f9;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer-box img {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            margin-top: 20px;
         }
         footer {
             background-color: #264585;
             color: white;
             padding: 40px;
         }
+        .logo-and-text {
+            display: flex;
+            align-items: center;
+        }
+        .logo-and-text img {
+            margin-right: 10px;
+        }
+        .text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 0;
+        }
+        .header {
+            font-size: 42px;
+            font-weight: 550;
+            color: #264585;
+            margin: 0;
+        }
+        .subheader {
+            font-size: 25px;
+            color: #F9B41B;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <a href="home.html"><img src="jti.png" alt="JTISphere Logo"></a>
-        <div>
-            <p class="header">JTISphere</p>
-            <p class="subheader">POLINEMA</p>
+        <div class="logo-and-text">
+            <a href="home.html"><img src="jti.png" alt="JTISphere Logo"></a>
+            <div class="text">
+                <p class="header">JTISphere</p>
+                <p class="subheader">POLINEMA</p>
+            </div>
         </div>
-        <ul>
+        <!-- <ul>
             <li class="home">Home</li>
             <li>Pengumuman</li>
             <li>Tentang SDM</li>
             <li>Dokumen</li>
-        </ul>
+        </ul> -->
         <div>
             <a href="{{ route('login') }}" class="login">Login</a>
-            <a href="{{ route('login') }}" class="admin">Login Administrator</a>
+            <!-- <a href="{{ route('login') }}" class="admin">Login Administrator</a> -->
         </div>
     </nav>
     <main>
@@ -134,25 +168,23 @@
             <fitur>Sistem Informasi Manajemen SDM JTI Polinema merupakan platform berbasis web dan mobile yang mempermudah distribusi tugas serta pemantauan beban kerja dosen dan staf di Jurusan Teknologi Informasi Polinema.
                 Fitur real-time monitoring pada sistem ini membantu memastikan pemerataan tugas yang optimal, mendukung efisiensi kerja, serta menjaga keseimbangan beban di lingkungan JTI.</p>
         </div>
-        {{-- <div class="footer-box">
+        <div class="footer-box">
             <h2>Struktur Organisasi</h2>
             <img src="struktur.png" alt="Struktur Organisasi" style="width: 100%; max-width: 600px; height: auto;">
-        </div> --}}
-        <div class="footer-box">
+        </div>
+        <!-- <div class="footer-box">
             <h2>Struktur Organisasi Jurusan Teknologi Informasi POLINEMA</h2>
                 <div class="footer-box">
                     <img src="SO.png" alt="Struktur Organisasi" style="width: 100%; max-width: 600px; height: auto;">
                 </div>
-        </div>
+        </div> -->
     </main>
     <footer>
         <p class="hki">Copyright @ 2024 JTISphere</p>
         <div class="kontak">
             <img src="logo.png" alt="Logo" style="max-width: 200px; height: auto;">
             <h2>Contact Us</h2>
-            <p>Politeknik Negeri Malang</p>
-            <p>Jl. Soekarno Hatta No. 9</p>
-            <p>Malang, Jawa Timur</p>
+            <p>Politeknik Negeri Malang - Jl. Soekarno Hatta No. 9 - Malang, Jawa Timur</p>
             <p>Email: info@polinema.ac.id</p>
             <p>Phone: (0341) 404424</p>
         </div>
