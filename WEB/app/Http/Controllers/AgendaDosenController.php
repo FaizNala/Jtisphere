@@ -7,12 +7,15 @@ use App\Models\AgendaModel;
 use App\Models\BuktiAgendaModel;
 use App\Models\DokumenModel;
 use App\Models\KegiatanAgendaModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Yajra\DataTables\Facades\DataTables;
 
 class AgendaDosenController extends Controller
@@ -73,7 +76,7 @@ class AgendaDosenController extends Controller
             ->where('a.agenda_id', $id)
             ->first();
 
-            $dosen = DB::table('m_dosen as d')
+        $dosen = DB::table('m_dosen as d')
             ->join('t_agenda_dosen as ad', 'd.dosen_id', '=', 'ad.dosen_id')
             ->join('t_kegiatan_agenda as ka', 'ad.agenda_id', '=', 'ka.agenda_id')
             ->join('t_kegiatan as k', 'ka.kegiatan_id', '=', 'k.kegiatan_id')
@@ -168,14 +171,14 @@ class AgendaDosenController extends Controller
                         $dokumen = DokumenModel::find($buktiAgenda->dokumen_id);
                         if ($dokumen) {
                             $buktiAgenda = BuktiAgendaModel::where('agenda_dosen_id', $agendaDosenId->agenda_dosen_id)
-                            ->first();
+                                ->first();
                             // $dokumen->delete(); // Hapus dokumen dari database
                             DokumenModel::where('dokumen_id', $buktiAgenda->dokumen_id)->delete();
                         }
 
                         $agendaDosenId = AgendaDosenModel::where('dosen_id', $dosenId)
-                        ->where('agenda_id', $id)
-                        ->firstOrFail();
+                            ->where('agenda_id', $id)
+                            ->firstOrFail();
                         BuktiAgendaModel::where('agenda_dosen_id', $agendaDosenId->agenda_dosen_id)->delete();
                         // $buktiAgenda->delete(); // Hapus data bukti agenda setelah dokumen dihapus
                     }
@@ -242,5 +245,101 @@ class AgendaDosenController extends Controller
             Log::error('Cloudinary Upload Error: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    public function export_excel()
+    {
+        try {
+            // Ambil data kegiatan yang akan di-export
+            $agenda = AgendaModel::select(
+                't_kegiatan.kegiatan_nama',
+                't_agenda.nama',
+                't_agenda.tanggal_mulai',
+                't_agenda.tanggal_selesai',
+                't_kegiatan_agenda.status'
+            )
+                ->join('t_kegiatan_agenda', 't_agenda.agenda_id', '=', 't_kegiatan_agenda.agenda_id')
+                ->join('t_kegiatan', 't_kegiatan_agenda.kegiatan_id', '=', 't_kegiatan.kegiatan_id')
+                ->join('t_agenda_dosen', 't_agenda.agenda_id', '=', 't_agenda_dosen.agenda_id') // Perbaikan join
+                ->where('t_agenda_dosen.dosen_id', session('dosen_id'))
+                ->get();
+
+            // Cek apakah data kosong
+            if ($agenda->isEmpty()) {
+                return redirect()->back()->with('error', 'Tidak ada data untuk di-export');
+            }
+
+            // Load library excel
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Header
+            $sheet->setCellValue('A1', 'No');
+            $sheet->setCellValue('B1', 'Nama Kegiatan');
+            $sheet->setCellValue('C1', 'Agenda');
+            $sheet->setCellValue('D1', 'Tanggal Mulai');
+            $sheet->setCellValue('E1', 'Tanggal Selesai');
+            $sheet->setCellValue('F1', 'Status');
+
+            $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+
+            // Isi data
+            $no = 1;
+            $baris = 2;
+            foreach ($agenda as $value) {
+                $sheet->setCellValue('A' . $baris, $no);
+                $sheet->setCellValue('B' . $baris, $value->kegiatan_nama);
+                $sheet->setCellValue('C' . $baris, $value->nama);
+                $sheet->setCellValue('D' . $baris, $value->tanggal_mulai);
+                $sheet->setCellValue('E' . $baris, $value->tanggal_selesai);
+                $sheet->setCellValue('F' . $baris, $value->status);
+
+                $baris++;
+                $no++;
+            }
+
+            // Auto size kolom
+            foreach (range('A', 'F') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+
+            $sheet->setTitle('Data Agenda Dosen');
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $filename = 'Data_Agenda_Dosen_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+            // Header untuk download
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+            exit;
+        } catch (\Exception $e) {
+            // Tangani error
+            return redirect()->back()->with('error', 'Gagal mengekspor data: ' . $e->getMessage());
+        }
+    }
+
+    public function export_pdf()
+    {
+        $agenda = AgendaModel::select(
+            't_kegiatan.kegiatan_nama',
+            't_agenda.nama',
+            't_agenda.tanggal_mulai',
+            't_agenda.tanggal_selesai',
+            't_kegiatan_agenda.status'
+        )
+            ->join('t_kegiatan_agenda', 't_agenda.agenda_id', '=', 't_kegiatan_agenda.agenda_id')
+            ->join('t_kegiatan', 't_kegiatan_agenda.kegiatan_id', '=', 't_kegiatan.kegiatan_id')
+            ->join('t_agenda_dosen', 't_agenda.agenda_id', '=', 't_agenda_dosen.agenda_id') // Perbaikan join
+            ->where('t_agenda_dosen.dosen_id', session('dosen_id'))
+            ->get();
+
+        $pdf = Pdf::loadView('agenda_dosen.export_pdf', ['agenda' => $agenda]);
+        $pdf->setPaper('a4', 'potrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        return $pdf->stream('Data Agenda Dosen ' . date('Y-m-d H:i:s') . '.pdf');
     }
 }
