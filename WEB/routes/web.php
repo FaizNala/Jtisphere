@@ -16,6 +16,7 @@ use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\NotifikasiController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 
 // Pattern enforcement for 'id' parameter (must be a number)
 Route::pattern('id', '[0-9]+');
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 // Auth routes
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
@@ -47,10 +48,10 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware(['auth'])->group(function () {
 
     // Welcome route
-    Route::get('/', function () {
+    Route::get('/home', function () {
         $currentLevelId = session('current_level_id');
         $currentRole = optional(optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level)->level_kode;
-    
+
         switch ($currentRole) {
             case 'ADM' || 'PMN':
                 return app(App\Http\Controllers\AdminController::class)->index();
@@ -60,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
                 abort(403, 'Role not assigned or unauthorized');
         }
     });
-    
+
     Route::get('/switch-role/{level_id}', [UserController::class, 'switchRole'])->name('switch.role');
     Route::get('/kalender', [KalenderController::class, 'index']);
     Route::get('/mark-as-read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifications.markAsRead');
