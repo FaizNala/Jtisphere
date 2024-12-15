@@ -154,6 +154,40 @@
                 padding: 30px;
             }
         }
+
+        /* Mencegah pergeseran saat modal muncul */
+        body.swal2-shown {
+            overflow-y: scroll !important;
+            padding-right: 0 !important;
+        }
+
+        .swal2-container {
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .swal2-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Tambahkan di bagian <style> */
+        .swal2-container.swal2-backdrop-show {
+            background-color: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .swal2-container {
+            z-index: 9999 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swal2-popup {
+            margin: 0 !important;
+        }
     </style>
 </head>
 
@@ -175,7 +209,8 @@
                     <div class="form-group">
                         <label for="username">Username</label>
                         <div class="input-group mb-3">
-                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username">
+                            <input type="text" id="username" name="username" class="form-control"
+                                placeholder="Enter your username">
                             <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-user"></i>
@@ -188,7 +223,8 @@
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div class="input-group mb-3">
-                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password">
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Enter your password">
                             <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-lock"></i>
@@ -254,6 +290,18 @@
                                     icon: 'success',
                                     title: 'Success',
                                     text: response.message,
+                                    showClass: {
+                                        popup: 'animate__animated animate__zoomIn'
+                                    },
+                                    hideClass: {
+                                        popup: 'animate__animated animate__zoomOut'
+                                    },
+                                    backdrop: 'rgba(0,0,0,0.4)', // Background overlay
+                                    customClass: {
+                                        popup: 'my-custom-popup-class', // Kelas kustom untuk popup
+                                    },
+                                    heightAuto: false, // Mencegah perubahan tinggi otomatis
+                                    scrollbarPadding: false // Mencegah penambahan padding
                                 }).then(function() {
                                     window.location = response.redirect;
                                 });
@@ -265,7 +313,19 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: response.message
+                                    text: response.message,
+                                    showClass: {
+                                        popup: 'animate__animated animate__shakeX'
+                                    },
+                                    hideClass: {
+                                        popup: 'animate__animated animate__fadeOut'
+                                    },
+                                    backdrop: 'rgba(0,0,0,0.4)',
+                                    customClass: {
+                                        popup: 'my-custom-popup-class',
+                                    },
+                                    heightAuto: false,
+                                    scrollbarPadding: false
                                 });
                             }
                         }
