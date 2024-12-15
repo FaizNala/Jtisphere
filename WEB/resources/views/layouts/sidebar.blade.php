@@ -173,7 +173,7 @@
                 <li class="nav-item">
                     <a href="{{ url('/kalender') }}"
                         class="nav-link {{ $activeMenu == 'kalender' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <i class="nav-icon fas fa-calendar-alt text-white"></i>
                         <p class="text-white">Kalender</p>
                     </a>
                 </li>
@@ -184,24 +184,24 @@
                     class="nav-item has-treeview {{ in_array($activeMenu, ['kegiatan', 'agenda_dosen']) ? 'menu-open' : '' }}">
                     <a href="#"
                         class="nav-link {{ in_array($activeMenu, ['kegiatan', 'agenda_dosen']) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-folder"></i>
+                        <i class="nav-icon fas fa-folder text-white"></i>
                         <p class="text-white">
                             Data Kegiatan
-                            <i class="right fas fa-angle-left"></i>
+                            <i class="right fas fa-angle-left text-white"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ url('/kegiatan_dosen') }}"
                                 class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-list-alt"></i>
+                                <i class="nav-icon fas fa-list-alt text-white"></i>
                                 <p class="text-white">Kegiatan</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ url('/agenda_dosen') }}"
                                 class="nav-link {{ $activeMenu == 'agenda_dosen' ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <i class="nav-icon fas fa-clipboard-list text-white"></i>
                                 <p class="text-white">Agenda Dosen</p>
                             </a>
                         </li>
