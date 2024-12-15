@@ -147,6 +147,7 @@ class UserController extends Controller
             'm_user.username',
             'm_dosen.nama',
             'm_dosen.nip',
+            'm_dosen.avatar',
             DB::raw('GROUP_CONCAT(m_level.level_id) as level_ids'),
             DB::raw('GROUP_CONCAT(m_level.level_nama SEPARATOR ", ") as level_nama')
         )
@@ -154,7 +155,7 @@ class UserController extends Controller
             ->join('t_dosen_level', 'm_dosen.dosen_id', '=', 't_dosen_level.dosen_id')
             ->join('m_level', 't_dosen_level.level_id', '=', 'm_level.level_id')
             ->where('m_user.user_id', $id)
-            ->groupBy('m_user.user_id', 'm_user.username', 'm_dosen.nama', 'm_dosen.nip')
+            ->groupBy('m_user.user_id', 'm_user.username', 'm_dosen.nama', 'm_dosen.nip', 'm_dosen.avatar')
             ->first();
 
         if (!$user) {
