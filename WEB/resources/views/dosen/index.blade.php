@@ -110,19 +110,19 @@
 <div class="row">
     <!-- Daftar Kegiatan -->
     <div class="col-12">
-        <div class="card">
+        <div class="card card-secondary">
             <div class="card-header">
                 <h3 class="card-title">Daftar Kegiatan Anda</h3>
                 <div class="card-tools">
                     <div class="input-group input-group-sm" style="width: 120px;">
-                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search" onkeyup="searchTable()">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card-body table-responsive p-0">
+            <div class="card-body table-responsive p-0" style="height: 300px; overflow-y: auto;">
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
@@ -149,6 +149,61 @@
                             </td>
                         </tr>
                         @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Progress Agenda -->
+    <div class="col-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Progress Agenda Anda Jangan Lupa Diupdate!</h3>
+            </div>
+            <div class="card-body table-responsive p-0" style="height: 300px; overflow-y: auto;">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Kegiatan</th>
+                            <th>Nama Agenda</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Label</th>
+                            <th>Detail Agenda</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($agenda as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->kegiatanAgenda->first()->kegiatan->kegiatan_nama ?? 'N/A' }}</td>
+                            <td>{{ $item->nama }}</td>
+                            <td>{{ $item->kegiatanAgenda->first()->status ?? 'N/A' }}</td>
+                            <td>
+                                <div class="progress progress-sm">
+                                    @php
+                                    // Calculate progress percentage and style
+                                    $status = $item->kegiatanAgenda->first()->status ?? 'N/A';
+                                    $progress = $status === 'Belum' ? 0 : ($status === 'Berjalan' ? 50 : 100);
+                                    $progressBarColor = $status === 'Belum' ? 'bg-info' : ($status === 'Berjalan' ? 'bg-warning' : 'bg-success');
+                                    @endphp
+                                    <div class="progress-bar {{ $progressBarColor }}" style="width: {{ $progress }}%"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge {{ $progressBarColor }}">{{ $progress }}%</span></td>
+                            <td>
+                                <button onclick="showDetail({{ $item->agenda_id }})" class="btn btn-info btn-sm">Detail</button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center">Tidak ada agenda yang ditemukan.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

@@ -52,10 +52,8 @@ Route::middleware(['auth'])->group(function () {
         $currentRole = optional(optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level)->level_kode;
     
         switch ($currentRole) {
-            case 'ADM':
+            case 'ADM' || 'PMN':
                 return app(App\Http\Controllers\AdminController::class)->index();
-            case 'PMN':
-                return app(App\Http\Controllers\PimpinanController::class)->index();
             case 'DSN':
                 return app(App\Http\Controllers\DosenController::class)->index();
             default:

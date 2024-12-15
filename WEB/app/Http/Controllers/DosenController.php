@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\UserModel;
 use App\Models\PeranModel;
 use App\Models\KegiatanModel;
+use App\Models\AgendaModel;
 use App\Models\DosenKegiatanModel;
 
 class DosenController extends Controller
@@ -18,6 +19,8 @@ class DosenController extends Controller
         ];
 
         $activeMenu = 'dashboard';
+
+        $dosenId = session('dosen_id'); // Pastikan Anda menyimpan dosen_id di session
 
         $totalKegiatanDosen = DB::table('t_kegiatan as k')
             ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
@@ -131,6 +134,12 @@ class DosenController extends Controller
         $persentaseBerjalan = $totalKegiatan > 0 ? ($berjalan / $totalKegiatan) * 100 : 0;
         $persentaseSelesai = $totalKegiatan > 0 ? ($selesai / $totalKegiatan) * 100 : 0;
 
+        $agenda = AgendaModel::with(['kegiatanAgenda'])
+            ->whereHas('agendaDosen', function ($query) use ($dosenId) {
+                $query->where('dosen_id', $dosenId);
+            })
+            ->get();
+
         //BELUM DIUBAH
         return view('dosen.index', compact(
             'breadcrumb',
@@ -147,7 +156,8 @@ class DosenController extends Controller
             'kegiatanDosen',
             'persentaseBelum',
             'persentaseBerjalan',
-            'persentaseSelesai'
+            'persentaseSelesai',
+            'agenda'
         ));
     }
 

@@ -122,23 +122,15 @@
 </div>
 
 <div class="row">
+    <!-- Daftar Kegiatan -->
     <div class="col-12">
-        <div class="card">
+        <div class="card card-secondary">
             <div class="card-header">
-                <h3 class="card-title">Tabel Beban Kerja Semua Dosen</h3>
-
+                <h3 class="card-title">Daftar Kegiatan Semua Dosen</h3>
                 <div class="card-tools">
-                    <div class="input-group input-group-sm" style="width: 120px;">
-                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-default">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <div class="card-body table-responsive p-0">
+            <div class="card-body table-responsive p-0" style="height: 300px; overflow-y: auto;">
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
@@ -146,34 +138,27 @@
                             <th>Nama Dosen</th>
                             <th>Jumlah Kegiatan</th>
                             <th>Status Kegiatan</th>
-                            <th>Detail Beban Kerja Dosen</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tbody>
-                            @foreach($dosenKegiatan as $item)
-                            <tr>
-                                <td>{{ $item->dosen_id }}</td>
-                                <td>{{ $item->dosen_nama }}</td>
-                                <td>{{ $item->jumlah_kegiatan }}</td>
-                                <td>
-                                    <span data-toggle="tooltip"
-                                          title="Belum: {{ $item->belum_terlaksana }}, Berjalan: {{ $item->berjalan }}, Selesai: {{ $item->selesai }}">
-                                        Belum: {{ $item->belum_terlaksana }}, Selesai: {{ $item->selesai }}
-                                    </span>
-                                    <td>
-                                        <button class="btn btn-info btn-sm" onclick="showDetail({{ $item->dosen_id }})">
-                                            Detail
-                                        </button>
-                                    </td>
-                                {{-- <td>{{ $item->nama_kegiatan }}</td> --}}
-                            </tr>
-                            @endforeach
-                        </tbody>
+                        @foreach($dosenKegiatan as $index => $item)
+                        <tr>
+                            <td>{{ $item->dosen_id }}</td>
+                            <td>{{ $item->dosen_nama }}</td>
+                            <td>{{ $item->jumlah_kegiatan }}</td>
+                            <td>
+                            <span data-toggle="tooltip"
+                                title="Belum: {{ $item->belum_terlaksana }}, Berjalan: {{ $item->berjalan }}, Selesai: {{ $item->selesai }}">
+                                Belum: {{ $item->belum_terlaksana }}, Selesai: {{ $item->selesai }}
+                            </span>
+                        </tr>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
+</div>
 <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
