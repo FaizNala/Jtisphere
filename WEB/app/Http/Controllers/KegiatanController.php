@@ -36,7 +36,7 @@ class KegiatanController extends Controller
 
         $kegiatan = KegiatanModel::all();
         $kategori = KategoriModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::orderBy('tanggal_mulai', 'DESC')->get();
 
         return view('kegiatan.index', [
             'activeMenu' => $activeMenu,

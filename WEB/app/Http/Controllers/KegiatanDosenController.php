@@ -34,7 +34,7 @@ class KegiatanDosenController extends Controller
 
         $kegiatan = KegiatanModel::all();
         $kategori = KategoriModel::all();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::orderBy('tanggal_mulai', 'DESC')->get();
 
         return view('kegiatan_dosen.index', [
             'activeMenu' => $activeMenu,
@@ -52,18 +52,20 @@ class KegiatanDosenController extends Controller
             ->whereHas('dosenKegiatan', function ($query) use ($dosenId) {
                 $query->where('dosen_id', $dosenId);
             })
-            ->withCount('dosenKegiatan');
+            ->withCount('dosenKegiatan')
+            ->join('m_periode', 't_kegiatan.periode_id', '=', 'm_periode.periode_id') // Join untuk akses kolom periode
+            ->orderBy('m_periode.tanggal_mulai', 'DESC'); // Order berdasarkan tanggal mulai periode secara descending
 
         // Filter by kategori
         $kategori_id = $request->input('filter_kategori');
         if (!empty($kategori_id)) {
-            $kegiatan->where('kategori_id', $kategori_id);
+            $kegiatan->where('t_kegiatan.kategori_id', $kategori_id); // Tambahkan prefix tabel
         }
 
         // Filter by periode
         $periode_id = $request->input('filter_periode');
         if (!empty($periode_id)) {
-            $kegiatan->where('periode_id', $periode_id);
+            $kegiatan->where('t_kegiatan.periode_id', $periode_id); // Tambahkan prefix tabel
         }
 
         return DataTables::of($kegiatan)
