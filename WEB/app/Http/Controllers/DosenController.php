@@ -25,32 +25,32 @@ class DosenController extends Controller
         $totalKegiatanDosen = DB::table('t_kegiatan as k')
             ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
             ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
-            ->where('d.dosen_id', session('dosen_id'))
-            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('d.dosen_id', $dosenId)
+            ->whereYear('k.tanggal_mulai', date('Y')) // Filter by current year
             ->count();
 
         $kegiatanBelumDosen = DB::table('t_kegiatan as k')
             ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
             ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
-            ->where('d.dosen_id', session('dosen_id'))
-            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('d.dosen_id', $dosenId)
             ->where('k.status', 'Belum')
+            ->whereYear('k.tanggal_mulai', date('Y')) // Filter by current year
             ->count();
 
         $kegiatanBerlangsungDosen = DB::table('t_kegiatan as k')
             ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
             ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
-            ->where('d.dosen_id', session('dosen_id'))
-            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('d.dosen_id', $dosenId)
             ->where('k.status', 'Berjalan')
+            ->whereYear('k.tanggal_mulai', date('Y')) // Filter by current year
             ->count();
 
         $kegiatanSelesaiDosen = DB::table('t_kegiatan as k')
             ->join('t_dosen_kegiatan as dk', 'k.kegiatan_id', '=', 'dk.kegiatan_id')
             ->join('m_dosen as d', 'dk.dosen_id', '=', 'd.dosen_id')
-            ->where('d.dosen_id', session('dosen_id'))
-            // ->whereIn('kt.kategori_nama', ['Terprogram', 'Non-Program'])
+            ->where('d.dosen_id', $dosenId)
             ->where('k.status', 'Selesai')
+            ->whereYear('k.tanggal_mulai', date('Y')) // Filter by current year
             ->count();
 
         // Hitung jumlah Pimpinan
@@ -110,12 +110,12 @@ class DosenController extends Controller
         $totalBobotKerja = $dosenKegiatan->sum('bobot_kerja'); // Hitung total bobot kerja
 
         // Ambil semua kegiatan
-        $kegiatanDosen = KegiatanModel::with(
-            ['dosenKegiatan'])
-            ->whereHas('dosenKegiatan', function($query){
-                $dosenId = session('dosen_id');
+        $kegiatanDosen = KegiatanModel::with(['dosenKegiatan'])
+            ->whereHas('dosenKegiatan', function ($query) use ($dosenId) {
                 $query->where('dosen_id', $dosenId);
-            })->get();
+            })
+            ->whereYear('tanggal_mulai', date('Y')) // Filter by current year
+            ->get();
 
         // Ambil semua kegiatan
         $kegiatan = KegiatanModel::with(['kategori', 'periode']) // Mengambil relasi kategori dan periode
@@ -138,6 +138,7 @@ class DosenController extends Controller
             ->whereHas('agendaDosen', function ($query) use ($dosenId) {
                 $query->where('dosen_id', $dosenId);
             })
+            ->whereYear('tanggal_mulai', date('Y')) // Filter by current year
             ->get();
 
         //BELUM DIUBAH
