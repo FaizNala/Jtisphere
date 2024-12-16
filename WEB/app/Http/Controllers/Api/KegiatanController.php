@@ -37,7 +37,13 @@ class KegiatanController extends Controller
             $agenda = DB::table('t_kegiatan_agenda')
                 ->join('t_agenda', 't_kegiatan_agenda.agenda_id', '=', 't_agenda.agenda_id')
                 ->where('t_kegiatan_agenda.kegiatan_id', $item->kegiatan_id)
-                ->select('t_agenda.agenda_id', 't_agenda.nama', 't_agenda.tanggal_mulai', 't_agenda.tanggal_selesai')
+                ->select(
+                    't_agenda.agenda_id',
+                    't_agenda.nama',
+                    't_agenda.tanggal_mulai',
+                    't_agenda.tanggal_selesai',
+                    't_kegiatan_agenda.status'
+                )
                 ->get();
             $item->dosen = $dosen;
             $item->agenda = $agenda;
