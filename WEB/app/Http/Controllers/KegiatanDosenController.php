@@ -54,13 +54,14 @@ class KegiatanDosenController extends Controller
             })
             ->withCount('dosenKegiatan');
 
+        // Filter by kategori
         $kategori_id = $request->input('filter_kategori');
-        $periode_id = $request->input('filter_periode');
-
         if (!empty($kategori_id)) {
             $kegiatan->where('kategori_id', $kategori_id);
         }
 
+        // Filter by periode
+        $periode_id = $request->input('filter_periode');
         if (!empty($periode_id)) {
             $kegiatan->where('periode_id', $periode_id);
         }
