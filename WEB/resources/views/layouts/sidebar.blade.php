@@ -118,7 +118,7 @@
                 data-accordion="false">
                 <!-- Dashboard Link -->
                 <li class="nav-item">
-                    <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
+                    <a href="{{ url('/home') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt text-white"></i>
                         <p class="text-white">Dashboard</p>
                     </a>
@@ -163,7 +163,7 @@
                 data-accordion="false">
                 <!-- Dashboard Link -->
                 <li class="nav-item">
-                    <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
+                    <a href="{{ url('/home') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt text-white"></i>
                         <p class="text-white">Dashboard</p>
                     </a>
