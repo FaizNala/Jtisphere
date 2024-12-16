@@ -34,12 +34,14 @@ class KegiatanDosenController extends Controller
 
         $kegiatan = KegiatanModel::all();
         $kategori = KategoriModel::all();
+        $periode = PeriodeModel::all();
 
         return view('kegiatan_dosen.index', [
             'activeMenu' => $activeMenu,
             'breadcrumb' => $breadcrumb,
             'kegiatan' => $kegiatan,
-            'kategori' => $kategori
+            'kategori' => $kategori,
+            'periode' => $periode
         ]);
     }
 
@@ -47,15 +49,20 @@ class KegiatanDosenController extends Controller
     {
         $dosenId = session('dosen_id');
         $kegiatan = KegiatanModel::with(['dosenKegiatan', 'kategori', 'periode'])
-            ->whereHas('dosenKegiatan', function ($query) {
-                $dosenId = session('dosen_id');
+            ->whereHas('dosenKegiatan', function ($query) use ($dosenId) {
                 $query->where('dosen_id', $dosenId);
             })
             ->withCount('dosenKegiatan');
 
         $kategori_id = $request->input('filter_kategori');
+        $periode_id = $request->input('filter_periode');
+
         if (!empty($kategori_id)) {
             $kegiatan->where('kategori_id', $kategori_id);
+        }
+
+        if (!empty($periode_id)) {
+            $kegiatan->where('periode_id', $periode_id);
         }
 
         return DataTables::of($kegiatan)
@@ -75,7 +82,7 @@ class KegiatanDosenController extends Controller
                     ->whereHas('peran', function ($query) {
                         $query->where('is_pic', 1);
                     })
-                    ->exists(); // Gunakan exists() untuk efisiensi
+                    ->exists();
 
                 $btn = '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
 
@@ -85,16 +92,17 @@ class KegiatanDosenController extends Controller
                 }
 
                 $is_selfevent = DosenKegiatanModel::where('kegiatan_id', $kegiatan->kegiatan_id)
-                ->where('dosen_id', $dosenId)
-                ->whereHas('peran', function ($query) {
-                    $query->where('is_pic', 1);
-                })
-                ->whereHas('kegiatan', function ($query) {
-                    $query->where('kategori_id', 3);
-                })
-                ->exists();
+                    ->where('dosen_id', $dosenId)
+                    ->whereHas('peran', function ($query) {
+                        $query->where('is_pic', 1);
+                    })
+                    ->whereHas('kegiatan', function ($query) {
+                        $query->where('kategori_id', 3);
+                    })
+                    ->exists();
+
                 if ($is_selfevent) {
-                    $btn.= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan_dosen/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 }
 
                 return $btn;
@@ -102,6 +110,7 @@ class KegiatanDosenController extends Controller
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
 
     public function create_ajax()
     {
@@ -458,8 +467,8 @@ class KegiatanDosenController extends Controller
                 if ($request->hasFile('surat_tugas')) {
                     // 1. Cari surat tugas lama terkait kegiatan
                     $oldSuratTugas = SuratTugasModel::select('kegiatan_id')
-                    ->where('kegiatan_id', $id)
-                    ->first();
+                        ->where('kegiatan_id', $id)
+                        ->first();
 
                     if ($oldSuratTugas) {
                         // 2. Temukan dokumen lama
