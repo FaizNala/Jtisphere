@@ -4,26 +4,29 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Agenda Dosen</h3>
             <div class="card-tools">
-                <a href="{{ url('/agenda_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
+                <a href="{{ url('/agenda_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i>
+                    Export
                     Agenda</a>
                 <a href="{{ url('/agenda_dosen/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
                     Agenda</a>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped table-hover table-sm" id="table-agenda">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Kegiatan</th>
-                        <th>Agenda</th>
-                        <th>Tanggal Mulai</th>
-                        <th>Tanggal Selesai</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered table-striped table-hover table-sm" id="table-agenda">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Kegiatan</th>
+                            <th>Agenda</th>
+                            <th>Tanggal Mulai</th>
+                            <th>Tanggal Selesai</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -51,7 +54,7 @@
                     "type": "POST",
                     "data": function(d) {
                         d.filter_kategori = $('.filter_kategori')
-                    .val(); // Menggunakan class filter_kategori
+                            .val(); // Menggunakan class filter_kategori
                     }
                 },
                 columns: [{

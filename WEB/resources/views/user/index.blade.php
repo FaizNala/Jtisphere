@@ -5,15 +5,16 @@
         <div class="card-header">
             <h3 class="card-title">Daftar User</h3>
             <div class="card-tools">
-                @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
+                @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
                     <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-info">Import User</button>
                 @endif
                 <a href="{{ url('/user/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
                     User</a>
                 <a href="{{ url('/user/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
                     User</a>
-                @if(auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
-                    <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-success">Tambah Data (Ajax)</button>
+                @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
+                    <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-success">Tambah Data
+                        (Ajax)</button>
                 @endif
             </div>
         </div>
@@ -43,20 +44,23 @@
             @if (session('error'))
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
-            <table class="table table-bordered table-striped table-hover table-sm" id="table-user">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Nama</th>
-                        <th>Level Pengguna</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered table-striped table-hover table-sm" id="table-user">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Nama</th>
+                            <th>Level Pengguna</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true"></div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -133,7 +137,7 @@
         });
 
         // Tambahkan handler untuk membersihkan Select2 saat modal ditutup
-        $('#myModal').on('hidden.bs.modal', function () {
+        $('#myModal').on('hidden.bs.modal', function() {
             if ($('.select2-multiple').length) {
                 $('.select2-multiple').select2('destroy');
             }

@@ -52,20 +52,22 @@
             @if (session('error'))
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
-            <table class="table table-bordered table-striped table-hover table-sm" id="table-kegiatan">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nama Kegiatan</th>
-                        <th>Kategori</th>
-                        <th>Periode</th>
-                        <th>Skala</th>
-                        <th>Jumlah Dosen</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered table-striped table-hover table-sm" id="table-kegiatan">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Kegiatan</th>
+                            <th>Kategori</th>
+                            <th>Periode</th>
+                            <th>Skala</th>
+                            <th>Jumlah Dosen</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -150,9 +152,9 @@
                 dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
             });
             // Di dalam script dokumentasi
-$('#filter_periode').change(function() {
-    dataKegiatan.ajax.reload(); // Reload data ketika filter periode berubah
-});
+            $('#filter_periode').change(function() {
+                dataKegiatan.ajax.reload(); // Reload data ketika filter periode berubah
+            });
         });
     </script>
 @endpush

@@ -4,11 +4,13 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Kegiatan</h3>
             <div class="card-tools">
-                <a href="{{ url('/kegiatan_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
+                <a href="{{ url('/kegiatan_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i>
+                    Export
                     Kegiatan</a>
                 <a href="{{ url('/kegiatan_dosen/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
                     Kegiatan</a>
-                <button onclick="modalAction('{{ url('/kegiatan_dosen/create_ajax') }}')" class="btn btn-success">Tambah Data
+                <button onclick="modalAction('{{ url('/kegiatan_dosen/create_ajax') }}')" class="btn btn-success">Tambah
+                    Data
                     (Ajax)</button>
             </div>
         </div>
@@ -46,20 +48,22 @@
             @if (session('error'))
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
-            <table class="table table-bordered table-striped table-hover table-sm" id="table-kegiatan">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nama Kegiatan</th>
-                        <th>Kategori</th>
-                        <th>Periode</th>
-                        <th>Skala</th>
-                        <th>Jumlah Dosen</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-            </table>
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered table-striped table-hover table-sm" id="table-kegiatan">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Kegiatan</th>
+                            <th>Kategori</th>
+                            <th>Periode</th>
+                            <th>Skala</th>
+                            <th>Jumlah Dosen</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
@@ -144,8 +148,8 @@
                 dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
             });
             $('.filter_periode').change(function() {
-    dataKegiatan.ajax.reload(); // Reload data when filter changes
-});
+                dataKegiatan.ajax.reload(); // Reload data when filter changes
+            });
         });
     </script>
 @endpush
