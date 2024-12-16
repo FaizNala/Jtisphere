@@ -26,7 +26,7 @@ class StatistikController extends Controller
         ];
 
         $level = LevelModel::select('level_id', 'level_nama')->get();
-        $periode = PeriodeModel::all();
+        $periode = PeriodeModel::orderBy('tanggal_mulai', 'DESC')->get();
         return view('statistik.index', [
             'activeMenu' => $activeMenu,
             'breadcrumb' => $breadcrumb,
