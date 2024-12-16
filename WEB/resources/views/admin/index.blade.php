@@ -101,7 +101,7 @@
         </div>
     </div>
 
-<div class="card card-primary">
+<!-- <div class="card card-primary">
     <div class="card-header">
         <h3 class="card-title">
             <i class="fas fa-chart-bar mr-1"></i>
@@ -119,7 +119,7 @@
     <div class="card-body">
         <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
     </div>
-</div>
+</div> -->
 
 <div class="row">
     <!-- Daftar Kegiatan -->

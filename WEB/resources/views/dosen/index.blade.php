@@ -132,7 +132,7 @@
                             <th>Tanggal Mulai</th>
                             <th>Tanggal Selesai</th>
                             <th>Skala</th>
-                            <th>Detail Kegiatan</th>
+                            <!-- <th>Detail Kegiatan</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -144,9 +144,9 @@
                             <td>{{ $item->tanggal_mulai }}</td>
                             <td>{{ $item->tanggal_selesai }}</td>
                             <td>{{ $item->skala }}</td>
-                            <td>
+                            <!-- <td>
                                 <button onclick="showDetail({{ $item->kegiatan_id }})" class="btn btn-info btn-sm">Detail</button>
-                            </td>
+                            </td> -->
                         </tr>
                         @endforeach
                     </tbody>
@@ -173,7 +173,7 @@
                             <th>Status</th>
                             <th>Progress</th>
                             <th>Label</th>
-                            <th>Detail Agenda</th>
+                            <!-- <th>Detail Agenda</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -186,7 +186,6 @@
                             <td>
                                 <div class="progress progress-sm">
                                     @php
-                                    // Calculate progress percentage and style
                                     $status = $item->kegiatanAgenda->first()->status ?? 'N/A';
                                     $progress = $status === 'Belum' ? 0 : ($status === 'Berjalan' ? 50 : 100);
                                     $progressBarColor = $status === 'Belum' ? 'bg-info' : ($status === 'Berjalan' ? 'bg-warning' : 'bg-success');
@@ -195,9 +194,9 @@
                                 </div>
                             </td>
                             <td><span class="badge {{ $progressBarColor }}">{{ $progress }}%</span></td>
-                            <td>
+                            <!-- <td>
                                 <button onclick="showDetail({{ $item->agenda_id }})" class="btn btn-info btn-sm">Detail</button>
-                            </td>
+                            </td> -->
                         </tr>
                         @empty
                         <tr>
