@@ -40,26 +40,20 @@ class AgendaController extends Controller
             't_agenda.nama',
             't_kegiatan_agenda.kegiatan_id',
             't_kegiatan_agenda.status',
-            't_kegiatan.kegiatan_id',
-            'm_dosen.dosen_id',
-            'm_dosen.nama as dosen_nama',
             DB::raw('COUNT(t_agenda_dosen.dosen_id) as jumlah_dosen')
         )
             ->join('t_kegiatan_agenda', 't_agenda.agenda_id', '=', 't_kegiatan_agenda.agenda_id')
             ->join('t_kegiatan', 't_kegiatan.kegiatan_id', '=', 't_kegiatan_agenda.kegiatan_id')
-            ->join('t_agenda_dosen', 't_agenda_dosen.agenda_id', '=', 't_agenda.agenda_id')
-            ->join('m_dosen', 't_agenda_dosen.dosen_id', '=', 'm_dosen.dosen_id')
+            ->leftJoin('t_agenda_dosen', 't_agenda_dosen.agenda_id', '=', 't_agenda.agenda_id')
             ->where('t_kegiatan_agenda.kegiatan_id', $id)
             ->groupBy(
                 't_agenda.agenda_id',
                 't_agenda.nama',
                 't_kegiatan_agenda.kegiatan_id',
-                't_kegiatan_agenda.status',
-                't_kegiatan.kegiatan_id',
-                'm_dosen.dosen_id',
-                'm_dosen.nama'
+                't_kegiatan_agenda.status'
             )
             ->get();
+        
 
         // Ambil dosen dan peran terkait
         $dosenKegiatan = DosenKegiatanModel::with(['dosen', 'peran'])
