@@ -4,12 +4,14 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Kegiatan</h3>
             <div class="card-tools">
-                <a href="{{ url('/kegiatan_dosen/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
+                <a href="{{ url('/kegiatan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export
                     Kegiatan</a>
-                <a href="{{ url('/kegiatan_dosen/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
+                <a href="{{ url('/kegiatan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export
                     Kegiatan</a>
-                <button onclick="modalAction('{{ url('/kegiatan_dosen/create_ajax') }}')" class="btn btn-success">Tambah Data
-                    (Ajax)</button>
+                @if (auth()->user()->dosen->dosenLevel->first()->level->level_kode == 'ADM')
+                    <button onclick="modalAction('{{ url('/kegiatan/create_ajax') }}')" class="btn btn-success">Tambah Data
+                        (Ajax)</button>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -25,7 +27,16 @@
                                         <option value="{{ $l->kategori_id }}">{{ $l->kategori_nama }}</option>
                                     @endforeach
                                 </select>
-                                <small class="form-text text-muted">Kategori Kagiatan</small>
+                                <small class="form-text text-muted">Kategori Kegiatan</small>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="filter_periode" id="filter_periode" class="form-control form-control-sm">
+                                    <option value="">- Semua -</option>
+                                    @foreach ($periode as $p)
+                                        <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="form-text text-muted">Pilih Periode</small>
                             </div>
                         </div>
                     </div>
@@ -67,72 +78,41 @@
                 $('#myModal').modal('show');
             })
         }
+
         var dataKegiatan;
         $(document).ready(function() {
             dataKegiatan = $('#table-kegiatan').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('kegiatan_dosen/list') }}",
-                    "dataType": "json",
-                    "type": "POST",
-                    "data": function(d) {
-                        d.filter_kategori = $('.filter_kategori')
-                            .val(); // Menggunakan class filter_kategori
+                    url: "{{ url('kegiatan/list') }}",
+                    type: "POST",
+                    data: function(d) {
+                        d.filter_kategori = $('.filter_kategori').val();
+                        d.filter_periode = $('#filter_periode').val();
+                        d._token = "{{ csrf_token() }}"; // Tambahkan token CSRF untuk keamanan
                     }
                 },
-                columns: [{
-                        data: "DT_RowIndex",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: "kegiatan_nama",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "kategori_nama",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "periode", // Kolom baru untuk jumlah dosen
-                        orderable: true,
-                        searchable: false
-                    },
-                    {
-                        data: "skala", // Kolom baru untuk jumlah dosen
-                        orderable: true,
-                        searchable: false
-                    },
-                    {
-                        data: "jumlah_dosen", // Kolom baru untuk jumlah dosen
-                        orderable: true,
-                        searchable: false
-                    },
-                    {
-                        data: "status",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "aksi",
-                        orderable: false,
-                        searchable: false
-                    }
+                columns: [
+                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
+                    { data: "kegiatan_nama", orderable: true, searchable: true },
+                    { data: "kategori_nama", orderable: true, searchable: true },
+                    { data: "periode", orderable: true, searchable: false },
+                    { data: "skala", orderable: true, searchable: false },
+                    { data: "jumlah_dosen", orderable: true, searchable: false },
+                    { data: "status", orderable: true, searchable: true },
+                    { data: "aksi", orderable: false, searchable: false }
                 ]
+            });
+
+            $('.filter_kategori, #filter_periode').change(function() {
+                dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
             });
 
             $('#table-kegiatan_filter input').unbind().bind('keyup', function(e) {
                 if (e.keyCode == 13) {
                     dataKegiatan.search(this.value).draw();
                 }
-            });
-
-            $('.filter_kategori').change(function() {
-                dataKegiatan.ajax.reload(); // Reload data ketika filter berubah
             });
         });
     </script>
