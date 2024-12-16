@@ -35,7 +35,7 @@
                             </div>
                             <div class="col-md-3">
                                 <select name="filter_periode" id="filter_periode" class="form-control form-control-sm">
-                                    {{-- <option value="">- Semua -</option> --}}
+                                    <option value="">- Semua -</option>
                                     @foreach ($periode as $p)
                                         <option value="{{ $p->periode_id }}">{{ $p->periode }}</option>
                                     @endforeach
