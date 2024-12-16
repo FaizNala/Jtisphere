@@ -50,26 +50,28 @@ class KegiatanController extends Controller
     public function list(Request $request)
     {
         $kegiatan = KegiatanModel::with(['kategori', 'periode'])
-            ->withCount('dosenKegiatan');
+            ->withCount('dosenKegiatan')
+            ->join('m_periode', 't_kegiatan.periode_id', '=', 'm_periode.periode_id')
+            ->orderBy('m_periode.tanggal_mulai', 'DESC');
 
         $kategori_id = $request->input('filter_kategori');
         $periode_id = $request->input('filter_periode');
 
         if (!empty($kategori_id)) {
-            $kegiatan->where('kategori_id', $kategori_id);
+            $kegiatan->where('t_kegiatan.kategori_id', $kategori_id); // Tambahkan prefix tabel
         }
 
         if (!empty($periode_id)) {
-            $kegiatan->where('periode_id', $periode_id);
+            $kegiatan->where('t_kegiatan.periode_id', $periode_id); // Tambahkan prefix tabel
         }
 
         return DataTables::of($kegiatan)
             ->addIndexColumn()
             ->addColumn('kategori_nama', function ($kegiatan) {
-                return $kegiatan->kategori->kategori_nama;
+                return optional($kegiatan->kategori)->kategori_nama; // Gunakan optional untuk menghindari error jika null
             })
             ->addColumn('periode', function ($kegiatan) {
-                return $kegiatan->periode->periode;
+                return optional($kegiatan->periode)->periode; // Gunakan optional untuk menghindari error jika null
             })
             ->addColumn('jumlah_dosen', function ($kegiatan) {
                 return $kegiatan->dosen_kegiatan_count;
@@ -79,7 +81,7 @@ class KegiatanController extends Controller
                 $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $currentLevelId = session('current_level_id');
                 $userRole = optional(
-                    optional(Auth::user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level,
+                    optional(auth()->user()->dosen->dosenLevel->where('level_id', $currentLevelId)->first())->level
                 )->level_kode;
                 if ($userRole == 'ADM') {
                     $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan->kegiatan_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
@@ -89,6 +91,7 @@ class KegiatanController extends Controller
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
 
     public function create_ajax()
     {
